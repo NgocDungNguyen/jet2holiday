@@ -307,13 +307,13 @@
         let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
         
         // Game Constants
-        const PRE_RAIN_TIME = 3; // 10 seconds before rain starts
-        const RAIN_DURATION = 30; // 60 seconds of rain
-        const MAX_WATER_LEVEL = 30; // Lose if water reaches 70%
+        const PRE_RAIN_TIME = 3; // 3 seconds before rain starts
+        const RAIN_DURATION = 30; // 30 seconds of rain
+        const MAX_WATER_LEVEL = 40; // Lose if water reaches 40%
         const SEWER_COUNT = 3;
-        const TRASH_PER_SEWER = 12; // More trash per sewer (increased from 5 to 8)
-        const WATER_RISE_RATE = 2.2; // Water rises 1.2% per SECOND when all sewers blocked
-        const WATER_DRAIN_RATE = 0.5; // Water drains 1.5% per SECOND per clear sewer
+        const TRASH_PER_SEWER = 10; // More trash per sewer (increased from 5 to 8)
+        const WATER_RISE_RATE = 2; // Water rises 2% per SECOND when all sewers blocked
+        const WATER_DRAIN_RATE = 0.8; // Water drains 1.5% per SECOND per clear sewer
         const LIGHTNING_INTERVAL = 5000; // Lightning every 3 seconds
         
         // Frame rate control
@@ -392,6 +392,10 @@
         const controlsDisplay = document.getElementById('controlsDisplay');
         const singleControls = document.getElementById('singleControls');
         const multiControls = document.getElementById('multiControls');
+        
+        // Key press tracking to prevent holding keys
+        let spacePressed = false;
+        let enterPressed = false;
         
         // Game Objects
         let player1 = {
@@ -1139,16 +1143,34 @@
         window.addEventListener('keydown', (e) => {
             keys[e.key] = true;
             
+            // Spacebar for Player 1 - only trigger once per press
             if (e.key === ' ' || e.key === 'Spacebar') {
                 e.preventDefault();
-                pickupOrDrop(1);
+                if (!spacePressed) {
+                    spacePressed = true;
+                    pickupOrDrop(1);
+                }
             }
+            // Enter for Player 2 (multiplayer only) - only trigger once per press
             if (e.key === 'Enter' && gameMode === 'multiplayer') {
                 e.preventDefault();
-                pickupOrDrop(2);
+                if (!enterPressed) {
+                    enterPressed = true;
+                    pickupOrDrop(2);
+                }
             }
         });
-        window.addEventListener('keyup', (e) => keys[e.key] = false);
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+            
+            // Reset the key press flags when keys are released
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                spacePressed = false;
+            }
+            if (e.key === 'Enter') {
+                enterPressed = false;
+            }
+        });
         
         function handleInput() {
             if (!gameState.gameActive) return;
