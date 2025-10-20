@@ -1,0 +1,322 @@
+# code_generation_prompts.txt
+
+## LEVEL 1: OCEAN CLEANUP - CODE GENERATION PROMPTS
+
+### Core Game Engine
+```
+Create a JavaScript class for a Gold Miner-style game with these specifications:
+- Player controls a boat that moves horizontally
+- Grabber swings with pendulum physics
+- Collision detection between grabber and trash items
+- Marine life that moves randomly and can be harmed by trash
+- Scoring system with penalties for environmental damage
+```
+
+### Physics and Movement Systems
+```
+Write JavaScript code for:
+1. Pendulum swing mechanics for the grabber (angle, velocity, direction changes)
+2. Boat movement with boundary checking
+3. Random movement patterns for fish and turtles
+4. Trash item drift physics in water currents
+```
+
+### Collision Detection
+```
+Implement collision detection functions for:
+- Grabber vs trash items (circular detection around grabber head)
+- Trash items vs marine life (radius-based collision)
+- Player boat vs screen boundaries
+```
+
+### Game State Management
+```
+Create a game state manager with:
+- Score tracking
+- Timer countdown
+- Trash collection counter
+- Marine life protection metrics
+- Win/lose condition checking
+```
+
+### UI Components
+```
+Generate HTML/CSS for:
+- Game canvas with water gradient background
+- Score panel with progress bars
+- Timer display
+- Control instructions overlay
+- Start/end screens with educational facts
+```
+
+## LEVEL 2: FLOOD PREVENTION - CODE GENERATION PROMPTS
+
+### Water Simulation System
+```
+Write JavaScript code for realistic water level simulation:
+- Water rises when sewers are blocked
+- Water drains when sewers are clear
+- Different drainage rates based on number of cleared sewers
+- Visual water level indicator with smooth transitions
+```
+
+### Player and Interaction System
+```
+Create player movement and interaction code:
+- Horizontal movement with A/D keys
+- Trash pickup and drop mechanics
+- Collision detection with sewers and bins
+- Inventory system for carried items
+```
+
+### Weather and Environment System
+```
+Implement weather effects:
+- Countdown timer to rain start
+- Rain particle system with random drop generation
+- Cloud movement with parallax effect
+- Lightning flash effects with timed thunder
+```
+
+### Sewer Management System
+```
+Code the sewer drain mechanics:
+- Each sewer starts blocked with multiple trash items
+- Visual indicators for blocked/clear status
+- Automatic blockage detection based on remaining trash
+- Drainage rate calculations per sewer
+```
+
+## LEVEL 3: DRONE DELIVERY - CODE GENERATION PROMPTS
+
+### Drone Control System
+```
+Create 4-directional drone movement:
+- WASD and arrow key controls
+- Smooth movement with boundaries
+- Battery consumption during flight
+- Recharging when drone returns to base
+```
+
+### Supply Management System
+```
+Implement supply delivery mechanics:
+- Three supply types (medic, food, water)
+- Pickup system from supply piles
+- Delivery system to houses
+- Inventory management with visual cargo display
+```
+
+### House and Family System
+```
+Code house management:
+- Each house tracks three required supply types
+- Visual status indicators for missing/delivered items
+- Family characters with animation states
+- Completion detection when all supplies delivered
+```
+
+### Mission Progression
+```
+Create mission tracking:
+- Total deliveries counter
+- Individual house completion tracking
+- Time limit countdown
+- Battery level warnings and game over conditions
+```
+
+## COMMON GAME SYSTEMS
+
+### Asset Loading and Management
+```
+Write asset loader for:
+- Preloading game images
+- Error handling for missing assets
+- Memory management for browser performance
+- Fallback rendering if assets fail to load
+```
+
+### Audio System
+```
+Create audio management:
+- Play/pause/stop controls
+- Volume management
+- Multiple audio channel support
+- Error handling for missing audio files
+```
+
+### Input Handling
+```
+Implement robust input system:
+- Keyboard event listeners
+- Key state tracking for smooth movement
+- Input buffering and debouncing
+- Multiple control scheme support
+```
+
+### Game Loop Architecture
+```
+Create main game loop:
+- Fixed time step update system
+- RequestAnimationFrame integration
+- Frame rate independence
+- Pause/resume functionality
+```
+
+### UI Rendering System
+```
+Code dynamic UI updates:
+- Real-time score updates
+- Progress bar animations
+- Status message displays
+- Transition effects between screens
+```
+
+## SPECIFIC FUNCTION IMPLEMENTATIONS
+
+### Level 1 - Grabber Physics
+```
+Write the grabber update function:
+- Handle swinging state with angular velocity
+- Extend/retract states with length changes
+- Collision detection during extension
+- Item carrying during retraction
+```
+
+### Level 2 - Water Calculation
+```
+Implement water level calculation:
+- Base inflow rate from rain
+- Drainage rate based on clear sewers
+- Time-based accumulation
+- Clamping to minimum/maximum levels
+```
+
+### Level 3 - Battery System
+```
+Create drone battery management:
+- Continuous drain during flight
+- Recharge when at base
+- Low battery warnings
+- Game over on complete depletion
+```
+
+## COLLISION DETECTION FUNCTIONS
+
+### Rectangle-Rectangle Collision
+```
+function checkRectCollision(rect1, rect2) {
+  // Implement AABB collision detection
+  // Return boolean collision result
+}
+```
+
+### Circle-Rectangle Collision
+```
+function checkCircleRectCollision(circle, rect) {
+  // Find closest point on rectangle to circle
+  // Calculate distance and compare to radius
+  // Return collision boolean
+}
+```
+
+### Point-in-Polygon Detection
+```
+function pointInPolygon(point, polygon) {
+  // Ray casting algorithm implementation
+  // Return whether point is inside polygon
+}
+```
+
+## ANIMATION AND EFFECTS
+
+### Particle Systems
+```
+Create particle effect generators for:
+- Water splashes
+- Collection effects
+- Pollution damage indicators
+- Success/failure visual feedback
+```
+
+### Sprite Animation
+```
+Implement sprite animation system:
+- Frame-based animation timing
+- Sprite sheet parsing
+- Animation state management
+- Smooth transitions between states
+```
+
+## DATA STRUCTURES
+
+### Game Object Management
+```
+Create object pooling system:
+- Pre-allocate object arrays
+- Reuse objects instead of creating/destroying
+- Memory efficiency for browser games
+- Garbage collection optimization
+```
+
+### State Management
+```
+Implement game state machine:
+- Menu, playing, paused, game over states
+- State transition logic
+- Persistent data between states
+- Reset functionality
+```
+
+## OPTIMIZATION PROMPTS
+
+### Performance Optimization
+```
+Optimize game for 60fps:
+- Object pooling implementation
+- Efficient collision detection
+- Canvas rendering optimizations
+- Memory leak prevention
+```
+
+### Mobile Compatibility
+```
+Make game mobile-friendly:
+- Touch control implementation
+- Responsive canvas scaling
+- Mobile performance considerations
+- Touch event handling
+```
+
+## ERROR HANDLING AND DEBUGGING
+
+### Error Recovery
+```
+Implement robust error handling:
+- Graceful asset loading failures
+- Game state corruption recovery
+- User-friendly error messages
+- Auto-recovery mechanisms
+```
+
+### Debug System
+```
+Create debugging tools:
+- FPS counter display
+- Collision visualization
+- State logging
+- Performance profiling
+```
+
+## SAVE/LOAD SYSTEM
+
+### Progress Persistence
+```
+Implement save system:
+- LocalStorage integration
+- Progress tracking across levels
+- Settings persistence
+- Save data validation
+```
+
+These prompts were used to generate the complete game codebase, ensuring consistent coding patterns, optimal performance, and maintainable architecture across all three levels.

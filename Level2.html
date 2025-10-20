@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanoi Flood Challenge - Level 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            background: #2c3e50;
+            padding: 10px;
+        }
+        
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        #topUI {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        #canvasWrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        #gameCanvas {
+            border: 3px solid #2c3e50;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            image-rendering: pixelated;
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .uiPanel {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid #3498db;
+            font-size: 14px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .uiPanel strong {
+            color: #3498db;
+        }
+        
+        .uiPanel > div {
+            margin: 4px 0;
+        }
+        
+        #controls {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid #2ecc71;
+            text-align: center;
+            font-size: 12px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        #endScreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            border: 4px solid #e74c3c;
+            text-align: center;
+            display: none;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+        
+        #endScreen h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        #endStats {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        
+        .factBox {
+            background: rgba(52, 152, 219, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+            font-size: 13px;
+            line-height: 1.5;
+            text-align: left;
+        }
+        
+        button {
+            background: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px 5px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #27ae60;
+            transform: scale(1.05);
+        }
+        
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            text-align: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        #startScreen h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            color: #3498db;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+        }
+        
+        #startScreen h2 {
+            font-size: clamp(18px, 3vw, 24px);
+            color: #f39c12;
+            margin-bottom: 20px;
+        }
+        
+        #startScreen p {
+            font-size: clamp(14px, 2vw, 17px);
+            max-width: 90%;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .key {
+            display: inline-block;
+            background: #34495e;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 4px;
+            border: 1px solid #7f8c8d;
+            font-family: monospace;
+            font-size: clamp(10px, 2vw, 14px);
+        }
+        
+        .missionBox {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px auto;
+            max-width: 700px;
+            width: 90%;
+        }
+        
+        .impactBox {
+            margin-top: 20px;
+            font-size: clamp(11px, 1.5vw, 13px);
+            color: #ecf0f1;
+            max-width: 650px;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            background: rgba(231,76,60,0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Top UI Panel - Outside Canvas -->
+        <div id="topUI">
+            <div class="uiPanel">
+                <div id="player1UI">
+                    <div><strong>👦 PLAYER 1</strong></div>
+                    <div>Trash: <span id="p1Trash">0</span></div>
+                </div>
+            </div>
+            
+            <div class="uiPanel" style="text-align: center;">
+                <div><strong>⏱️ Countdown:</strong> <span id="countdownValue">10s</span></div>
+                <div><strong>🌧️ Rain:</strong> <span id="rainTimeValue">60s</span></div>
+                <div><strong>💧 Water:</strong> <span id="waterLevelValue">0%</span></div>
+                <div><strong>🕳️ Sewers:</strong> <span id="sewersClear">0</span>/3</div>
+            </div>
+            
+            <div class="uiPanel" id="player2UI" style="display: none;">
+                <div><strong>👧 PLAYER 2</strong></div>
+                <div>Trash: <span id="p2Trash">0</span></div>
+            </div>
+        </div>
+        
+        <!-- Canvas Wrapper -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+        
+        <!-- Controls - Outside Canvas -->
+        <div id="controls">
+            <span id="singleControls">
+                <span class="key">A/D</span> or <span class="key">←/→</span> = Move | <span class="key">SPACEBAR</span> = Pick Up/Drop
+            </span>
+            <span id="multiControls" style="display: none;">
+                P1: <span class="key">A/D</span> + <span class="key">SPACE</span> | 
+                P2: <span class="key">←/→</span> + <span class="key">ENTER</span>
+            </span>
+        </div>
+        
+        <div id="endScreen">
+            <h2 id="endTitle">MISSION COMPLETE!</h2>
+            <div id="endStats"></div>
+            <div class="factBox" id="endFact"></div>
+            <div>
+                <button id="nextLevelBtn" style="display: none;">🚁 NEXT LEVEL →</button>
+                <button id="retryBtn">TRY AGAIN</button>
+                <button id="backBtn">BACK TO LEVEL 1</button>
+            </div>
+        </div>
+        
+        <div id="startScreen">
+            <h1>🌧️ HANOI FLOOD PREVENTION</h1>
+            <h2 id="modeTitle" style="color: #3498db; margin: 10px 0;">LEVEL 2: Urban Flood Challenge</h2>
+            
+            <div class="missionBox">
+                <p style="font-size: clamp(12px, 2vw, 16px); line-height: 1.6; margin-bottom: 10px;">
+                    🏙️ <strong>THE CHALLENGE:</strong> Hanoi faces severe urban flooding during monsoon season.<br>
+                    Blocked sewers from plastic waste cause streets to flood in minutes, affecting thousands of families.
+                </p>
+                <p style="font-size: clamp(11px, 1.8vw, 14px); color: #3498db; margin-top: 10px;">
+                    🚨 Heavy rain is approaching! Clear trash from sewers before flooding becomes catastrophic!
+                </p>
+            </div>
+            
+            <p id="missionDesc" style="max-width: 650px; width: 90%; margin: 15px auto; font-size: clamp(12px, 1.8vw, 15px); line-height: 1.6;">
+                <strong>⏱️ You have 3 seconds preparation time before the rain starts!</strong><br>
+                Move plastic waste to recycling bins to clear sewers and prevent dangerous flooding.<br>
+                <em style="color: #f39c12;">⚠️ Water level rises when sewers are blocked! Keep drains clear to save the city!</em>
+            </p>
+            
+            <div style="margin: 15px auto; font-size: clamp(11px, 1.8vw, 14px);" id="controlsDisplay">
+                <span class="key">A/D</span> or <span class="key">←/→</span> = Move
+                <span class="key" style="margin-left: 15px;">SPACEBAR</span> = Pick Up / Drop
+            </div>
+            
+            <button id="startBtn" style="font-size: clamp(14px, 2.5vw, 18px); padding: 15px 40px; margin: 10px;">🚀 START MISSION</button>
+            
+            <div class="impactBox">
+                <strong>🌍 REAL IMPACT:</strong> 80% of Hanoi's urban flooding is caused by blocked drainage systems.<br>
+                Proper waste management can prevent disasters and protect communities!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get game mode from URL parameter (passed from Level 1)
+        const urlParams = new URLSearchParams(window.location.search);
+        let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
+        
+        // Game Constants
+        const PRE_RAIN_TIME = 3; // 10 seconds before rain starts
+        const RAIN_DURATION = 30; // 60 seconds of rain
+        const MAX_WATER_LEVEL = 30; // Lose if water reaches 70%
+        const SEWER_COUNT = 3;
+        const TRASH_PER_SEWER = 12; // More trash per sewer (increased from 5 to 8)
+        const WATER_RISE_RATE = 2.2; // Water rises 1.2% per SECOND when all sewers blocked
+        const WATER_DRAIN_RATE = 0.5; // Water drains 1.5% per SECOND per clear sewer
+        const LIGHTNING_INTERVAL = 5000; // Lightning every 3 seconds
+        
+        // Frame rate control
+        let lastFrameTime = Date.now();
+        const targetFPS = 60;
+        const frameDelay = 1000 / targetFPS;
+        
+        // Load Assets
+        const assets = {
+            background: new Image(),
+            bin: new Image(),
+            bottle: new Image(),
+            plastic: new Image(),
+            boy: new Image(),
+            girl: new Image(),
+            cloud: new Image(),
+            lightning: new Image()
+        };
+        
+        assets.background.src = 'assets/City.png';
+        assets.bin.src = 'assets/bin.png';
+        assets.bottle.src = 'assets/bottle.png';
+        assets.plastic.src = 'assets/plastic.png';
+        assets.boy.src = 'assets/Boy.png';
+        assets.girl.src = 'assets/Girl.png';
+        assets.cloud.src = 'assets/Cloud.png';
+        assets.lightning.src = 'assets/Lightning.png';
+        
+        // Load Audio
+        const rainSound = new Audio('SFX/Rain.mp3');
+        rainSound.loop = true;
+        rainSound.volume = 0.8;
+        
+        const thunderSound = new Audio('SFX/Thunder.mp3');
+        thunderSound.volume = 1.0;
+        
+        const successSound = new Audio('SFX/Success.mp3');
+        successSound.volume = 1.0;
+        
+        // Game State
+        let gameState = {
+            phase: 'preRain',
+            preRainTimeLeft: PRE_RAIN_TIME,
+            rainTimeLeft: RAIN_DURATION,
+            waterLevel: 0,
+            p1Trash: 0,
+            p2Trash: 0,
+            totalTrash: 0,
+            sewersCleared: 0,
+            gameActive: false,
+            gameOver: false,
+            lastLightning: 0,
+            winner: null
+        };
+        
+        // DOM Elements
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const endScreen = document.getElementById('endScreen');
+        const startBtn = document.getElementById('startBtn');
+        const retryBtn = document.getElementById('retryBtn');
+        const backBtn = document.getElementById('backBtn');
+        const countdownValue = document.getElementById('countdownValue');
+        const rainTimeValue = document.getElementById('rainTimeValue');
+        const waterLevelValue = document.getElementById('waterLevelValue');
+        const sewersClear = document.getElementById('sewersClear');
+        const p1TrashUI = document.getElementById('p1Trash');
+        const p2TrashUI = document.getElementById('p2Trash');
+        const player2UI = document.getElementById('player2UI');
+        const endTitle = document.getElementById('endTitle');
+        const endStats = document.getElementById('endStats');
+        const endFact = document.getElementById('endFact');
+        const modeTitle = document.getElementById('modeTitle');
+        const missionDesc = document.getElementById('missionDesc');
+        const controlsDisplay = document.getElementById('controlsDisplay');
+        const singleControls = document.getElementById('singleControls');
+        const multiControls = document.getElementById('multiControls');
+        
+        // Game Objects
+        let player1 = {
+            x: 200,
+            y: 480,
+            width: 45,
+            height: 65,
+            speed: 5,
+            carrying: null,
+            isBoy: true
+        };
+        
+        let player2 = {
+            x: 600,
+            y: 480,
+            width: 45,
+            height: 65,
+            speed: 5,
+            carrying: null,
+            isBoy: false
+        };
+        
+        let sewers = [];
+        let bins = [];
+        let trashItems = [];
+        let clouds = [];
+        let rainDrops = [];
+        let lightningFlash = false;
+        
+        // Initialize UI based on game mode
+        function initUI() {
+            if (gameMode === 'multiplayer') {
+                modeTitle.textContent = 'LEVEL 2 - MULTIPLAYER MODE';
+                missionDesc.innerHTML = `
+                    Welcome to Hanoi! Heavy rain is coming to the city streets.<br>
+                    <strong>Player 1 (Boy) vs Player 2 (Girl)</strong><br>
+                    Compete to clear the most trash and save the city!<br><br>
+                    <strong>⏱️ You have 10 seconds before the rain starts!</strong>
+                `;
+                controlsDisplay.innerHTML = `
+                    P1: <span class="key">A/D</span> + <span class="key">SPACE</span> |
+                    P2: <span class="key">←/→</span> + <span class="key">ENTER</span>
+                `;
+                player2UI.style.display = 'block';
+                singleControls.style.display = 'none';
+                multiControls.style.display = 'inline';
+            } else {
+                modeTitle.textContent = 'LEVEL 2 - SINGLE PLAYER';
+                missionDesc.innerHTML = `
+                    Welcome to Hanoi! Heavy rain is coming to the city streets.<br>
+                    Clear trash from sewer drains before flooding becomes dangerous.<br><br>
+                    <strong>⏱️ You have 10 seconds before the rain starts!</strong><br>
+                    Move trash to bins to clear sewers and prevent flooding.
+                `;
+                player2UI.style.display = 'none';
+                singleControls.style.display = 'inline';
+                multiControls.style.display = 'none';
+            }
+        }
+        
+        function createSewers() {
+            sewers = [];
+            const sewerY = 510;
+            const sewerPositions = [150, 400, 650];
+            
+            sewerPositions.forEach((x) => {
+                sewers.push({
+                    x: x,
+                    y: sewerY,
+                    width: 55,
+                    height: 30,
+                    blocked: true,
+                    trashCount: 0
+                });
+            });
+        }
+        
+        function createBins() {
+            bins = [];
+            bins.push({ x: 40, y: 495, width: 65, height: 75 });
+            bins.push({ x: 695, y: 495, width: 65, height: 75 });
+        }
+        
+        function createInitialTrash() {
+            trashItems = [];
+            const trashTypes = ['bottle', 'plastic'];
+            
+            sewers.forEach((sewer, sewerIndex) => {
+                for (let i = 0; i < TRASH_PER_SEWER; i++) {
+                    const type = trashTypes[Math.floor(Math.random() * trashTypes.length)];
+                    const offsetX = (Math.random() - 0.5) * 50;
+                    const offsetY = (Math.random() - 0.5) * 25;
+                    
+                    trashItems.push({
+                        x: sewer.x + offsetX,
+                        y: sewer.y + offsetY,
+                        width: 32,
+                        height: 32,
+                        type: type,
+                        onSewer: sewerIndex,
+                        canPickup: false
+                    });
+                    sewer.trashCount++;
+                }
+            });
+            
+            gameState.totalTrash = trashItems.length;
+        }
+        
+        function createClouds() {
+            clouds = [];
+            for (let i = 0; i < 6; i++) {
+                clouds.push({
+                    x: Math.random() * 800,
+                    y: Math.random() * 80,
+                    width: 140 + Math.random() * 80,
+                    height: 70 + Math.random() * 40,
+                    speed: 0.4 + Math.random() * 0.6
+                });
+            }
+        }
+        
+        function createRainDrop() {
+            if (gameState.phase === 'raining') {
+                for (let i = 0; i < 4; i++) {
+                    rainDrops.push({
+                        x: Math.random() * 800,
+                        y: -10,
+                        speed: 9 + Math.random() * 5,
+                        length: 18 + Math.random() * 12
+                    });
+                }
+            }
+        }
+        
+        function initGame() {
+            gameState = {
+                phase: 'preRain',
+                preRainTimeLeft: PRE_RAIN_TIME,
+                rainTimeLeft: RAIN_DURATION,
+                waterLevel: 0,
+                p1Trash: 0,
+                p2Trash: 0,
+                totalTrash: 0,
+                sewersCleared: 0,
+                gameActive: true,
+                gameOver: false,
+                lastLightning: 0,
+                winner: null
+            };
+            
+            // Reset players
+            if (gameMode === 'single') {
+                player1.x = 400;
+                player1.y = 480;
+                player1.carrying = null;
+                player1.isBoy = Math.random() > 0.5;
+            } else {
+                player1.x = 200;
+                player1.y = 480;
+                player1.carrying = null;
+                player1.isBoy = true;
+                
+                player2.x = 600;
+                player2.y = 480;
+                player2.carrying = null;
+                player2.isBoy = false;
+            }
+            
+            createSewers();
+            createBins();
+            createInitialTrash();
+            
+            // Don't create clouds yet - they should spawn when rain starts
+            clouds = [];
+            rainDrops = [];
+            lightningFlash = false;
+            
+            // Reset frame timer
+            lastFrameTime = Date.now();
+            
+            updateUI();
+            startScreen.style.display = 'none';
+            endScreen.style.display = 'none';
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function updateGame(deltaTime) {
+            if (!gameState.gameActive) return;
+            
+            // Use deltaTime for frame-independent updates (deltaTime is in seconds)
+            if (gameState.phase === 'preRain') {
+                gameState.preRainTimeLeft -= deltaTime;
+                
+                if (gameState.preRainTimeLeft <= 0) {
+                    gameState.phase = 'raining';
+                    gameState.preRainTimeLeft = 0;
+                    
+                    // When rain starts: spawn clouds and play rain sound
+                    createClouds();
+                    rainSound.play().catch(err => console.log('Rain sound error:', err));
+                }
+            } else if (gameState.phase === 'raining') {
+                gameState.rainTimeLeft -= deltaTime;
+                
+                if (gameState.rainTimeLeft <= 0) {
+                    gameState.rainTimeLeft = 0;
+                    endGame();
+                    return;
+                }
+                
+                // Only create rain drops occasionally (not every frame)
+                if (Math.random() < 0.3) {
+                    createRainDrop();
+                }
+                
+                updateWaterLevel(deltaTime);
+                
+                // Lightning and thunder system (every 3 seconds during rain)
+                const now = Date.now();
+                if (now - gameState.lastLightning >= LIGHTNING_INTERVAL) {
+                    console.log('⚡ Lightning strike triggered!');
+                    
+                    // Step 1: Play thunder sound immediately
+                    thunderSound.currentTime = 0;
+                    thunderSound.play().catch(err => console.log('Thunder error:', err));
+                    
+                    // Step 2: Show lightning 0.2 seconds AFTER thunder starts
+                    setTimeout(() => {
+                        lightningFlash = true;
+                        console.log('⚡ Lightning flash = true');
+                        setTimeout(() => {
+                            lightningFlash = false;
+                            console.log('⚡ Lightning flash = false');
+                        }, 200); // Lightning visible for 0.2s
+                    }, 200);
+                    
+                    gameState.lastLightning = now;
+                }
+                
+                if (gameState.waterLevel >= MAX_WATER_LEVEL) {
+                    endGame();
+                    return;
+                }
+            }
+            
+            clouds.forEach(cloud => {
+                cloud.x += cloud.speed;
+                if (cloud.x > 800 + cloud.width) cloud.x = -cloud.width;
+            });
+            
+            rainDrops = rainDrops.filter(drop => {
+                drop.y += drop.speed;
+                return drop.y < 600;
+            });
+            
+            updateSewerStatus();
+            checkInteractions();
+        }
+        
+        function updateWaterLevel(deltaTime) {
+            if (gameState.phase !== 'raining') return;
+            
+            const blockedSewers = sewers.filter(s => s.blocked).length;
+            const clearSewers = SEWER_COUNT - blockedSewers;
+            
+            // Realistic water logic:
+            // - Water only rises when sewers are BLOCKED (can't drain)
+            // - Water drains when sewers are CLEAR
+            // - If all sewers clear: water drains fast, no rising
+            // - If all sewers blocked: water rises fast (realistic flooding!)
+            
+            let netChange = 0;
+            
+            if (blockedSewers > 0) {
+                // Water rises proportional to number of blocked sewers
+                const waterInflow = WATER_RISE_RATE * (blockedSewers / SEWER_COUNT) * deltaTime;
+                netChange += waterInflow;
+            }
+            
+            if (clearSewers > 0) {
+                // Water drains proportional to number of clear sewers
+                const waterDrain = clearSewers * WATER_DRAIN_RATE * deltaTime;
+                netChange -= waterDrain;
+            }
+            
+            gameState.waterLevel += netChange;
+            gameState.waterLevel = Math.max(0, Math.min(100, gameState.waterLevel));
+        }
+        
+        function updateSewerStatus() {
+            let clearedCount = 0;
+            
+            sewers.forEach(sewer => {
+                sewer.trashCount = trashItems.filter(t => t.onSewer === sewers.indexOf(sewer)).length;
+                sewer.blocked = sewer.trashCount > 0;
+                if (!sewer.blocked) clearedCount++;
+            });
+            
+            gameState.sewersCleared = clearedCount;
+        }
+        
+        function checkInteractions() {
+            // Player 1 interactions
+            if (!player1.carrying) {
+                trashItems.forEach(trash => {
+                    if (isColliding(player1, trash)) {
+                        trash.canPickup = true;
+                        trash.pickupBy = 1;
+                    } else if (trash.pickupBy === 1) {
+                        trash.canPickup = false;
+                        trash.pickupBy = null;
+                    }
+                });
+            }
+            
+            if (player1.carrying) {
+                bins.forEach(bin => {
+                    if (isColliding(player1, bin)) {
+                        bin.canDrop = true;
+                        bin.dropBy = 1;
+                    } else if (bin.dropBy === 1) {
+                        bin.canDrop = false;
+                        bin.dropBy = null;
+                    }
+                });
+            }
+            
+            // Player 2 interactions (multiplayer only)
+            if (gameMode === 'multiplayer') {
+                if (!player2.carrying) {
+                    trashItems.forEach(trash => {
+                        if (isColliding(player2, trash) && trash.pickupBy !== 1) {
+                            trash.canPickup = true;
+                            trash.pickupBy = 2;
+                        } else if (trash.pickupBy === 2) {
+                            trash.canPickup = false;
+                            trash.pickupBy = null;
+                        }
+                    });
+                }
+                
+                if (player2.carrying) {
+                    bins.forEach(bin => {
+                        if (isColliding(player2, bin) && bin.dropBy !== 1) {
+                            bin.canDrop = true;
+                            bin.dropBy = 2;
+                        } else if (bin.dropBy === 2) {
+                            bin.canDrop = false;
+                            bin.dropBy = null;
+                        }
+                    });
+                }
+            }
+        }
+        
+        function pickupOrDrop(playerNum) {
+            if (!gameState.gameActive) return;
+            
+            const player = playerNum === 1 ? player1 : player2;
+            
+            if (!player.carrying) {
+                for (let i = 0; i < trashItems.length; i++) {
+                    const trash = trashItems[i];
+                    if (isColliding(player, trash)) {
+                        player.carrying = trash;
+                        trashItems.splice(i, 1);
+                        return;
+                    }
+                }
+            } else {
+                for (let bin of bins) {
+                    if (isColliding(player, bin)) {
+                        player.carrying = null;
+                        if (playerNum === 1) gameState.p1Trash++;
+                        else gameState.p2Trash++;
+                        return;
+                    }
+                }
+                
+                trashItems.push({
+                    x: player.x,
+                    y: player.y,
+                    width: player.carrying.width,
+                    height: player.carrying.height,
+                    type: player.carrying.type,
+                    onSewer: -1,
+                    canPickup: false
+                });
+                player.carrying = null;
+            }
+        }
+        
+        function isColliding(obj1, obj2) {
+            return obj1.x < obj2.x + obj2.width &&
+                   obj1.x + obj1.width > obj2.x &&
+                   obj1.y < obj2.y + obj2.height &&
+                   obj1.y + obj1.height > obj2.y;
+        }
+        
+        function updateUI() {
+            countdownValue.textContent = Math.ceil(gameState.preRainTimeLeft) + 's';
+            rainTimeValue.textContent = Math.ceil(gameState.rainTimeLeft) + 's';
+            waterLevelValue.textContent = Math.floor(gameState.waterLevel) + '%';
+            sewersClear.textContent = gameState.sewersCleared;
+            p1TrashUI.textContent = gameState.p1Trash;
+            if (gameMode === 'multiplayer') {
+                p2TrashUI.textContent = gameState.p2Trash;
+            }
+        }
+        
+        function endGame() {
+            gameState.gameActive = false;
+            gameState.gameOver = true;
+            
+            rainSound.pause();
+            rainSound.currentTime = 0;
+            
+            const totalTrashCleared = gameState.p1Trash + gameState.p2Trash;
+            const victory = gameState.waterLevel < MAX_WATER_LEVEL && gameState.sewersCleared === SEWER_COUNT;
+            
+            if (gameMode === 'single') {
+                if (victory) {
+                    endTitle.textContent = '🎉 MISSION SUCCESS! 🎉';
+                    endTitle.style.color = '#2ecc71';
+                    successSound.currentTime = 0;
+                    successSound.play().catch(err => console.log('Success sound error:', err));
+                    
+                    endStats.innerHTML = `
+                        <p><strong>🗑️ Trash Cleared:</strong> ${gameState.p1Trash} pieces</p>
+                        <p><strong>🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
+                        <p><strong>💧 Final Water Level:</strong> ${Math.floor(gameState.waterLevel)}%</p>
+                    `;
+                    
+                    endFact.innerHTML = `<strong>🌍 HANOI'S FLOOD PREVENTION SUCCESS:</strong><br>
+• Hanoi experiences <strong>severe flooding during monsoon season</strong> (May-October)<br>
+• Plastic waste in sewers is identified as a <strong>major cause of urban flooding</strong><br>
+• The drainage system, built during French colonial era, struggles with modern waste volume<br>
+• A single blocked sewer can cause flooding across <strong>multiple city blocks</strong><br>
+• Citizens working together to maintain clear sewers have reduced flood incidents by 40%<br>
+<em style="color: #2ecc71;">🎉 You've demonstrated effective community disaster prevention!</em>`;
+                    
+                    // Show Next Level button on victory
+                    nextLevelBtn.style.display = 'inline-block';
+                } else {
+                    endTitle.textContent = '💔 MISSION FAILED!';
+                    endTitle.style.color = '#e74c3c';
+                    
+                    endStats.innerHTML = `
+                        <p><strong>🗑️ Trash Cleared:</strong> ${gameState.p1Trash} pieces</p>
+                        <p><strong>🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
+                        <p><strong>💧 Final Water Level:</strong> ${Math.floor(gameState.waterLevel)}%</p>
+                    `;
+                    
+                    if (gameState.waterLevel >= MAX_WATER_LEVEL) {
+                        endFact.innerHTML = `<strong>⚠️ FLOOD DISASTER - HANOI'S REALITY:</strong><br>
+• Urban flooding in Hanoi displaces <strong>thousands of families</strong> each year during monsoon season<br>
+• Blocked sewers can turn streets into dangerous rivers in <strong>under 15 minutes</strong><br>
+• Studies show <strong>80% of urban flooding</strong> could be prevented with proper waste management<br>
+• Vietnam loses millions of USD annually due to flood damage from blocked drainage<br>
+<em style="color: #3498db;">Source: Hanoi Department of Natural Resources & Environment, 2024</em>`;
+                    } else {
+                        endFact.innerHTML = `<strong>⏰ TIME MANAGEMENT - LESSONS FROM HANOI:</strong><br>
+• Quick action is crucial during heavy rain events in urban areas<br>
+• Hanoi receives over <strong>1,600mm of rain annually</strong>, mostly during monsoon season (May-October)<br>
+• Communities that prepare infrastructure <strong>before</strong> rain have 70% fewer flood issues<br>
+• Regular sewer maintenance saves lives and property<br>
+<em style="color: #2ecc71;">Prevention is better than emergency response!</em>`;
+                    }
+                }
+            } else {
+                // Multiplayer mode
+                if (gameState.p1Trash > gameState.p2Trash) {
+                    gameState.winner = 1;
+                } else if (gameState.p2Trash > gameState.p1Trash) {
+                    gameState.winner = 2;
+                } else {
+                    gameState.winner = 0;
+                }
+                
+                if (victory && gameState.winner !== 0) {
+                    endTitle.textContent = gameState.winner === 1 ? '🎉 PLAYER 1 WINS! 🎉' : '🎉 PLAYER 2 WINS! 🎉';
+                    endTitle.style.color = gameState.winner === 1 ? '#3498db' : '#e91e63';
+                    successSound.currentTime = 0;
+                    successSound.play().catch(err => console.log('Success sound error:', err));
+                    
+                    endStats.innerHTML = `
+                        <p><strong>👦 Player 1:</strong> ${gameState.p1Trash} trash cleared</p>
+                        <p><strong>👧 Player 2:</strong> ${gameState.p2Trash} trash cleared</p>
+                        <p><strong>🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
+                        <p><strong>💧 Water Level:</strong> ${Math.floor(gameState.waterLevel)}%</p>
+                    `;
+                    
+                    endFact.innerHTML = `<strong>🏆 EXCELLENT TEAMWORK - HANOI SAVED!</strong><br>
+• Working together, you prevented a major flood disaster in Hanoi!<br>
+• <strong>${totalTrashCleared} pieces of plastic waste</strong> removed from critical sewer systems<br>
+• Every community member's effort counts in disaster prevention<br>
+• Real Hanoi cleanup initiatives have cleared over <strong>200 tons</strong> of waste from drainage systems in 2024<br>
+<em style="color: #3498db;">🌍 Community action creates resilient cities!</em>`;
+                    
+                    // Show Next Level button on multiplayer victory
+                    nextLevelBtn.style.display = 'inline-block';
+                } else if (victory && gameState.winner === 0) {
+                    endTitle.textContent = '🤝 TIE GAME - HANOI SAVED!';
+                    endTitle.style.color = '#f39c12';
+                    
+                    endStats.innerHTML = `
+                        <p><strong>👦 Player 1:</strong> ${gameState.p1Trash} trash</p>
+                        <p><strong>👧 Player 2:</strong> ${gameState.p2Trash} trash</p>
+                        <p>Both players performed equally! Great teamwork!</p>
+                    `;
+                    
+                    endFact.innerHTML = `<strong>🤝 PERFECT BALANCE - COMMUNITY SUCCESS!</strong><br>
+• Both players contributed equally to protecting Hanoi from flooding!<br>
+• <strong>${totalTrashCleared} pieces of trash</strong> cleared together from drainage systems<br>
+• Collaborative disaster prevention reflects real community resilience in Vietnam<br>
+<em style="color: #2ecc71;">Together, we build flood-resistant cities! 💪</em>`;
+                    
+                    // Show Next Level button on tie victory
+                    nextLevelBtn.style.display = 'inline-block';
+                } else {
+                    endTitle.textContent = '💔 MISSION FAILED!';
+                    endTitle.style.color = '#e74c3c';
+                    
+                    endStats.innerHTML = `
+                        <p><strong>👦 Player 1:</strong> ${gameState.p1Trash} trash</p>
+                        <p><strong>👧 Player 2:</strong> ${gameState.p2Trash} trash</p>
+                        <p><strong>💧 Water Level:</strong> ${Math.floor(gameState.waterLevel)}% - TOO HIGH!</p>
+                    `;
+                    
+                    endFact.innerHTML = `<strong>⚠️ The Flood Won!</strong><br>
+• You needed to work faster to clear the sewers<br>
+• Urban flooding is a serious threat requiring quick action<br>
+• Try again and coordinate better to save the city!`;
+                }
+            }
+            
+            endScreen.style.display = 'block';
+        }
+        
+        function drawGame() {
+            ctx.clearRect(0, 0, 800, 600);
+            
+            // Background
+            if (assets.background.complete) {
+                ctx.drawImage(assets.background, 0, 0, 800, 600);
+            } else {
+                const gradient = ctx.createLinearGradient(0, 0, 0, 600);
+                gradient.addColorStop(0, '#87CEEB');
+                gradient.addColorStop(0.6, '#708090');
+                gradient.addColorStop(1, '#505050');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 800, 600);
+            }
+            
+            // Clouds during rain
+            if (gameState.phase === 'raining' && assets.cloud.complete) {
+                clouds.forEach(cloud => {
+                    ctx.globalAlpha = 0.75;
+                    ctx.drawImage(assets.cloud, cloud.x, cloud.y, cloud.width, cloud.height);
+                    ctx.globalAlpha = 1.0;
+                });
+            }
+            
+            // Lightning - Draw multiple bolts for better visibility
+            if (lightningFlash && assets.lightning.complete) {
+                // Flash the entire screen briefly
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.fillRect(0, 0, 800, 600);
+                
+                // Draw 2-3 lightning bolts at random positions
+                const boltCount = 2 + Math.floor(Math.random() * 2); // 2 or 3 bolts
+                for (let i = 0; i < boltCount; i++) {
+                    ctx.globalAlpha = 0.9;
+                    const lightningX = Math.random() * 700;
+                    ctx.drawImage(assets.lightning, lightningX, 0, 100, 220);
+                }
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // Rain drops
+            if (gameState.phase === 'raining') {
+                ctx.strokeStyle = 'rgba(174, 194, 224, 0.7)';
+                ctx.lineWidth = 2;
+                rainDrops.forEach(drop => {
+                    ctx.beginPath();
+                    ctx.moveTo(drop.x, drop.y);
+                    ctx.lineTo(drop.x, drop.y + drop.length);
+                    ctx.stroke();
+                });
+            }
+            
+            // Water level
+            if (gameState.waterLevel > 0) {
+                const waterHeight = (gameState.waterLevel / 100) * 600;
+                const waterY = 600 - waterHeight;
+                
+                const waterGradient = ctx.createLinearGradient(0, waterY, 0, 600);
+                waterGradient.addColorStop(0, 'rgba(52, 152, 219, 0.6)');
+                waterGradient.addColorStop(1, 'rgba(41, 128, 185, 0.8)');
+                
+                ctx.fillStyle = waterGradient;
+                ctx.fillRect(0, waterY, 800, waterHeight);
+                
+                // Waves
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < 800; x += 20) {
+                    const waveY = waterY + Math.sin((x + Date.now() / 200) / 10) * 4;
+                    if (x === 0) ctx.moveTo(x, waveY);
+                    else ctx.lineTo(x, waveY);
+                }
+                ctx.stroke();
+            }
+            
+            // Sewers
+            sewers.forEach(sewer => {
+                ctx.fillStyle = sewer.blocked ? '#2c3e50' : '#27ae60';
+                ctx.fillRect(sewer.x - 27, sewer.y - 15, sewer.width, sewer.height);
+                
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                for (let i = 0; i < 6; i++) {
+                    const barX = sewer.x - 27 + (i * 10);
+                    ctx.beginPath();
+                    ctx.moveTo(barX, sewer.y - 15);
+                    ctx.lineTo(barX, sewer.y + 15);
+                    ctx.stroke();
+                }
+                
+                if (!sewer.blocked) {
+                    ctx.fillStyle = '#27ae60';
+                    ctx.font = 'bold 22px Arial';
+                    ctx.fillText('✓', sewer.x - 10, sewer.y - 25);
+                }
+            });
+            
+            // Bins
+            bins.forEach(bin => {
+                if (assets.bin.complete) {
+                    ctx.drawImage(assets.bin, bin.x, bin.y, bin.width, bin.height);
+                } else {
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.fillRect(bin.x, bin.y, bin.width, bin.height);
+                }
+                
+                if (bin.canDrop) {
+                    ctx.strokeStyle = '#2ecc71';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(bin.x - 5, bin.y - 5, bin.width + 10, bin.height + 10);
+                }
+                bin.canDrop = false;
+            });
+            
+            // Trash
+            trashItems.forEach(trash => {
+                const img = trash.type === 'bottle' ? assets.bottle : assets.plastic;
+                if (img.complete) {
+                    ctx.drawImage(img, trash.x - 16, trash.y - 16, trash.width, trash.height);
+                } else {
+                    ctx.fillStyle = trash.type === 'bottle' ? '#3498db' : '#e67e22';
+                    ctx.fillRect(trash.x - 16, trash.y - 16, trash.width, trash.height);
+                }
+                
+                if (trash.canPickup) {
+                    const highlightColor = trash.pickupBy === 1 ? '#3498db' : '#e91e63';
+                    ctx.strokeStyle = highlightColor;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(trash.x - 19, trash.y - 19, trash.width + 6, trash.height + 6);
+                }
+            });
+            
+            // Player 1
+            const p1Img = player1.isBoy ? assets.boy : assets.girl;
+            if (p1Img.complete) {
+                ctx.drawImage(p1Img, player1.x - 22, player1.y - 32, player1.width, player1.height);
+            } else {
+                ctx.fillStyle = player1.isBoy ? '#3498db' : '#e91e63';
+                ctx.fillRect(player1.x - 22, player1.y - 32, player1.width, player1.height);
+            }
+            
+            if (player1.carrying) {
+                const carryImg = player1.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
+                if (carryImg.complete) {
+                    ctx.drawImage(carryImg, player1.x - 16, player1.y - 60, 32, 32);
+                }
+            }
+            
+            // Player 2 (multiplayer only)
+            if (gameMode === 'multiplayer') {
+                const p2Img = assets.girl;
+                if (p2Img.complete) {
+                    ctx.drawImage(p2Img, player2.x - 22, player2.y - 32, player2.width, player2.height);
+                } else {
+                    ctx.fillStyle = '#e91e63';
+                    ctx.fillRect(player2.x - 22, player2.y - 32, player2.width, player2.height);
+                }
+                
+                if (player2.carrying) {
+                    const carryImg = player2.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
+                    if (carryImg.complete) {
+                        ctx.drawImage(carryImg, player2.x - 16, player2.y - 60, 32, 32);
+                    }
+                }
+            }
+        }
+        
+        function gameLoop() {
+            // Calculate delta time (time since last frame)
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
+            lastFrameTime = currentTime;
+            
+            if (gameState.gameActive) {
+                handleInput();
+                updateGame(deltaTime); // Pass delta time for frame-independent updates
+                updateUI();
+            }
+            drawGame();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Event Listeners
+        startBtn.addEventListener('click', initGame);
+        retryBtn.addEventListener('click', () => {
+            endScreen.style.display = 'none';
+            startScreen.style.display = 'flex';
+        });
+        backBtn.addEventListener('click', () => window.location.href = 'index.html?mode=' + gameMode);
+        
+        const nextLevelBtn = document.getElementById('nextLevelBtn');
+        nextLevelBtn.addEventListener('click', () => {
+            window.location.href = 'Level3.html?mode=' + gameMode;
+        });
+        
+        const keys = {};
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                e.preventDefault();
+                pickupOrDrop(1);
+            }
+            if (e.key === 'Enter' && gameMode === 'multiplayer') {
+                e.preventDefault();
+                pickupOrDrop(2);
+            }
+        });
+        window.addEventListener('keyup', (e) => keys[e.key] = false);
+        
+        function handleInput() {
+            if (!gameState.gameActive) return;
+            
+            // Player 1 controls
+            if (gameMode === 'single') {
+                // In single player, can use A/D or arrows
+                if (keys['a'] || keys['A'] || keys['ArrowLeft']) player1.x -= player1.speed;
+                if (keys['d'] || keys['D'] || keys['ArrowRight']) player1.x += player1.speed;
+            } else {
+                // In multiplayer, Player 1 uses A/D only
+                if (keys['a'] || keys['A']) player1.x -= player1.speed;
+                if (keys['d'] || keys['D']) player1.x += player1.speed;
+                
+                // Player 2 uses arrows
+                if (keys['ArrowLeft']) player2.x -= player2.speed;
+                if (keys['ArrowRight']) player2.x += player2.speed;
+                
+                player2.x = Math.max(22, Math.min(778, player2.x));
+            }
+            
+            player1.x = Math.max(22, Math.min(778, player1.x));
+        }
+        
+        // Initialize UI and draw initial screen
+        initUI();
+        drawGame();
+    </script>
+</body>
+</html>
