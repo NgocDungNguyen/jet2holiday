@@ -1,317 +1,352 @@
-# asset_generation_prompts.txt
+===============================================================================
+                        ASSET GENERATION PROMPTS
+===============================================================================
 
-## BACKGROUNDS & ENVIRONMENTS
 
-### Hanoi City Street (Level 2)
-```
-Create a detailed 2D pixel art background of Hanoi city during a rainy day. Include:
-- Traditional Vietnamese architecture with French colonial influences
-- Multiple building types: shops, houses, apartments
-- Wet streets with reflections and puddles
-- People doing daily activities: walking with umbrellas, riding motorbikes, waiting under awnings
-- Street vendors with food carts
-- Power lines and street signs
-- Dark, overcast sky with rain visible
-- Color palette: grays, blues, muted tones for rainy atmosphere
-- Resolution: 800x600 pixels, pixel art style
-```
+-------------------------------------------------------------------------------
+BACKGROUNDS & ENVIRONMENTS
+-------------------------------------------------------------------------------
 
-### South China Sea Coastal Village (Level 1)
-```
-Create a 2D pixel art background of a Vietnamese coastal fishing village like Làng Chài Lăng Cô:
-TOP SECTION (above water):
-- Traditional fishing boats on the shore
-- Wooden houses on stilts
-- Fishing nets drying
-- Palm trees and coastal vegetation
-- Mountains in the background
-- Early morning lighting with golden hour colors
+HANOI CITY STREET (Level 2):
 
-BOTTOM SECTION (underwater):
-- Clear blue ocean water with light rays
-- Coral reef system at the bottom
-- Various tropical fish swimming
-- Sea plants and rocks
-- Gradual depth darkening
-- Resolution: 800x600 pixels, pixel art style
-```
+    Create a detailed 2D pixel art background of Hanoi city during a rainy day. 
+    Include:
+    - Traditional Vietnamese architecture with French colonial influences
+    - Multiple building types: shops, houses, apartments
+    - Wet streets with reflections and puddles
+    - People doing daily activities: walking with umbrellas, riding motorbikes, 
+      waiting under awnings
+    - Street vendors with food carts
+    - Power lines and street signs
+    - Dark, overcast sky with rain visible
+    - Color palette: grays, blues, muted tones for rainy atmosphere
+    - Resolution: 800x600 pixels, pixel art style
 
-### Dark Stormy Sky (Level 2)
-```
-Create a 2D pixel art dark stormy sky background:
-- Heavy dark gray clouds covering entire sky
-- Multiple cloud layers with different shades
-- Visible rain streaks falling
-- Dramatic lighting with some backlit cloud edges
-- Mood: ominous, storm-approaching
-- Color palette: deep grays, blues, purples
-- Seamless tiling capability for horizontal scrolling
-- Resolution: 800x200 pixels, pixel art style
-```
 
-## CHARACTERS & PEOPLE
+SOUTH CHINA SEA COASTAL VILLAGE (Level 1):
 
-### Male Student with Red Scarf
-```
-Create a 2D pixel art character of a Vietnamese male student:
-- School uniform: white shirt, dark pants
-- Bright red scarf around neck (pioneer scarf)
-- Black hair, typical Vietnamese features
-- School backpack on shoulders
-- Standing pose, friendly expression
-- Pixel art style, 32x64 pixels
-- Multiple color variations for different students
-```
+    Create a 2D pixel art background of a Vietnamese coastal fishing village 
+    like Làng Chài Lăng Cô:
+    
+    TOP SECTION (above water):
+    - Traditional fishing boats on the shore
+    - Wooden houses on stilts
+    - Fishing nets drying
+    - Palm trees and coastal vegetation
+    - Mountains in the background
+    - Early morning lighting with golden hour colors
 
-### Female Student with Red Scarf
-```
-Create a 2D pixel art character of a Vietnamese female student:
-- School uniform: white áo dài or white shirt with dark skirt
-- Bright red scarf around neck
-- Long black hair, typical Vietnamese features
-- School backpack or book bag
-- Standing pose, cheerful expression
-- Pixel art style, 32x64 pixels
-- Match male student style for consistency
-```
+    BOTTOM SECTION (underwater):
+    - Clear blue ocean water with light rays
+    - Coral reef system at the bottom
+    - Various tropical fish swimming
+    - Sea plants and rocks
+    - Gradual depth darkening
+    - Resolution: 800x600 pixels, pixel art style
 
-### Family Group
-```
-Create 2D pixel art family group for flood rescue scenario:
-- Family of 4: father, mother, son, daughter
-- Stranded on rooftop during flood
-- Worried expressions, waving for help
-- Casual Vietnamese clothing
-- Huddled together for safety
-- Different heights and ages visible
-- Pixel art style, 64x96 pixels for group
-- Show them on a rooftop background element
-```
 
-## BUILDINGS & STRUCTURES
+DARK STORMY SKY (Level 2):
 
-### Vietnamese House (Level 3)
-```
-Create 2D pixel art of traditional Vietnamese house:
-- Narrow "tube house" architecture
-- Multiple floors (3-4 stories)
-- Balconies with plants and drying clothes
-- Tiled roof with curved edges
-- French-style shutters and windows
-- Partially submerged in flood water (lower 30%)
-- People visible on upper floors/roof
-- Pixel art style, 80x120 pixels
-- Color: yellow walls, red-brown roof
-```
+    Create a 2D pixel art dark stormy sky background:
+    - Heavy dark gray clouds covering entire sky
+    - Multiple cloud layers with different shades
+    - Visible rain streaks falling
+    - Dramatic lighting with some backlit cloud edges
+    - Mood: ominous, storm-approaching
+    - Color palette: deep grays, blues, purples
+    - Seamless tiling capability for horizontal scrolling
+    - Resolution: 800x200 pixels, pixel art style
 
-### Military Base/Rescue Center (Level 3)
-```
-Create 2D pixel art military base or rescue center:
-- Command center building with communication towers
-- Helicopter landing pad
-- Supply storage buildings
-- Fenced perimeter with gate
-- Military vehicles parked nearby
-- Emergency lighting and flags
-- Mountain backdrop for context
-- Pixel art style, 160x120 pixels
-- Colors: military greens, grays
-```
 
-### Mountain with Base (Level 3)
-```
-Create 2D pixel art mountain with flat base area:
-- Large mountain dominating background
-- Flat base area at bottom for operations
-- Rocky texture with some vegetation
-- Path or road leading up mountain
-- Elevated position overlooking valley
-- Space for drone launch pad at base
-- Pixel art style, 200x180 pixels
-- Colors: various browns, greens for vegetation
-```
+-------------------------------------------------------------------------------
+CHARACTERS & PEOPLE
+-------------------------------------------------------------------------------
 
-## VEHICLES & EQUIPMENT
+MALE STUDENT WITH RED SCARF:
 
-### Delivery Drone (Level 3)
-```
-Create 2D pixel art delivery drone:
-- Quadcopter design with four rotors
-- Central body for cargo compartment
-- Landing skids underneath
-- Carrying a medical box or supply package
-- In flight position, slight tilt for movement
-- LED lights on front and back
-- Pixel art style, 40x24 pixels
-- Colors: white body with colored accents
-- Multiple versions: empty, carrying medic, carrying food, carrying water
-```
+    Create a 2D pixel art character of a Vietnamese male student:
+    - School uniform: white shirt, dark pants
+    - Bright red scarf around neck (pioneer scarf)
+    - Black hair, typical Vietnamese features
+    - School backpack on shoulders
+    - Standing pose, friendly expression
+    - Pixel art style, 32x64 pixels
+    - Multiple color variations for different students
 
-### Fishing Boat (Level 1)
-```
-Create 2D pixel art traditional Vietnamese fishing boat:
-- Wooden boat with curved hull
-- Fishing nets and equipment visible
-- Small cabin or shelter
-- Motor at back
-- Multiple boats in different sizes
-- Tied to dock or floating in water
-- Pixel art style, 64x32 pixels
-- Colors: weathered wood, blue accents
-```
 
-## OBJECTS & ITEMS
+FEMALE STUDENT WITH RED SCARF:
 
-### Street Trash Bin
-```
-Create 2D pixel art public trash bin:
-- Standard street garbage can design
-- Green plastic or metal material
-- Recycling symbols visible
-- Lid that opens
-- Some trash visible inside
-- Weather-worn appearance
-- Pixel art style, 24x32 pixels
-- Multiple versions: empty, full, overflowing
-```
+    Create a 2D pixel art character of a Vietnamese female student:
+    - School uniform: white áo dài or white shirt with dark skirt
+    - Bright red scarf around neck
+    - Long black hair, typical Vietnamese features
+    - School backpack or book bag
+    - Standing pose, cheerful expression
+    - Pixel art style, 32x64 pixels
+    - Match male student style for consistency
 
-### Food Package
-```
-Create 2D pixel art emergency food package:
-- Rectangular cardboard box
-- Red Cross or aid organization logo
-- "FOOD" label in clear text
-- Wrapped in plastic sealing
-- Stackable design
-- Pixel art style, 20x16 pixels
-- Colors: brown cardboard, red accents
-```
 
-### Medical Box
-```
-Create 2D pixel art medical supply box:
-- White box with red cross symbol
-- First aid kit appearance
-- Latches and handle
-- "MEDICAL" or "FIRST AID" labeling
-- Clean, sterile appearance
-- Pixel art style, 18x14 pixels
-- Colors: white, red, green
-```
+FAMILY GROUP:
 
-### Water Bottle
-```
-Create 2D pixel art water bottle:
-- Plastic bottle shape with cap
-- Water level visible inside
-- Label with "WATER" text
-- Blue coloring for water
-- Reflection highlights
-- Pixel art style, 8x20 pixels
-- Colors: clear/blue, white cap
-```
+    Create 2D pixel art family group for flood rescue scenario:
+    - Family of 4: father, mother, son, daughter
+    - Stranded on rooftop during flood
+    - Worried expressions, waving for help
+    - Casual Vietnamese clothing
+    - Huddled together for safety
+    - Different heights and ages visible
+    - Pixel art style, 64x96 pixels for group
+    - Show them on a rooftop background element
 
-## TRASH & POLLUTION ITEMS
 
-### Plastic Bottle
-```
-Create 2D pixel art plastic bottle trash:
-- Standard PET bottle shape
-- Some liquid remaining inside
-- Crushed/distorted shape from use
-- Label peeling slightly
-- Floating in water or on ground
-- Pixel art style, 12x24 pixels
-- Colors: clear/light blue, colored cap
-```
+-------------------------------------------------------------------------------
+BUILDINGS & STRUCTURES
+-------------------------------------------------------------------------------
 
-### Plastic Bag
-```
-Create 2D pixel art plastic bag trash:
-- Wrinkled, floating plastic bag
-- Handles visible
-- Semi-transparent material
-- Moving/fluttering in wind or water
-- Environmental hazard symbol optional
-- Pixel art style, 20x24 pixels
-- Colors: white/gray with transparency
-```
+VIETNAMESE HOUSE (Level 3):
 
-## WEATHER & EFFECTS
+    Create 2D pixel art of traditional Vietnamese house:
+    - Narrow "tube house" architecture
+    - Multiple floors (3-4 stories)
+    - Balconies with plants and drying clothes
+    - Tiled roof with curved edges
+    - French-style shutters and windows
+    - Partially submerged in flood water (lower 30%)
+    - People visible on upper floors/roof
+    - Pixel art style, 80x120 pixels
+    - Color: yellow walls, red-brown roof
 
-### Lightning Strike
-```
-Create 2D pixel art lightning effect:
-- Bright white/yellow lightning bolt
-- Multiple branching paths
-- Glow effect around lightning
-- Frame-by-frame animation sequence (3-4 frames)
-- Dramatic, sudden appearance
-- Illuminating surrounding clouds
-- Pixel art style, various sizes
-- Colors: white, yellow, blue for electricity
-```
 
-### Dark Storm Clouds
-```
-Create 2D pixel art storm clouds:
-- Heavy, dark cumulonimbus clouds
-- Multiple layers of gray tones
-- Fluffy but ominous appearance
-- Rain visible falling from bottom
-- Some backlighting from hidden sun
-- Moving/animated version possible
-- Pixel art style, 100x80 pixels per cloud
-- Colors: dark grays, blues, purples
-```
+MILITARY BASE/RESCUE CENTER (Level 3):
 
-### Rain Effects
-```
-Create 2D pixel art rain animation:
-- Multiple rain streaks at different angles
-- Splash effects when hitting surfaces
-- Puddle formation and ripples
-- 4-frame animation cycle
-- Variable intensity (light to heavy rain)
-- Overlay effect for game screen
-- Pixel art style, screen-sized
-- Colors: light blue/white streaks
-```
+    Create 2D pixel art military base or rescue center:
+    - Command center building with communication towers
+    - Helicopter landing pad
+    - Supply storage buildings
+    - Fenced perimeter with gate
+    - Military vehicles parked nearby
+    - Emergency lighting and flags
+    - Mountain backdrop for context
+    - Pixel art style, 160x120 pixels
+    - Colors: military greens, grays
 
-## EDUCATIONAL DIAGRAMS
 
-### Microplastic Pollution Cycle
-```
-Create 2D pixel art educational diagram showing:
-1. Human throwing plastic into ocean
-2. Fish eating plastic particles
-3. Fishermen catching contaminated fish
-4. Human eating the fish
-5. Microplastics inside human body
-6. Human getting sick
+MOUNTAIN WITH BASE (Level 3):
 
-Each step connected with arrows
-Simple, clear visual storytelling
-Color-coded for easy understanding
-Pixel art style, 400x300 pixels
-Include labels for each step
-```
+    Create 2D pixel art mountain with flat base area:
+    - Large mountain dominating background
+    - Flat base area at bottom for operations
+    - Rocky texture with some vegetation
+    - Path or road leading up mountain
+    - Elevated position overlooking valley
+    - Space for drone launch pad at base
+    - Pixel art style, 200x180 pixels
+    - Colors: various browns, greens for vegetation
 
-## ANIMATION REQUIREMENTS
 
-### All Assets Should Have:
-- Consistent pixel art style across all elements
-- Appropriate sizes for game resolution (800x600)
-- Multiple states where needed (empty/full, on/off, etc.)
-- Color palettes suitable for Vietnam environment
-- Cultural accuracy for Vietnamese context
-- Game-optimized with clear silhouettes and readable details
+-------------------------------------------------------------------------------
+VEHICLES & EQUIPMENT
+-------------------------------------------------------------------------------
 
-### Technical Specifications:
-- File format: PNG with transparency
-- Color depth: 256 colors maximum
-- Style: 16-bit inspired pixel art
-- Consistency: Same artist style across all assets
-- Organization: Separate files for different states
+DELIVERY DRONE (Level 3):
 
-These prompts were used to generate all visual assets for the game, ensuring consistent style, cultural appropriateness, and technical compatibility with the web-based game engine.
+    Create 2D pixel art delivery drone:
+    - Quadcopter design with four rotors
+    - Central body for cargo compartment
+    - Landing skids underneath
+    - Carrying a medical box or supply package
+    - In flight position, slight tilt for movement
+    - LED lights on front and back
+    - Pixel art style, 40x24 pixels
+    - Colors: white body with colored accents
+    - Multiple versions: empty, carrying medic, carrying food, carrying water
+
+
+FISHING BOAT (Level 1):
+
+    Create 2D pixel art traditional Vietnamese fishing boat:
+    - Wooden boat with curved hull
+    - Fishing nets and equipment visible
+    - Small cabin or shelter
+    - Motor at back
+    - Multiple boats in different sizes
+    - Tied to dock or floating in water
+    - Pixel art style, 64x32 pixels
+    - Colors: weathered wood, blue accents
+
+
+-------------------------------------------------------------------------------
+OBJECTS & ITEMS
+-------------------------------------------------------------------------------
+
+STREET TRASH BIN:
+
+    Create 2D pixel art public trash bin:
+    - Standard street garbage can design
+    - Green plastic or metal material
+    - Recycling symbols visible
+    - Lid that opens
+    - Some trash visible inside
+    - Weather-worn appearance
+    - Pixel art style, 24x32 pixels
+    - Multiple versions: empty, full, overflowing
+
+
+FOOD PACKAGE:
+
+    Create 2D pixel art emergency food package:
+    - Rectangular cardboard box
+    - Red Cross or aid organization logo
+    - "FOOD" label in clear text
+    - Wrapped in plastic sealing
+    - Stackable design
+    - Pixel art style, 20x16 pixels
+    - Colors: brown cardboard, red accents
+
+
+MEDICAL BOX:
+
+    Create 2D pixel art medical supply box:
+    - White box with red cross symbol
+    - First aid kit appearance
+    - Latches and handle
+    - "MEDICAL" or "FIRST AID" labeling
+    - Clean, sterile appearance
+    - Pixel art style, 18x14 pixels
+    - Colors: white, red, green
+
+
+WATER BOTTLE:
+
+    Create 2D pixel art water bottle:
+    - Plastic bottle shape with cap
+    - Water level visible inside
+    - Label with "WATER" text
+    - Blue coloring for water
+    - Reflection highlights
+    - Pixel art style, 8x20 pixels
+    - Colors: clear/blue, white cap
+
+
+-------------------------------------------------------------------------------
+TRASH & POLLUTION ITEMS
+-------------------------------------------------------------------------------
+
+PLASTIC BOTTLE:
+
+    Create 2D pixel art plastic bottle trash:
+    - Standard PET bottle shape
+    - Some liquid remaining inside
+    - Crushed/distorted shape from use
+    - Label peeling slightly
+    - Floating in water or on ground
+    - Pixel art style, 12x24 pixels
+    - Colors: clear/light blue, colored cap
+
+
+PLASTIC BAG:
+
+    Create 2D pixel art plastic bag trash:
+    - Wrinkled, floating plastic bag
+    - Handles visible
+    - Semi-transparent material
+    - Moving/fluttering in wind or water
+    - Environmental hazard symbol optional
+    - Pixel art style, 20x24 pixels
+    - Colors: white/gray with transparency
+
+
+-------------------------------------------------------------------------------
+WEATHER & EFFECTS
+-------------------------------------------------------------------------------
+
+LIGHTNING STRIKE:
+
+    Create 2D pixel art lightning effect:
+    - Bright white/yellow lightning bolt
+    - Multiple branching paths
+    - Glow effect around lightning
+    - Frame-by-frame animation sequence (3-4 frames)
+    - Dramatic, sudden appearance
+    - Illuminating surrounding clouds
+    - Pixel art style, various sizes
+    - Colors: white, yellow, blue for electricity
+
+
+DARK STORM CLOUDS:
+
+    Create 2D pixel art storm clouds:
+    - Heavy, dark cumulonimbus clouds
+    - Multiple layers of gray tones
+    - Fluffy but ominous appearance
+    - Rain visible falling from bottom
+    - Some backlighting from hidden sun
+    - Moving/animated version possible
+    - Pixel art style, 100x80 pixels per cloud
+    - Colors: dark grays, blues, purples
+
+
+RAIN EFFECTS:
+
+    Create 2D pixel art rain animation:
+    - Multiple rain streaks at different angles
+    - Splash effects when hitting surfaces
+    - Puddle formation and ripples
+    - 4-frame animation cycle
+    - Variable intensity (light to heavy rain)
+    - Overlay effect for game screen
+    - Pixel art style, screen-sized
+    - Colors: light blue/white streaks
+
+
+-------------------------------------------------------------------------------
+EDUCATIONAL DIAGRAMS
+-------------------------------------------------------------------------------
+
+MICROPLASTIC POLLUTION CYCLE:
+
+    Create 2D pixel art educational diagram showing:
+    1. Human throwing plastic into ocean
+    2. Fish eating plastic particles
+    3. Fishermen catching contaminated fish
+    4. Human eating the fish
+    5. Microplastics inside human body
+    6. Human getting sick
+
+    Each step connected with arrows
+    Simple, clear visual storytelling
+    Color-coded for easy understanding
+    Pixel art style, 400x300 pixels
+    Include labels for each step
+
+
+-------------------------------------------------------------------------------
+ANIMATION REQUIREMENTS
+-------------------------------------------------------------------------------
+
+ALL ASSETS SHOULD HAVE:
+
+    - Consistent pixel art style across all elements
+    - Appropriate sizes for game resolution (800x600)
+    - Multiple states where needed (empty/full, on/off, etc.)
+    - Color palettes suitable for Vietnam environment
+    - Cultural accuracy for Vietnamese context
+    - Game-optimized with clear silhouettes and readable details
+
+
+TECHNICAL SPECIFICATIONS:
+
+    - File format: PNG with transparency
+    - Color depth: 256 colors maximum
+    - Style: 16-bit inspired pixel art
+    - Consistency: Same artist style across all assets
+    - Organization: Separate files for different states
+
+
+===============================================================================
+
+These prompts were used to generate all visual assets for the game, ensuring 
+consistent style, cultural appropriateness, and technical compatibility with 
+the web-based game engine.
+
+===============================================================================
