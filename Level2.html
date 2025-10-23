@@ -355,13 +355,13 @@
         let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
         
         // Game Constants
-        const PRE_RAIN_TIME = 5; // 5 seconds before rain starts
-        const RAIN_DURATION = 30; // 30 seconds of rain
-        const MAX_WATER_LEVEL = 40; // Lose if water reaches 40%
+        const PRE_RAIN_TIME = 10; // 5 seconds before rain starts
+        const RAIN_DURATION = 60; // 30 seconds of rain
+        const MAX_WATER_LEVEL = 50; // Lose if water reaches 40%
         const SEWER_COUNT = 3;
-        const TRASH_PER_SEWER = 10; // More trash per sewer (increased from 5 to 8)
-        const WATER_RISE_RATE = 1; // Water rises 1% per SECOND when all sewers blocked
-        const WATER_DRAIN_RATE = 0.5; // Water drains 0.5% per SECOND per clear sewer
+        const TRASH_PER_SEWER = 12; // More trash per sewer (increased from 5 to 8)
+        const WATER_RISE_RATE = 0.8; // Water rises 1% per SECOND when all sewers blocked
+        const WATER_DRAIN_RATE = 0.4; // Water drains 0.5% per SECOND per clear sewer
         const LIGHTNING_INTERVAL = 5000; // Lightning every 5 seconds
 
         // Frame rate control
@@ -373,6 +373,8 @@
         const assets = {
             background: new Image(),
             bin: new Image(),
+            binOpen: new Image(),
+            trashCar: new Image(),
             sewer: new Image(),
             bottle: new Image(),
             plastic: new Image(),
@@ -387,11 +389,13 @@
             boyLeftRun1: new Image(),
             boyLeftRun2: new Image(),
             boyLeftBow: new Image(),
+            boyLeftLying: new Image(),
             boyRightWalk1: new Image(),
             boyRightWalk2: new Image(),
             boyRightRun1: new Image(),
             boyRightRun2: new Image(),
             boyRightBow: new Image(),
+            boyRightLying: new Image(),
             // Girl sprites
             girlFront: new Image(),
             girlLeft: new Image(),
@@ -401,15 +405,19 @@
             girlLeftRun1: new Image(),
             girlLeftRun2: new Image(),
             girlLeftBow: new Image(),
+            girlLeftLying: new Image(),
             girlRightWalk1: new Image(),
             girlRightWalk2: new Image(),
             girlRightRun1: new Image(),
             girlRightRun2: new Image(),
-            girlRightBow: new Image()
+            girlRightBow: new Image(),
+            girlRightLying: new Image()
         };
         
         assets.background.src = 'assets/level2/City.png';
-        assets.bin.src = 'assets/level2/bin.png';
+        assets.bin.src = 'assets/level2/Bin.png';
+        assets.binOpen.src = 'assets/level2/Bin_Open.png';
+        assets.trashCar.src = 'assets/level2/Trash_Car.png';
         assets.sewer.src = 'assets/level2/Sew.png';
         assets.bottle.src = 'assets/level2/Bottle.png';
         assets.plastic.src = 'assets/level2/Plastic.png';
@@ -430,6 +438,8 @@
         assets.boyRightRun1.src = 'assets/level2/Boy_Right_Run1.png';
         assets.boyRightRun2.src = 'assets/level2/Boy_Right_Run2.png';
         assets.boyRightBow.src = 'assets/level2/Boy_Right_Bow.png';
+        assets.boyLeftLying.src = 'assets/level2/Boy_Left_Lying.png';
+        assets.boyRightLying.src = 'assets/level2/Boy_Right_Lying.png';
         
         // Load Girl sprites
         assets.girlFront.src = 'assets/level2/Girl_Front.png';
@@ -440,11 +450,13 @@
         assets.girlLeftRun1.src = 'assets/level2/Girl_Left_Run1.png';
         assets.girlLeftRun2.src = 'assets/level2/Girl_Left_Run2.png';
         assets.girlLeftBow.src = 'assets/level2/Girl_Left_Bow.png';
+        assets.girlLeftLying.src = 'assets/level2/Girl_Left_Lying.png';
         assets.girlRightWalk1.src = 'assets/level2/Girl_Right_Walk1.png';
         assets.girlRightWalk2.src = 'assets/level2/Girl_Right_Walk2.png';
         assets.girlRightRun1.src = 'assets/level2/Girl_Right_Run1.png';
         assets.girlRightRun2.src = 'assets/level2/Girl_Right_Run2.png';
         assets.girlRightBow.src = 'assets/level2/Girl_Right_Bow.png';
+        assets.girlRightLying.src = 'assets/level2/Girl_Right_Lying.png';
         
         // Load Audio
         const rainSound = new Audio('SFX/Rain.mp3');
@@ -509,45 +521,95 @@
         // Character selection
         let selectedCharacter = 'boy'; // 'boy' or 'girl' for single player
         
+        // IMPORTANT: Boy and Girl characters have IDENTICAL animation and movement settings
+        // Only the sprite images differ - all speeds, transitions, and timings are the same
+        
         // Game Objects
         let player1 = {
             x: 200,
-            y: 480,
+            y: 550, // Standing on ground at y=500
+            baseY: 550, // Ground level (moved down to give more room for water)
             width: 45,
-            height: 90,
-            speed: 1, // Slowed down by 2x (was 5)
+            height: 80, // Reduced from 90 to 80 pixels (more realistic proportion)
+            baseSpeed: 1, // SAME for both Boy and Girl
+            speed: 1,
             carrying: null,
             isBoy: true,
             // Animation states
             direction: 'front', // 'front', 'left', 'right'
-            movementState: 'idle', // 'idle', 'walk1', 'walk2', 'run1', 'run2', 'bow'
-            animationFrame: 0, // Track animation frame for cycling
-            frameCounter: 0, // Count frames for animation timing
-            idleTimer: 0, // Timer for returning to front pose after 3 seconds
-            walkRunTransitionFrame: 30, // Frames before transitioning from walk to run
-            animationSpeed: 15, // Frames to hold each animation pose (slowed down more)
+            movementState: 'idle', // 'idle', 'walk', 'run', 'bow', 'lying', 'dead'
+            animationFrame: 0,
+            frameCounter: 0,
+            idleTimer: 0,
+            walkRunTransitionFrame: 35, // SAME for both Boy and Girl
+            animationSpeed: 15, // SAME for both Boy and Girl
             bowTimer: 0,
-            bowDuration: 15 // frames for bow animation
+            bowDuration: 25, // SAME for both Boy and Girl
+            // Stamina system
+            stamina: 100,
+            maxStamina: 100,
+            staminaRegenRate: 0.15, // Regenerates per frame when not acting - SAME for both
+            staminaDrainMove: 0.08, // Drain when moving - SAME for both
+            staminaDrainBow: 2, // Drain when picking/dropping - SAME for both
+            staminaDrainUnderwater: 0.25, // Extra drain when underwater - SAME for both
+            // Jumping
+            velocityY: 0,
+            isJumping: false,
+            jumpPower: -8, // Reduced from -8 for more realistic jump height - SAME for both
+            gravity: 0.3, // Increased for more realistic falling speed - SAME for both Boy and Girl
+            // Health/Drowning
+            health: 100,
+            maxHealth: 100,
+            underwaterTimer: 0, // Seconds spent fully underwater (uses deltaTime)
+            drownThreshold: 5.0, // 5 seconds to drown (time-based, not frame-based) - SAME for both
+            isDrowning: false,
+            isDead: false,
+            deathAnimTimer: 0,
+            deathAnimDuration: 120 // 2 second slow fall animation - SAME for both
         };
         
+        // Player 2 has IDENTICAL settings to Player 1 for fair multiplayer
         let player2 = {
             x: 600,
-            y: 480,
+            y: 550, // Standing on ground at y=500
+            baseY: 550, // Ground level (moved down to give more room for water)
             width: 45,
-            height: 90,
-            speed: 1.5, // Slowed down by 2x (was 5)
+            height: 80, // Reduced from 90 to 80 pixels (more realistic proportion)
+            baseSpeed: 1, // IDENTICAL to Player 1
+            speed: 1,
             carrying: null,
-            isBoy: false,
+            isBoy: false, // Only difference: sprite selection
             // Animation states
             direction: 'front',
             movementState: 'idle',
             animationFrame: 0,
             frameCounter: 0,
             idleTimer: 0,
-            walkRunTransitionFrame: 30,
-            animationSpeed: 15,
+            walkRunTransitionFrame: 35, // IDENTICAL to Player 1
+            animationSpeed: 15, // IDENTICAL to Player 1
             bowTimer: 0,
-            bowDuration: 15
+            bowDuration: 25, // IDENTICAL to Player 1
+            // Stamina system
+            stamina: 100,
+            maxStamina: 100,
+            staminaRegenRate: 0.15, // IDENTICAL to Player 1
+            staminaDrainMove: 0.08, // IDENTICAL to Player 1
+            staminaDrainBow: 2, // IDENTICAL to Player 1
+            staminaDrainUnderwater: 0.25, // IDENTICAL to Player 1
+            // Jumping
+            velocityY: 0,
+            isJumping: false,
+            jumpPower: -8, // IDENTICAL to Player 1 - realistic jump height
+            gravity: 0.3, // IDENTICAL to Player 1 - realistic falling speed
+            // Health/Drowning
+            health: 100,
+            maxHealth: 100,
+            underwaterTimer: 0, // Seconds spent fully underwater (uses deltaTime)
+            drownThreshold: 5.0, // IDENTICAL to Player 1 (time-based, not frame-based)
+            isDrowning: false,
+            isDead: false,
+            deathAnimTimer: 0,
+            deathAnimDuration: 120 // IDENTICAL to Player 1 - 2 second slow fall animation
         };
         
         let sewers = [];
@@ -590,7 +652,7 @@
         
         function createSewers() {
             sewers = [];
-            const sewerY = 510;
+            const sewerY = 530; // Adjusted to match new ground level (500 + 30 offset)
             const sewerPositions = [150, 400, 650];
             
             sewerPositions.forEach((x) => {
@@ -607,8 +669,40 @@
         
         function createBins() {
             bins = [];
-            bins.push({ x: 40, y: 495, width: 65, height: 75 });
-            bins.push({ x: 695, y: 495, width: 65, height: 75 });
+            // Left bin (regular bin)
+            bins.push({ 
+                x: 30, 
+                y: 440, // Adjusted to match new ground level (500 - 60 offset)
+                baseY: 440, // Original ground position
+                width: 70, 
+                height: 120,
+                type: 'bin', // 'bin' or 'trashCar'
+                isOpen: false,
+                openTimer: 0,
+                isFloating: false,
+                floatOffset: 0,
+                floatSpeed: 0.8,
+                floatDirection: 1,
+                floatDuration: 0, // Current duration in direction
+                floatDurationTarget: 60 + Math.random() * 120 // Random 1-3 seconds
+            });
+            // Right bin (trash car)
+            bins.push({ 
+                x: 695, 
+                y: 440, // Adjusted to match new ground level (500 - 60 offset)
+                baseY: 440,
+                width: 70, 
+                height: 120,
+                type: 'trashCar',
+                isOpen: false,
+                openTimer: 0,
+                isFloating: false,
+                floatOffset: 0,
+                floatSpeed: 1.0,
+                floatDirection: -1,
+                floatDuration: 0,
+                floatDurationTarget: 60 + Math.random() * 120
+            });
         }
         
         function createInitialTrash() {
@@ -683,7 +777,7 @@
             // Reset players
             if (gameMode === 'single') {
                 player1.x = 400;
-                player1.y = 480;
+                player1.y = player1.baseY; // Use baseY (500)
                 player1.carrying = null;
                 player1.isBoy = (selectedCharacter === 'boy');
                 player1.direction = 'front';
@@ -692,9 +786,18 @@
                 player1.frameCounter = 0;
                 player1.idleTimer = 0;
                 player1.bowTimer = 0;
+                // Reset physics
+                player1.velocityY = 0;
+                player1.isJumping = false;
+                player1.stamina = 100;
+                player1.underwaterTimer = 0;
+                player1.isDrowning = false;
+                player1.isDead = false;
+                player1.deathAnimTimer = 0;
+                player1.speed = player1.baseSpeed;
             } else {
                 player1.x = 200;
-                player1.y = 480;
+                player1.y = player1.baseY; // Use baseY (500)
                 player1.carrying = null;
                 player1.isBoy = true;
                 player1.direction = 'front';
@@ -703,9 +806,18 @@
                 player1.frameCounter = 0;
                 player1.idleTimer = 0;
                 player1.bowTimer = 0;
+                // Reset physics
+                player1.velocityY = 0;
+                player1.isJumping = false;
+                player1.stamina = 100;
+                player1.underwaterTimer = 0;
+                player1.isDrowning = false;
+                player1.isDead = false;
+                player1.deathAnimTimer = 0;
+                player1.speed = player1.baseSpeed;
                 
                 player2.x = 600;
-                player2.y = 480;
+                player2.y = player2.baseY; // Use baseY (500)
                 player2.carrying = null;
                 player2.isBoy = false;
                 player2.direction = 'front';
@@ -714,6 +826,15 @@
                 player2.frameCounter = 0;
                 player2.idleTimer = 0;
                 player2.bowTimer = 0;
+                // Reset physics
+                player2.velocityY = 0;
+                player2.isJumping = false;
+                player2.stamina = 100;
+                player2.underwaterTimer = 0;
+                player2.isDrowning = false;
+                player2.isDead = false;
+                player2.deathAnimTimer = 0;
+                player2.speed = player2.baseSpeed;
             }
             
             createSewers();
@@ -735,8 +856,119 @@
             requestAnimationFrame(gameLoop);
         }
         
+        function updatePlayer(player, deltaTime) {
+            if (player.isDead) {
+                // Handle death animation - character falls to ground and stays there
+                if (player.deathAnimTimer < player.deathAnimDuration) {
+                    player.deathAnimTimer++;
+                    
+                    // Falling animation - slowly fall down to ground level
+                    if (player.y < player.baseY) {
+                        player.y += 1; // Fall down very slowly (reduced from 2 to 1 for smoother animation)
+                        // Don't go past ground level
+                        if (player.y > player.baseY) {
+                            player.y = player.baseY;
+                        }
+                    }
+                } else {
+                    // After death animation, ensure character is on ground
+                    player.y = player.baseY;
+                }
+                return;
+            }
+            
+            // Calculate water level from bottom of canvas
+            const waterHeight = (gameState.waterLevel / 100) * 600;
+            const waterY = 600 - waterHeight;
+            
+            // Calculate player's head position
+            // Player sprite: feet at player.y, head at player.y - height
+            // The actual head/face is about 85% up from the feet (top 15% is hair/top of head)
+            const playerTopY = player.y - player.height; // Top of character sprite
+            const playerHeadY = player.y - (player.height * 0.85); // Face/nose level (85% up from feet)
+            
+            // Add 1.2x buffer zone: water must be 1.2x above head before drowning countdown starts
+            // This gives more realistic drowning mechanic - water needs to be significantly over the head
+            const headHeight = player.height * 0.85; // Distance from feet to head
+            const bufferDistance = headHeight * 0.2; // 20% extra buffer (to reach 1.2x total)
+            const drowningThresholdY = playerHeadY - bufferDistance; // Water must be above this point
+            
+            // Check if player is deep enough underwater to start drowning (water is 1.2x above head)
+            const isDeepUnderwater = waterY < drowningThresholdY;
+            
+            // Check if player is at least partially underwater (for physics)
+            const isUnderwater = playerHeadY > waterY;
+            
+            // Gravity and jumping physics with underwater resistance
+            if (!player.isDead) {
+                // Apply gravity (stronger when underwater for water resistance)
+                if (isUnderwater) {
+                    player.velocityY += player.gravity * 1.5; // 50% stronger gravity underwater (water drag)
+                } else {
+                    player.velocityY += player.gravity;
+                }
+                
+                player.y += player.velocityY;
+                
+                // Ground collision
+                if (player.y >= player.baseY) {
+                    player.y = player.baseY;
+                    player.velocityY = 0;
+                    player.isJumping = false;
+                }
+            }
+            
+            // Stamina regeneration (always regenerate when not jumping)
+            if (!player.isJumping) {
+                player.stamina = Math.min(player.maxStamina, player.stamina + player.staminaRegenRate);
+            }
+            
+            // Speed adjustments
+            // Underwater slows movement
+            if (isDeepUnderwater) {
+                player.speed = player.baseSpeed * 0.5; // 50% slower underwater
+            } else {
+                player.speed = player.baseSpeed; // Normal speed above water
+            }
+            
+            // Low stamina affects speed
+            if (player.stamina < 20) {
+                player.speed *= 0.3; // Very slow when exhausted
+            } else if (player.stamina < 50) {
+                player.speed *= 0.6; // Moderate slowdown
+            }
+            
+            // DROWNING MECHANICS - Must be deep underwater (1.2x above head) for 4 seconds
+            if (isDeepUnderwater) {
+                // Increment underwater timer using deltaTime for consistent timing across all frame rates
+                player.underwaterTimer += deltaTime;
+                
+                // Check if drowning threshold exceeded (4.0 seconds of real time)
+                if (player.underwaterTimer >= player.drownThreshold) {
+                    player.isDrowning = true;
+                    player.isDead = true;
+                    player.movementState = 'lying';
+                    player.deathAnimTimer = 0;
+                    
+                    // End game after 3 second delay (let player see the lying down animation)
+                    setTimeout(() => {
+                        endGame();
+                    }, 3000);
+                }
+            } else {
+                // IMPORTANT: Reset timer immediately when not deep underwater (getting oxygen)
+                player.underwaterTimer = 0;
+            }
+        }
+        
         function updateGame(deltaTime) {
             if (!gameState.gameActive) return;
+            
+            // Update players (stamina, jumping, drowning)
+            updatePlayer(player1, deltaTime);
+            if (gameMode === 'multiplayer') {
+                updatePlayer(player2, deltaTime);
+            }
             
             // Update bow timer for both players
             if (player1.bowTimer > 0) {
@@ -817,6 +1049,51 @@
             rainDrops = rainDrops.filter(drop => {
                 drop.y += drop.speed;
                 return drop.y < 600;
+            });
+            
+            // Update bins (floating and opening animation)
+            bins.forEach(bin => {
+                // Handle bin opening timer
+                if (bin.openTimer > 0) {
+                    bin.openTimer--;
+                    if (bin.openTimer === 0) {
+                        bin.isOpen = false;
+                    }
+                }
+                
+                // Calculate water height for floating effect
+                const waterHeight = (gameState.waterLevel / 100) * 600;
+                const waterY = 600 - waterHeight;
+                
+                // Calculate bin's center point
+                const binCenterY = bin.baseY + (bin.height / 2);
+                
+                // Only start floating when water reaches the CENTER of the bin
+                if (waterY <= binCenterY) {
+                    // Water has reached center - bin starts floating
+                    // Lift bin up exactly with water level (bin stays half-submerged)
+                    bin.y = waterY - (bin.height / 2);
+                    bin.isFloating = true;
+                    
+                    // Timed directional floating (1-3 seconds each direction)
+                    bin.floatDuration++;
+                    bin.floatOffset += bin.floatSpeed * bin.floatDirection;
+                    
+                    // Change direction after duration expires
+                    if (bin.floatDuration >= bin.floatDurationTarget) {
+                        bin.floatDirection *= -1;
+                        bin.floatDuration = 0;
+                        bin.floatDurationTarget = 60 + Math.random() * 120; // New random 1-3 seconds
+                    }
+                    
+                } else {
+                    // Water hasn't reached center yet - bin stays on ground, covered by water
+                    bin.y = bin.baseY;
+                    bin.floatOffset = 0;
+                    bin.isFloating = false;
+                    bin.floatDuration = 0;
+                    bin.floatDirection = Math.random() > 0.5 ? 1 : -1; // Random initial direction
+                }
             });
             
             updateSewerStatus();
@@ -952,6 +1229,10 @@
                 for (let bin of bins) {
                     if (isColliding(player, bin)) {
                         nearBin = true;
+                        
+                        // Open the bin first
+                        bin.isOpen = true;
+                        bin.openTimer = 45; // Keep open for 30 frames (0.5 seconds)
                         
                         // Trigger bow animation
                         player.movementState = 'bow';
@@ -1177,6 +1458,11 @@
         function getCharacterSprite(player) {
             const prefix = player.isBoy ? 'boy' : 'girl';
             
+            // If dead/lying, show lying animation
+            if (player.movementState === 'lying' || player.isDead) {
+                return assets[prefix + (player.direction === 'left' ? 'LeftLying' : 'RightLying')];
+            }
+            
             // If bowing, show bow animation
             if (player.movementState === 'bow') {
                 return assets[prefix + (player.direction === 'left' ? 'LeftBow' : 'RightBow')];
@@ -1253,31 +1539,7 @@
                 });
             }
             
-            // Water level
-            if (gameState.waterLevel > 0) {
-                const waterHeight = (gameState.waterLevel / 100) * 600;
-                const waterY = 600 - waterHeight;
-                
-                const waterGradient = ctx.createLinearGradient(0, waterY, 0, 600);
-                waterGradient.addColorStop(0, 'rgba(52, 152, 219, 0.6)');
-                waterGradient.addColorStop(1, 'rgba(41, 128, 185, 0.8)');
-                
-                ctx.fillStyle = waterGradient;
-                ctx.fillRect(0, waterY, 800, waterHeight);
-                
-                // Waves
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                for (let x = 0; x < 800; x += 20) {
-                    const waveY = waterY + Math.sin((x + Date.now() / 200) / 10) * 4;
-                    if (x === 0) ctx.moveTo(x, waveY);
-                    else ctx.lineTo(x, waveY);
-                }
-                ctx.stroke();
-            }
-            
-            // Sewers
+            // Sewers (draw before water so they appear submerged)
             sewers.forEach(sewer => {
                 // Draw sewer image
                 if (assets.sewer.complete) {
@@ -1306,19 +1568,31 @@
                 }
             });
             
-            // Bins
+            // Bins (draw before water so they can be partially submerged)
             bins.forEach(bin => {
-                if (assets.bin.complete) {
-                    ctx.drawImage(assets.bin, bin.x, bin.y, bin.width, bin.height);
+                // Apply floating offset to x position
+                const drawX = bin.x + bin.floatOffset;
+                
+                // Choose correct image based on bin type and state
+                let binImage;
+                if (bin.type === 'trashCar') {
+                    binImage = assets.trashCar;
+                } else {
+                    // Regular bin - show open or closed
+                    binImage = bin.isOpen ? assets.binOpen : assets.bin;
+                }
+                
+                if (binImage && binImage.complete) {
+                    ctx.drawImage(binImage, drawX, bin.y, bin.width, bin.height);
                 } else {
                     ctx.fillStyle = '#7f8c8d';
-                    ctx.fillRect(bin.x, bin.y, bin.width, bin.height);
+                    ctx.fillRect(drawX, bin.y, bin.width, bin.height);
                 }
                 
                 if (bin.canDrop) {
                     ctx.strokeStyle = '#2ecc71';
                     ctx.lineWidth = 4;
-                    ctx.strokeRect(bin.x - 5, bin.y - 5, bin.width + 10, bin.height + 10);
+                    ctx.strokeRect(drawX - 5, bin.y - 5, bin.width + 10, bin.height + 10);
                 }
                 bin.canDrop = false;
             });
@@ -1344,16 +1618,17 @@
             // Player 1
             const p1Sprite = getCharacterSprite(player1);
             if (p1Sprite && p1Sprite.complete) {
-                ctx.drawImage(p1Sprite, player1.x - 22, player1.y - 32, player1.width, player1.height);
+                // Draw sprite: x centered, y is feet position, sprite drawn upward (y - height)
+                ctx.drawImage(p1Sprite, player1.x - (player1.width / 2), player1.y - player1.height, player1.width, player1.height);
             } else {
                 ctx.fillStyle = player1.isBoy ? '#3498db' : '#e91e63';
-                ctx.fillRect(player1.x - 22, player1.y - 32, player1.width, player1.height);
+                ctx.fillRect(player1.x - (player1.width / 2), player1.y - player1.height, player1.width, player1.height);
             }
             
             if (player1.carrying) {
                 const carryImg = player1.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
                 if (carryImg.complete) {
-                    ctx.drawImage(carryImg, player1.x - 16, player1.y - 60, 32, 32);
+                    ctx.drawImage(carryImg, player1.x - 16, player1.y - player1.height - 10, 32, 32);
                 }
             }
             
@@ -1361,18 +1636,113 @@
             if (gameMode === 'multiplayer') {
                 const p2Sprite = getCharacterSprite(player2);
                 if (p2Sprite && p2Sprite.complete) {
-                    ctx.drawImage(p2Sprite, player2.x - 22, player2.y - 32, player2.width, player2.height);
+                    // Draw sprite: x centered, y is feet position, sprite drawn upward (y - height)
+                    ctx.drawImage(p2Sprite, player2.x - (player2.width / 2), player2.y - player2.height, player2.width, player2.height);
                 } else {
                     ctx.fillStyle = '#e91e63';
-                    ctx.fillRect(player2.x - 22, player2.y - 32, player2.width, player2.height);
+                    ctx.fillRect(player2.x - (player2.width / 2), player2.y - player2.height, player2.width, player2.height);
                 }
                 
                 if (player2.carrying) {
                     const carryImg = player2.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
                     if (carryImg.complete) {
-                        ctx.drawImage(carryImg, player2.x - 16, player2.y - 60, 32, 32);
+                        ctx.drawImage(carryImg, player2.x - 16, player2.y - player2.height - 10, 32, 32);
                     }
                 }
+            }
+            
+            // Water level (draw LAST so it overlays everything for realistic flooding effect)
+            if (gameState.waterLevel > 0) {
+                const waterHeight = (gameState.waterLevel / 100) * 600;
+                const waterY = 600 - waterHeight;
+                
+                const waterGradient = ctx.createLinearGradient(0, waterY, 0, 600);
+                waterGradient.addColorStop(0, 'rgba(52, 152, 219, 0.5)');
+                waterGradient.addColorStop(1, 'rgba(41, 128, 185, 0.7)');
+                
+                ctx.fillStyle = waterGradient;
+                ctx.fillRect(0, waterY, 800, waterHeight);
+                
+                // Waves
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < 800; x += 20) {
+                    const waveY = waterY + Math.sin((x + Date.now() / 200) / 10) * 4;
+                    if (x === 0) ctx.moveTo(x, waveY);
+                    else ctx.lineTo(x, waveY);
+                }
+                ctx.stroke();
+            }
+            
+            // Draw Stamina and Health UI
+            // Player 1 - Top left
+            drawPlayerUI(player1, 20, 20, 'Player 1');
+            
+            // Player 2 - Top right (multiplayer only)
+            if (gameMode === 'multiplayer') {
+                drawPlayerUI(player2, 580, 20, 'Player 2');
+            }
+        }
+        
+        function drawPlayerUI(player, x, y, label) {
+            // Label
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(label, x, y);
+            
+            // Stamina bar background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(x, y + 5, 200, 20);
+            
+            // Stamina bar (color changes based on level)
+            let staminaColor;
+            const staminaPercent = player.stamina / player.maxStamina;
+            if (staminaPercent > 0.6) {
+                staminaColor = '#2ecc71'; // Green
+            } else if (staminaPercent > 0.3) {
+                staminaColor = '#f39c12'; // Yellow
+            } else {
+                staminaColor = '#e74c3c'; // Red
+            }
+            
+            ctx.fillStyle = staminaColor;
+            ctx.fillRect(x, y + 5, 200 * staminaPercent, 20);
+            
+            // Stamina text
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.fillText(`Stamina: ${Math.floor(player.stamina)}`, x + 5, y + 20);
+            
+            // Underwater timer (only show when deep underwater - 1.2x above head)
+            const waterY = 600 - (gameState.waterLevel / 100) * 600;
+            const playerHeadY = player.y - (player.height * 0.85); // Match the head calculation in updatePlayer
+            const headHeight = player.height * 0.85;
+            const bufferDistance = headHeight * 0.2; // 20% buffer
+            const drowningThresholdY = playerHeadY - bufferDistance;
+            const isDeepUnderwater = waterY < drowningThresholdY;
+            
+            if (isDeepUnderwater && player.underwaterTimer > 0) {
+                // Drowning warning bar
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(x, y + 30, 200, 20);
+                
+                // Time remaining until drowning (uses deltaTime, so timer is in seconds)
+                const drownPercent = Math.min(1, player.underwaterTimer / player.drownThreshold);
+                ctx.fillStyle = drownPercent > 0.66 ? '#e74c3c' : '#f39c12'; // Red when close to drowning
+                ctx.fillRect(x, y + 30, 200 * drownPercent, 20);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Arial';
+                const timeLeft = Math.max(0, (player.drownThreshold - player.underwaterTimer).toFixed(1));
+                ctx.fillText(`UNDERWATER! ${timeLeft}s`, x + 5, y + 45);
+            }
+            
+            // Death message
+            if (player.isDead) {
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText('DROWNED!', x, y + 65);
             }
         }
         
@@ -1552,27 +1922,63 @@
                 // In single player, can use A/D or arrows
                 const p1Left = keys['a'] || keys['A'] || keys['ArrowLeft'];
                 const p1Right = keys['d'] || keys['D'] || keys['ArrowRight'];
+                const p1Jump = keys['w'] || keys['W'] || keys['ArrowUp'];
                 
-                if (p1Left) player1.x -= player1.speed;
-                if (p1Right) player1.x += player1.speed;
+                if (p1Left && !player1.isDead) {
+                    player1.x -= player1.speed;
+                }
+                if (p1Right && !player1.isDead) {
+                    player1.x += player1.speed;
+                }
+                
+                // Jump if on ground and not dead - ONLY jumping drains stamina
+                if (p1Jump && !player1.isJumping && player1.y >= player1.baseY && !player1.isDead && player1.stamina >= 5) {
+                    player1.velocityY = player1.jumpPower;
+                    player1.isJumping = true;
+                    player1.stamina = Math.max(0, player1.stamina - 5);
+                }
                 
                 updatePlayerAnimation(player1, p1Left, p1Right);
             } else {
-                // In multiplayer, Player 1 uses A/D only
+                // In multiplayer, Player 1 uses A/D and W only
                 const p1Left = keys['a'] || keys['A'];
                 const p1Right = keys['d'] || keys['D'];
+                const p1Jump = keys['w'] || keys['W'];
                 
-                if (p1Left) player1.x -= player1.speed;
-                if (p1Right) player1.x += player1.speed;
+                if (p1Left && !player1.isDead) {
+                    player1.x -= player1.speed;
+                }
+                if (p1Right && !player1.isDead) {
+                    player1.x += player1.speed;
+                }
+                
+                // Jump if on ground and not dead - ONLY jumping drains stamina
+                if (p1Jump && !player1.isJumping && player1.y >= player1.baseY && !player1.isDead && player1.stamina >= 5) {
+                    player1.velocityY = player1.jumpPower;
+                    player1.isJumping = true;
+                    player1.stamina = Math.max(0, player1.stamina - 5);
+                }
                 
                 updatePlayerAnimation(player1, p1Left, p1Right);
                 
                 // Player 2 uses arrows
                 const p2Left = keys['ArrowLeft'];
                 const p2Right = keys['ArrowRight'];
+                const p2Jump = keys['ArrowUp'];
                 
-                if (p2Left) player2.x -= player2.speed;
-                if (p2Right) player2.x += player2.speed;
+                if (p2Left && !player2.isDead) {
+                    player2.x -= player2.speed;
+                }
+                if (p2Right && !player2.isDead) {
+                    player2.x += player2.speed;
+                }
+                
+                // Jump if on ground and not dead - ONLY jumping drains stamina
+                if (p2Jump && !player2.isJumping && player2.y >= player2.baseY && !player2.isDead && player2.stamina >= 5) {
+                    player2.velocityY = player2.jumpPower;
+                    player2.isJumping = true;
+                    player2.stamina = Math.max(0, player2.stamina - 5);
+                }
                 
                 updatePlayerAnimation(player2, p2Left, p2Right);
                 
