@@ -724,7 +724,12 @@
                         height: 32,
                         type: type,
                         onSewer: sewerIndex,
-                        canPickup: false
+                        canPickup: false,
+                        // Initial trash doesn't fall (already on ground/sewer)
+                        isFalling: false,
+                        velocityY: 0,
+                        gravity: 0.008,
+                        groundY: sewer.y + offsetY
                     });
                     sewer.trashCount++;
                 }
@@ -1116,6 +1121,24 @@
                 }
             });
             
+            // Update falling trash items (gravity animation for dropped trash)
+            trashItems.forEach(trash => {
+                if (trash.isFalling) {
+                    // Apply gravity to velocity
+                    trash.velocityY += trash.gravity;
+                    
+                    // Update position
+                    trash.y += trash.velocityY;
+                    
+                    // Check if reached ground
+                    if (trash.y >= trash.groundY) {
+                        trash.y = trash.groundY; // Stop at ground level
+                        trash.velocityY = 0;
+                        trash.isFalling = false; // Stop falling
+                    }
+                }
+            });
+            
             updateSewerStatus();
             checkInteractions();
         }
@@ -1291,17 +1314,22 @@
                     // Drop trash on road after brief delay
                     setTimeout(() => {
                         if (player.carrying) {
-                            // Drop trash at ground level (baseY) so it doesn't float in air
-                            const groundY = 530; // Ground level where trash should be
+                            // Drop trash at player's current position with falling animation
+                            const groundY = 530; // Ground level where trash should land
                             
                             trashItems.push({
                                 x: player.x,
-                                y: groundY, // Always drop at ground level, not at player's current Y
+                                y: player.y, // Start at player's current Y position (could be mid-air)
                                 width: player.carrying.width,
                                 height: player.carrying.height,
                                 type: player.carrying.type,
                                 onSewer: -1,
-                                canPickup: false
+                                canPickup: false,
+                                // Gravity physics for falling animation
+                                isFalling: player.y < groundY, // Only fall if above ground
+                                velocityY: 0, // Start with no downward velocity
+                                gravity: 0.008, // Very slow gravity for visible falling animation
+                                groundY: groundY // Store where to stop falling
                             });
                             player.carrying = null;
                             gameState.trashOnRoad++;
@@ -1365,7 +1393,7 @@
                     endStats.innerHTML = statsHTML;
                     
                     endFact.innerHTML = `
-                        <img src="assets/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                        <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                         <strong>🌍 HANOI'S FLOOD PREVENTION SUCCESS:</strong><br>
 • Hanoi experiences <strong>severe flooding during monsoon season</strong> (May-October)<br>
 • Plastic waste in sewers is identified as a <strong>major cause of urban flooding</strong><br>
@@ -1439,7 +1467,7 @@
                     endStats.innerHTML = multiStatsHTML;
                     
                     endFact.innerHTML = `
-                        <img src="assets/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                        <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                         <strong>🏆 EXCELLENT TEAMWORK - HANOI SAVED!</strong><br>
 • Working together, you prevented a major flood disaster in Hanoi!<br>
 • <strong>${totalTrashCleared} pieces of plastic waste</strong> removed from critical sewer systems<br>
@@ -1460,7 +1488,7 @@
                     `;
                     
                     endFact.innerHTML = `
-                        <img src="assets/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                        <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                         <strong>🤝 PERFECT BALANCE - COMMUNITY SUCCESS!</strong><br>
 • Both players contributed equally to protecting Hanoi from flooding!<br>
 • <strong>${totalTrashCleared} pieces of trash</strong> cleared together from drainage systems<br>
