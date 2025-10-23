@@ -145,6 +145,36 @@
             transform: scale(1.05);
         }
         
+        #characterScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 250;
+            text-align: center;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        #characterScreen h1 {
+            font-size: clamp(28px, 5vw, 48px);
+            color: #3498db;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(52, 152, 219, 0.6);
+        }
+        
+        #selectBoy:hover, #selectGirl:hover {
+            border-color: #3498db !important;
+            background: rgba(52, 152, 219, 0.1);
+            transform: scale(1.05);
+        }
+        
         #startScreen {
             position: fixed;
             top: 0;
@@ -267,7 +297,25 @@
             </div>
         </div>
         
-        <div id="startScreen">
+        <div id="characterScreen" style="display: none;">
+            <h1>🌧️ HANOI FLOOD PREVENTION</h1>
+            <h2 style="color: #3498db; margin: 20px 0;">Choose Your Character</h2>
+            
+            <div style="display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin: 30px 0;">
+                <div id="selectBoy" style="cursor: pointer; text-align: center; padding: 20px; border: 3px solid transparent; border-radius: 10px; transition: all 0.3s;">
+                    <img src="assets/level2/Boy_Front.png" style="width: 150px; height: auto; image-rendering: pixelated;">
+                    <h3 style="color: #3498db; margin-top: 10px;">BOY</h3>
+                </div>
+                <div id="selectGirl" style="cursor: pointer; text-align: center; padding: 20px; border: 3px solid transparent; border-radius: 10px; transition: all 0.3s;">
+                    <img src="assets/level2/Girl_Front.png" style="width: 150px; height: auto; image-rendering: pixelated;">
+                    <h3 style="color: #e74c3c; margin-top: 10px;">GIRL</h3>
+                </div>
+            </div>
+            
+            <button id="backToLevel1" style="background: #95a5a6; margin-top: 20px;">← BACK TO LEVEL 1</button>
+        </div>
+        
+        <div id="startScreen" style="display: none;">
             <h1>🌧️ HANOI FLOOD PREVENTION</h1>
             <h2 id="modeTitle" style="color: #3498db; margin: 10px 0;">LEVEL 2: Urban Flood Challenge</h2>
             
@@ -307,15 +355,15 @@
         let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
         
         // Game Constants
-        const PRE_RAIN_TIME = 3; // 3 seconds before rain starts
+        const PRE_RAIN_TIME = 5; // 5 seconds before rain starts
         const RAIN_DURATION = 30; // 30 seconds of rain
         const MAX_WATER_LEVEL = 40; // Lose if water reaches 40%
         const SEWER_COUNT = 3;
         const TRASH_PER_SEWER = 10; // More trash per sewer (increased from 5 to 8)
-        const WATER_RISE_RATE = 2; // Water rises 2% per SECOND when all sewers blocked
-        const WATER_DRAIN_RATE = 0.8; // Water drains 1.5% per SECOND per clear sewer
-        const LIGHTNING_INTERVAL = 5000; // Lightning every 3 seconds
-        
+        const WATER_RISE_RATE = 1; // Water rises 1% per SECOND when all sewers blocked
+        const WATER_DRAIN_RATE = 0.5; // Water drains 0.5% per SECOND per clear sewer
+        const LIGHTNING_INTERVAL = 5000; // Lightning every 5 seconds
+
         // Frame rate control
         let lastFrameTime = Date.now();
         const targetFPS = 60;
@@ -325,30 +373,86 @@
         const assets = {
             background: new Image(),
             bin: new Image(),
+            sewer: new Image(),
             bottle: new Image(),
             plastic: new Image(),
-            boy: new Image(),
-            girl: new Image(),
             cloud: new Image(),
-            lightning: new Image()
+            lightning: new Image(),
+            // Boy sprites
+            boyFront: new Image(),
+            boyLeft: new Image(),
+            boyRight: new Image(),
+            boyLeftWalk1: new Image(),
+            boyLeftWalk2: new Image(),
+            boyLeftRun1: new Image(),
+            boyLeftRun2: new Image(),
+            boyLeftBow: new Image(),
+            boyRightWalk1: new Image(),
+            boyRightWalk2: new Image(),
+            boyRightRun1: new Image(),
+            boyRightRun2: new Image(),
+            boyRightBow: new Image(),
+            // Girl sprites
+            girlFront: new Image(),
+            girlLeft: new Image(),
+            girlRight: new Image(),
+            girlLeftWalk1: new Image(),
+            girlLeftWalk2: new Image(),
+            girlLeftRun1: new Image(),
+            girlLeftRun2: new Image(),
+            girlLeftBow: new Image(),
+            girlRightWalk1: new Image(),
+            girlRightWalk2: new Image(),
+            girlRightRun1: new Image(),
+            girlRightRun2: new Image(),
+            girlRightBow: new Image()
         };
         
-        assets.background.src = 'assets/City.png';
-        assets.bin.src = 'assets/bin.png';
-        assets.bottle.src = 'assets/bottle.png';
-        assets.plastic.src = 'assets/plastic.png';
-        assets.boy.src = 'assets/Boy.png';
-        assets.girl.src = 'assets/Girl.png';
-        assets.cloud.src = 'assets/Cloud.png';
-        assets.lightning.src = 'assets/Lightning.png';
+        assets.background.src = 'assets/level2/City.png';
+        assets.bin.src = 'assets/level2/bin.png';
+        assets.sewer.src = 'assets/level2/Sew.png';
+        assets.bottle.src = 'assets/level2/Bottle.png';
+        assets.plastic.src = 'assets/level2/Plastic.png';
+        assets.cloud.src = 'assets/level2/Cloud.png';
+        assets.lightning.src = 'assets/level2/Lightning.png';
+        
+        // Load Boy sprites
+        assets.boyFront.src = 'assets/level2/Boy_Front.png';
+        assets.boyLeft.src = 'assets/level2/Boy_Left.png';
+        assets.boyRight.src = 'assets/level2/Boy_Right.png';
+        assets.boyLeftWalk1.src = 'assets/level2/Boy_Left_Walk1.png';
+        assets.boyLeftWalk2.src = 'assets/level2/Boy_Left_Walk2.png';
+        assets.boyLeftRun1.src = 'assets/level2/Boy_Left_Run1.png';
+        assets.boyLeftRun2.src = 'assets/level2/Boy_Left_Run2.png';
+        assets.boyLeftBow.src = 'assets/level2/Boy_Left_Bow.png';
+        assets.boyRightWalk1.src = 'assets/level2/Boy_Right_Walk1.png';
+        assets.boyRightWalk2.src = 'assets/level2/Boy_Right_Walk2.png';
+        assets.boyRightRun1.src = 'assets/level2/Boy_Right_Run1.png';
+        assets.boyRightRun2.src = 'assets/level2/Boy_Right_Run2.png';
+        assets.boyRightBow.src = 'assets/level2/Boy_Right_Bow.png';
+        
+        // Load Girl sprites
+        assets.girlFront.src = 'assets/level2/Girl_Front.png';
+        assets.girlLeft.src = 'assets/level2/Girl_Left.png';
+        assets.girlRight.src = 'assets/level2/Girl_Right.png';
+        assets.girlLeftWalk1.src = 'assets/level2/Girl_Left_Walk1.png';
+        assets.girlLeftWalk2.src = 'assets/level2/Girl_Left_Walk2.png';
+        assets.girlLeftRun1.src = 'assets/level2/Girl_Left_Run1.png';
+        assets.girlLeftRun2.src = 'assets/level2/Girl_Left_Run2.png';
+        assets.girlLeftBow.src = 'assets/level2/Girl_Left_Bow.png';
+        assets.girlRightWalk1.src = 'assets/level2/Girl_Right_Walk1.png';
+        assets.girlRightWalk2.src = 'assets/level2/Girl_Right_Walk2.png';
+        assets.girlRightRun1.src = 'assets/level2/Girl_Right_Run1.png';
+        assets.girlRightRun2.src = 'assets/level2/Girl_Right_Run2.png';
+        assets.girlRightBow.src = 'assets/level2/Girl_Right_Bow.png';
         
         // Load Audio
         const rainSound = new Audio('SFX/Rain.mp3');
         rainSound.loop = true;
-        rainSound.volume = 0.5;
+        rainSound.volume = 1.0;
         
         const thunderSound = new Audio('SFX/Thunder.mp3');
-        thunderSound.volume = 0.5;
+        thunderSound.volume = 1.0;
         
         const successSound = new Audio('SFX/Success.mp3');
         successSound.volume = 1.0;
@@ -362,6 +466,7 @@
             p1Trash: 0,
             p2Trash: 0,
             totalTrash: 0,
+            trashOnRoad: 0, // Track trash dropped on road (not in bins)
             sewersCleared: 0,
             gameActive: false,
             gameOver: false,
@@ -372,6 +477,10 @@
         // DOM Elements
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const characterScreen = document.getElementById('characterScreen');
+        const selectBoy = document.getElementById('selectBoy');
+        const selectGirl = document.getElementById('selectGirl');
+        const backToLevel1 = document.getElementById('backToLevel1');
         const startScreen = document.getElementById('startScreen');
         const endScreen = document.getElementById('endScreen');
         const startBtn = document.getElementById('startBtn');
@@ -397,25 +506,48 @@
         let spacePressed = false;
         let enterPressed = false;
         
+        // Character selection
+        let selectedCharacter = 'boy'; // 'boy' or 'girl' for single player
+        
         // Game Objects
         let player1 = {
             x: 200,
             y: 480,
             width: 45,
-            height: 65,
-            speed: 5,
+            height: 90,
+            speed: 1, // Slowed down by 2x (was 5)
             carrying: null,
-            isBoy: true
+            isBoy: true,
+            // Animation states
+            direction: 'front', // 'front', 'left', 'right'
+            movementState: 'idle', // 'idle', 'walk1', 'walk2', 'run1', 'run2', 'bow'
+            animationFrame: 0, // Track animation frame for cycling
+            frameCounter: 0, // Count frames for animation timing
+            idleTimer: 0, // Timer for returning to front pose after 3 seconds
+            walkRunTransitionFrame: 30, // Frames before transitioning from walk to run
+            animationSpeed: 15, // Frames to hold each animation pose (slowed down more)
+            bowTimer: 0,
+            bowDuration: 15 // frames for bow animation
         };
         
         let player2 = {
             x: 600,
             y: 480,
             width: 45,
-            height: 65,
-            speed: 5,
+            height: 90,
+            speed: 1.5, // Slowed down by 2x (was 5)
             carrying: null,
-            isBoy: false
+            isBoy: false,
+            // Animation states
+            direction: 'front',
+            movementState: 'idle',
+            animationFrame: 0,
+            frameCounter: 0,
+            idleTimer: 0,
+            walkRunTransitionFrame: 30,
+            animationSpeed: 15,
+            bowTimer: 0,
+            bowDuration: 15
         };
         
         let sewers = [];
@@ -540,6 +672,7 @@
                 p1Trash: 0,
                 p2Trash: 0,
                 totalTrash: 0,
+                trashOnRoad: 0,
                 sewersCleared: 0,
                 gameActive: true,
                 gameOver: false,
@@ -552,17 +685,35 @@
                 player1.x = 400;
                 player1.y = 480;
                 player1.carrying = null;
-                player1.isBoy = Math.random() > 0.5;
+                player1.isBoy = (selectedCharacter === 'boy');
+                player1.direction = 'front';
+                player1.movementState = 'idle';
+                player1.animationFrame = 0;
+                player1.frameCounter = 0;
+                player1.idleTimer = 0;
+                player1.bowTimer = 0;
             } else {
                 player1.x = 200;
                 player1.y = 480;
                 player1.carrying = null;
                 player1.isBoy = true;
+                player1.direction = 'front';
+                player1.movementState = 'idle';
+                player1.animationFrame = 0;
+                player1.frameCounter = 0;
+                player1.idleTimer = 0;
+                player1.bowTimer = 0;
                 
                 player2.x = 600;
                 player2.y = 480;
                 player2.carrying = null;
                 player2.isBoy = false;
+                player2.direction = 'front';
+                player2.movementState = 'idle';
+                player2.animationFrame = 0;
+                player2.frameCounter = 0;
+                player2.idleTimer = 0;
+                player2.bowTimer = 0;
             }
             
             createSewers();
@@ -586,6 +737,21 @@
         
         function updateGame(deltaTime) {
             if (!gameState.gameActive) return;
+            
+            // Update bow timer for both players
+            if (player1.bowTimer > 0) {
+                player1.bowTimer--;
+                if (player1.bowTimer === 0) {
+                    player1.movementState = 'idle';
+                }
+            }
+            
+            if (gameMode === 'multiplayer' && player2.bowTimer > 0) {
+                player2.bowTimer--;
+                if (player2.bowTimer === 0) {
+                    player2.movementState = 'idle';
+                }
+            }
             
             // Use deltaTime for frame-independent updates (deltaTime is in seconds)
             if (gameState.phase === 'preRain') {
@@ -758,35 +924,74 @@
             
             const player = playerNum === 1 ? player1 : player2;
             
+            // Skip if player is already in bow animation
+            if (player.bowTimer > 0) return;
+            
             if (!player.carrying) {
+                // Try to pick up trash from sewer
                 for (let i = 0; i < trashItems.length; i++) {
                     const trash = trashItems[i];
                     if (isColliding(player, trash)) {
-                        player.carrying = trash;
-                        trashItems.splice(i, 1);
+                        // Trigger bow animation
+                        player.movementState = 'bow';
+                        player.bowTimer = player.bowDuration;
+                        
+                        // Pick up trash after brief delay
+                        setTimeout(() => {
+                            if (trashItems.includes(trash)) {
+                                player.carrying = trash;
+                                trashItems.splice(trashItems.indexOf(trash), 1);
+                            }
+                        }, 250); // 250ms delay for bow animation
                         return;
                     }
                 }
             } else {
+                // Check if near a bin first
+                let nearBin = false;
                 for (let bin of bins) {
                     if (isColliding(player, bin)) {
-                        player.carrying = null;
-                        if (playerNum === 1) gameState.p1Trash++;
-                        else gameState.p2Trash++;
+                        nearBin = true;
+                        
+                        // Trigger bow animation
+                        player.movementState = 'bow';
+                        player.bowTimer = player.bowDuration;
+                        
+                        // Drop trash in bin after brief delay
+                        setTimeout(() => {
+                            if (player.carrying) {
+                                player.carrying = null;
+                                if (playerNum === 1) gameState.p1Trash++;
+                                else gameState.p2Trash++;
+                            }
+                        }, 250); // 250ms delay for bow animation
                         return;
                     }
                 }
                 
-                trashItems.push({
-                    x: player.x,
-                    y: player.y,
-                    width: player.carrying.width,
-                    height: player.carrying.height,
-                    type: player.carrying.type,
-                    onSewer: -1,
-                    canPickup: false
-                });
-                player.carrying = null;
+                // If not near bin, drop trash on road (penalty)
+                if (!nearBin) {
+                    // Trigger bow animation
+                    player.movementState = 'bow';
+                    player.bowTimer = player.bowDuration;
+                    
+                    // Drop trash on road after brief delay
+                    setTimeout(() => {
+                        if (player.carrying) {
+                            trashItems.push({
+                                x: player.x,
+                                y: player.y,
+                                width: player.carrying.width,
+                                height: player.carrying.height,
+                                type: player.carrying.type,
+                                onSewer: -1,
+                                canPickup: false
+                            });
+                            player.carrying = null;
+                            gameState.trashOnRoad++;
+                        }
+                    }, 250); // 250ms delay for bow animation
+                }
             }
         }
         
@@ -816,6 +1021,7 @@
             rainSound.currentTime = 0;
             
             const totalTrashCleared = gameState.p1Trash + gameState.p2Trash;
+            const trashPenalty = gameState.trashOnRoad * 2; // 2 points penalty per trash on road
             const victory = gameState.waterLevel < MAX_WATER_LEVEL && gameState.sewersCleared === SEWER_COUNT;
             
             if (gameMode === 'single') {
@@ -825,11 +1031,22 @@
                     successSound.currentTime = 0;
                     successSound.play().catch(err => console.log('Success sound error:', err));
                     
-                    endStats.innerHTML = `
-                        <p><strong>🗑️ Trash Cleared:</strong> ${gameState.p1Trash} pieces</p>
+                    const finalScore = gameState.p1Trash - trashPenalty;
+                    let statsHTML = `
+                        <p><strong>🗑️ Trash Cleared:</strong> ${gameState.p1Trash} pieces</p>`;
+                    
+                    if (gameState.trashOnRoad > 0) {
+                        statsHTML += `
+                        <p><strong>⚠️ Trash Left on Road:</strong> ${gameState.trashOnRoad} pieces (-${trashPenalty} points)</p>
+                        <p><strong>📊 Final Score:</strong> ${finalScore} points</p>`;
+                    }
+                    
+                    statsHTML += `
                         <p><strong>🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
                         <p><strong>💧 Final Water Level:</strong> ${Math.floor(gameState.waterLevel)}%</p>
                     `;
+                    
+                    endStats.innerHTML = statsHTML;
                     
                     endFact.innerHTML = `
                         <img src="assets/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
@@ -871,9 +1088,12 @@
                 }
             } else {
                 // Multiplayer mode
-                if (gameState.p1Trash > gameState.p2Trash) {
+                const p1FinalScore = gameState.p1Trash - trashPenalty;
+                const p2FinalScore = gameState.p2Trash - trashPenalty;
+                
+                if (p1FinalScore > p2FinalScore) {
                     gameState.winner = 1;
-                } else if (gameState.p2Trash > gameState.p1Trash) {
+                } else if (p2FinalScore > p1FinalScore) {
                     gameState.winner = 2;
                 } else {
                     gameState.winner = 0;
@@ -885,12 +1105,22 @@
                     successSound.currentTime = 0;
                     successSound.play().catch(err => console.log('Success sound error:', err));
                     
-                    endStats.innerHTML = `
+                    let multiStatsHTML = `
                         <p><strong>👦 Player 1:</strong> ${gameState.p1Trash} trash cleared</p>
-                        <p><strong>👧 Player 2:</strong> ${gameState.p2Trash} trash cleared</p>
-                        <p><strong>🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
+                        <p><strong>👧 Player 2:</strong> ${gameState.p2Trash} trash cleared</p>`;
+                    
+                    if (gameState.trashOnRoad > 0) {
+                        multiStatsHTML += `
+                        <p><strong>⚠️ Trash Left on Road:</strong> ${gameState.trashOnRoad} pieces (-${trashPenalty} penalty for both)</p>
+                        <p><strong>� Final Scores:</strong> P1: ${p1FinalScore}, P2: ${p2FinalScore}</p>`;
+                    }
+                    
+                    multiStatsHTML += `
+                        <p><strong>�🕳️ Sewers Cleared:</strong> ${gameState.sewersCleared} / 3</p>
                         <p><strong>💧 Water Level:</strong> ${Math.floor(gameState.waterLevel)}%</p>
                     `;
+                    
+                    endStats.innerHTML = multiStatsHTML;
                     
                     endFact.innerHTML = `
                         <img src="assets/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
@@ -941,6 +1171,34 @@
             }
             
             endScreen.style.display = 'block';
+        }
+        
+        // Get character sprite based on player state
+        function getCharacterSprite(player) {
+            const prefix = player.isBoy ? 'boy' : 'girl';
+            
+            // If bowing, show bow animation
+            if (player.movementState === 'bow') {
+                return assets[prefix + (player.direction === 'left' ? 'LeftBow' : 'RightBow')];
+            }
+            
+            // If front/idle, show front
+            if (player.direction === 'front' || player.movementState === 'idle') {
+                return assets[prefix + 'Front'];
+            }
+            
+            // Otherwise show movement animation based on state
+            const dir = player.direction === 'left' ? 'Left' : 'Right';
+            
+            // For walking and running, cycle between frame 1 and 2
+            switch(player.movementState) {
+                case 'walk':
+                    return player.animationFrame === 0 ? assets[prefix + dir + 'Walk1'] : assets[prefix + dir + 'Walk2'];
+                case 'run':
+                    return player.animationFrame === 0 ? assets[prefix + dir + 'Run1'] : assets[prefix + dir + 'Run2'];
+                default:
+                    return assets[prefix + dir];
+            }
         }
         
         function drawGame() {
@@ -1021,19 +1279,26 @@
             
             // Sewers
             sewers.forEach(sewer => {
-                ctx.fillStyle = sewer.blocked ? '#2c3e50' : '#27ae60';
-                ctx.fillRect(sewer.x - 27, sewer.y - 15, sewer.width, sewer.height);
-                
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                for (let i = 0; i < 6; i++) {
-                    const barX = sewer.x - 27 + (i * 10);
-                    ctx.beginPath();
-                    ctx.moveTo(barX, sewer.y - 15);
-                    ctx.lineTo(barX, sewer.y + 15);
-                    ctx.stroke();
+                // Draw sewer image
+                if (assets.sewer.complete) {
+                    ctx.drawImage(assets.sewer, sewer.x - 27, sewer.y - 15, sewer.width, sewer.height);
+                } else {
+                    // Fallback: Draw sewer grate with bars
+                    ctx.fillStyle = sewer.blocked ? '#2c3e50' : '#27ae60';
+                    ctx.fillRect(sewer.x - 27, sewer.y - 15, sewer.width, sewer.height);
+                    
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                    for (let i = 0; i < 6; i++) {
+                        const barX = sewer.x - 27 + (i * 10);
+                        ctx.beginPath();
+                        ctx.moveTo(barX, sewer.y - 15);
+                        ctx.lineTo(barX, sewer.y + 15);
+                        ctx.stroke();
+                    }
                 }
                 
+                // Show checkmark if cleared
                 if (!sewer.blocked) {
                     ctx.fillStyle = '#27ae60';
                     ctx.font = 'bold 22px Arial';
@@ -1077,9 +1342,9 @@
             });
             
             // Player 1
-            const p1Img = player1.isBoy ? assets.boy : assets.girl;
-            if (p1Img.complete) {
-                ctx.drawImage(p1Img, player1.x - 22, player1.y - 32, player1.width, player1.height);
+            const p1Sprite = getCharacterSprite(player1);
+            if (p1Sprite && p1Sprite.complete) {
+                ctx.drawImage(p1Sprite, player1.x - 22, player1.y - 32, player1.width, player1.height);
             } else {
                 ctx.fillStyle = player1.isBoy ? '#3498db' : '#e91e63';
                 ctx.fillRect(player1.x - 22, player1.y - 32, player1.width, player1.height);
@@ -1094,9 +1359,9 @@
             
             // Player 2 (multiplayer only)
             if (gameMode === 'multiplayer') {
-                const p2Img = assets.girl;
-                if (p2Img.complete) {
-                    ctx.drawImage(p2Img, player2.x - 22, player2.y - 32, player2.width, player2.height);
+                const p2Sprite = getCharacterSprite(player2);
+                if (p2Sprite && p2Sprite.complete) {
+                    ctx.drawImage(p2Sprite, player2.x - 22, player2.y - 32, player2.width, player2.height);
                 } else {
                     ctx.fillStyle = '#e91e63';
                     ctx.fillRect(player2.x - 22, player2.y - 32, player2.width, player2.height);
@@ -1127,10 +1392,55 @@
         }
         
         // Event Listeners
-        startBtn.addEventListener('click', initGame);
+        // Character selection (for single player mode only)
+        selectBoy.addEventListener('click', () => {
+            selectedCharacter = 'boy';
+            player1.isBoy = true;
+            characterScreen.style.display = 'none';
+            initGame();
+        });
+        
+        selectGirl.addEventListener('click', () => {
+            selectedCharacter = 'girl';
+            player1.isBoy = false;
+            characterScreen.style.display = 'none';
+            initGame();
+        });
+        
+        backToLevel1.addEventListener('click', () => {
+            window.location.href = 'index.html?mode=' + gameMode;
+        });
+        
+        // Show appropriate screen on load
+        window.addEventListener('load', () => {
+            // Always show start screen first
+            startScreen.style.display = 'flex';
+            initUI();
+            
+            if (gameMode === 'multiplayer') {
+                // Multiplayer: Boy is P1, Girl is P2
+                player1.isBoy = true;
+                player2.isBoy = false;
+            }
+        });
+        
+        startBtn.addEventListener('click', () => {
+            if (gameMode === 'single') {
+                // Show character selection for single player
+                startScreen.style.display = 'none';
+                characterScreen.style.display = 'flex';
+            } else {
+                // Start game directly for multiplayer
+                initGame();
+            }
+        });
         retryBtn.addEventListener('click', () => {
             endScreen.style.display = 'none';
-            startScreen.style.display = 'flex';
+            if (gameMode === 'single') {
+                characterScreen.style.display = 'flex';
+            } else {
+                startScreen.style.display = 'flex';
+            }
         });
         backBtn.addEventListener('click', () => window.location.href = 'index.html?mode=' + gameMode);
         
@@ -1175,19 +1485,96 @@
         function handleInput() {
             if (!gameState.gameActive) return;
             
+            // Helper function to update player animation based on movement
+            function updatePlayerAnimation(player, movingLeft, movingRight) {
+                if (player.bowTimer > 0) {
+                    // Currently bowing, don't change animation
+                    return;
+                }
+                
+                if (movingLeft || movingRight) {
+                    // Reset idle timer when moving
+                    player.idleTimer = 0;
+                    
+                    // Determine direction
+                    if (movingLeft && !movingRight) {
+                        if (player.direction !== 'left') {
+                            // Changing direction, show Left/Right static pose first
+                            player.direction = 'left';
+                            player.frameCounter = 0;
+                            player.animationFrame = 0;
+                        }
+                    } else if (movingRight && !movingLeft) {
+                        if (player.direction !== 'right') {
+                            // Changing direction, show Left/Right static pose first
+                            player.direction = 'right';
+                            player.frameCounter = 0;
+                            player.animationFrame = 0;
+                        }
+                    }
+                    
+                    // Increment frame counter
+                    player.frameCounter++;
+                    
+                    // Determine if walking or running based on how long moving
+                    if (player.frameCounter < player.walkRunTransitionFrame) {
+                        player.movementState = 'walk';
+                    } else {
+                        player.movementState = 'run';
+                    }
+                    
+                    // Cycle animation frames (Walk1->Walk2->Walk1... or Run1->Run2->Run1...)
+                    // Change frame every animationSpeed frames
+                    if (player.frameCounter % player.animationSpeed === 0) {
+                        player.animationFrame = player.animationFrame === 0 ? 1 : 0;
+                    }
+                    
+                } else {
+                    // Not moving - increment idle timer
+                    player.idleTimer++;
+                    
+                    // After 3 seconds (assuming 60fps: 3 * 60 = 180 frames), return to front
+                    if (player.idleTimer >= 180) {
+                        player.direction = 'front';
+                        player.movementState = 'idle';
+                    } else {
+                        // Show static Left/Right pose while idle < 3 seconds
+                        player.movementState = 'idle';
+                    }
+                    
+                    player.frameCounter = 0;
+                    player.animationFrame = 0;
+                }
+            }
+            
             // Player 1 controls
             if (gameMode === 'single') {
                 // In single player, can use A/D or arrows
-                if (keys['a'] || keys['A'] || keys['ArrowLeft']) player1.x -= player1.speed;
-                if (keys['d'] || keys['D'] || keys['ArrowRight']) player1.x += player1.speed;
+                const p1Left = keys['a'] || keys['A'] || keys['ArrowLeft'];
+                const p1Right = keys['d'] || keys['D'] || keys['ArrowRight'];
+                
+                if (p1Left) player1.x -= player1.speed;
+                if (p1Right) player1.x += player1.speed;
+                
+                updatePlayerAnimation(player1, p1Left, p1Right);
             } else {
                 // In multiplayer, Player 1 uses A/D only
-                if (keys['a'] || keys['A']) player1.x -= player1.speed;
-                if (keys['d'] || keys['D']) player1.x += player1.speed;
+                const p1Left = keys['a'] || keys['A'];
+                const p1Right = keys['d'] || keys['D'];
+                
+                if (p1Left) player1.x -= player1.speed;
+                if (p1Right) player1.x += player1.speed;
+                
+                updatePlayerAnimation(player1, p1Left, p1Right);
                 
                 // Player 2 uses arrows
-                if (keys['ArrowLeft']) player2.x -= player2.speed;
-                if (keys['ArrowRight']) player2.x += player2.speed;
+                const p2Left = keys['ArrowLeft'];
+                const p2Right = keys['ArrowRight'];
+                
+                if (p2Left) player2.x -= player2.speed;
+                if (p2Right) player2.x += player2.speed;
+                
+                updatePlayerAnimation(player2, p2Left, p2Right);
                 
                 player2.x = Math.max(22, Math.min(778, player2.x));
             }

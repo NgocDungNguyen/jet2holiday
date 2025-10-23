@@ -437,8 +437,8 @@
             </div>
             
             <div class="uiPanel">
-                <div><strong>TIME:</strong> <span id="timeValue">180</span>s</div>
-                <div><strong>GOAL:</strong> <span id="goalValue">100</span> points</div>
+                <div><strong>TIME:</strong> <span id="timeValue">60</span>s</div>
+                <div><strong>MIN SCORE:</strong> <span id="minScore">50</span></div>
                 <div><strong>FISH SAVED:</strong> <span id="fishProtected">0</span></div>
                 <div><strong>COLLISIONS:</strong> <span id="collisionCount">0</span></div>
             </div>
@@ -485,7 +485,7 @@
                 <!-- Fact will be inserted here -->
             </div>
             <div id="cycleImageContainer" style="display: none; margin: 20px 0;">
-                <img id="cycleImage" src="assets/cycle.png" alt="Plastic Cycle" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #e74c3c;">
+                <img id="cycleImage" src="assets/level1/cycle.png" alt="Plastic Cycle" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #e74c3c;">
                 <div style="font-size: 14px; margin-top: 10px; color: #bdc3c7; line-height: 1.6;">
                     <strong>THE PLASTIC CYCLE:</strong><br>
                     Human dumps plastic → Fish eats plastic → Human catches fish → Human eats fish → Microplastics in human body → Human gets sick
@@ -546,37 +546,47 @@
     </div>
 
     <script>
-        // Game Constants - EASIER SETTINGS
-        const LEVEL_GOAL = 100; // Much easier goal
-        const LEVEL_TIME = 60; // 3 minutes in seconds
+        // Game Constants - CHALLENGE MODE
+        const LEVEL_TIME = 60; // 1 minute survival challenge
+        const MIN_SCORE_TO_PASS = 50; // Minimum score needed to pass (can't go below this)
         const OCEAN_SURFACE = 200; // 20% of canvas height (600 * 0.2) - no objects above this line
         
         // Load Assets
         const assets = {
-            boat: new Image(),
+            boat1Left: new Image(),
+            boat1Right: new Image(),
+            boat2Left: new Image(),
+            boat2Right: new Image(),
             bottle: new Image(),
             fish: new Image(),
             grabber: new Image(),
             plastic: new Image(),
             turtle: new Image(),
+            crab: new Image(),
+            shrimp: new Image(),
             background: new Image(),
             cycle: new Image()
         };
         
-        // Load all images
-        assets.boat.src = 'assets/boat.png';
-        assets.bottle.src = 'assets/bottle.png';
-        assets.fish.src = 'assets/fish.png';
-        assets.grabber.src = 'assets/grabber.png';
-        assets.plastic.src = 'assets/plastic.png';
-        assets.turtle.src = 'assets/turtle.png';
-        assets.background.src = 'assets/V2.png';
+        // Load all images from level1 folder
+        assets.boat1Left.src = 'assets/level1/VN_Boat1_Left.png';
+        assets.boat1Right.src = 'assets/level1/VN_Boat1_Right.png';
+        assets.boat2Left.src = 'assets/level1/VN_Boat2_Left.png';
+        assets.boat2Right.src = 'assets/level1/VN_Boat2_Right.png';
+        assets.bottle.src = 'assets/level1/Bottle.png';
+        assets.fish.src = 'assets/level1/Fish.png';
+        assets.grabber.src = 'assets/level1/Grabber.png';
+        assets.plastic.src = 'assets/level1/Plastic.png';
+        assets.turtle.src = 'assets/level1/Turtle.png';
+        assets.crab.src = 'assets/level1/Crab.png';
+        assets.shrimp.src = 'assets/level1/Shrimp.png';
+        assets.background.src = 'assets/level1/Island.png';
         assets.cycle.src = 'assets/cycle.png';
         
         // Load Background Music
         const bgMusic = new Audio('SFX/Sea.mp3');
         bgMusic.loop = true; // Loop forever
-        bgMusic.volume = 0.5; // Maximum volume (200% louder - browser max is 1.0)
+        bgMusic.volume = 1.0; // Maximum volume (200% louder - browser max is 1.0)
         
         // Load Catch Sound Effect
         const catchSound = new Audio('SFX/Catch.mp3');
@@ -652,21 +662,29 @@
         let boat1 = {
             x: canvas.width / 4,
             y: OCEAN_SURFACE - 10,
-            width: 80,
-            height: 40,
+            width: 160,
+            height: 80,
             speed: 3,
             canMove: true,
-            color: '#3498db' // Blue for P1
+            color: '#3498db', // Blue for P1
+            direction: 'left', // Current direction: 'left' or 'right'
+            targetDirection: 'left', // Target direction for smooth transition
+            flipProgress: 0, // 0 to 1, for smooth flip animation
+            isFlipping: false
         };
         
         let boat2 = {
             x: (canvas.width / 4) * 3,
             y: OCEAN_SURFACE - 10,
-            width: 80,
-            height: 40,
+            width: 160,
+            height: 80,
             speed: 3,
             canMove: true,
-            color: '#e74c3c' // Red for P2
+            color: '#e74c3c', // Red for P2
+            direction: 'left', // Current direction: 'left' or 'right'
+            targetDirection: 'left', // Target direction for smooth transition
+            flipProgress: 0, // 0 to 1, for smooth flip animation
+            isFlipping: false
         };
         
         let grabber1 = {
@@ -710,7 +728,9 @@
         // Marine Life Types - REDUCED PENALTIES
         const MARINE_LIFE_TYPES = {
             FISH: { penalty: 30, radius: 25, color: '#1DD3B0', speed: 0.3, name: 'Fish', asset: 'fish' },
-            TURTLE: { penalty: 50, radius: 30, color: '#AFFC41', speed: 0.2, name: 'Turtle', asset: 'turtle' }
+            TURTLE: { penalty: 50, radius: 30, color: '#AFFC41', speed: 0.2, name: 'Turtle', asset: 'turtle' },
+            CRAB: { penalty: 25, radius: 20, color: '#FF6347', speed: 0.25, name: 'Crab', asset: 'crab' },
+            SHRIMP: { penalty: 20, radius: 18, color: '#FFA07A', speed: 0.35, name: 'Shrimp', asset: 'shrimp' }
         };
         
         // Initialize Game
@@ -756,6 +776,10 @@
             // Reset Player 1
             boat1.y = OCEAN_SURFACE - 10;
             boat1.canMove = true;
+            boat1.direction = 'left';
+            boat1.targetDirection = 'left';
+            boat1.flipProgress = 0;
+            boat1.isFlipping = false;
             grabber1 = {
                 angle: 0,
                 length: 60,
@@ -773,6 +797,10 @@
             // Reset Player 2
             boat2.y = OCEAN_SURFACE - 10;
             boat2.canMove = true;
+            boat2.direction = 'left';
+            boat2.targetDirection = 'left';
+            boat2.flipProgress = 0;
+            boat2.isFlipping = false;
             grabber2 = {
                 angle: 0,
                 length: 60,
@@ -917,9 +945,29 @@
             }
         }
         
+        // Update Boat Animation
+        function updateBoatAnimation(boat) {
+            if (boat.isFlipping) {
+                // Smooth flip animation
+                boat.flipProgress += 0.1; // Adjust speed of flip (0.1 = fast, 0.05 = slower)
+                
+                if (boat.flipProgress >= 1) {
+                    boat.flipProgress = 0;
+                    boat.isFlipping = false;
+                    boat.direction = boat.targetDirection;
+                }
+            }
+        }
+        
         // Update Game State
         function updateGame() {
             if (!gameState.gameActive) return;
+            
+            // Update boat animations
+            updateBoatAnimation(boat1);
+            if (gameMode === 'multiplayer') {
+                updateBoatAnimation(boat2);
+            }
             
             // Update Player 1 grabber (always)
             updateGrabber(grabber1, boat1, 1);
@@ -946,18 +994,36 @@
             
             // Check game over conditions
             if (gameState.timeLeft <= 0) {
+                // Time's up - determine winner based on score
+                if (gameMode === 'single') {
+                    gameState.winner = (gameState.p1Score >= MIN_SCORE_TO_PASS) ? 1 : null;
+                } else {
+                    // Multiplayer: highest score wins (if both meet minimum)
+                    const p1Pass = gameState.p1Score >= MIN_SCORE_TO_PASS;
+                    const p2Pass = gameState.p2Score >= MIN_SCORE_TO_PASS;
+                    
+                    if (p1Pass && p2Pass) {
+                        gameState.winner = (gameState.p1Score >= gameState.p2Score) ? 1 : 2;
+                    } else if (p1Pass) {
+                        gameState.winner = 1;
+                    } else if (p2Pass) {
+                        gameState.winner = 2;
+                    } else {
+                        gameState.winner = null; // Both failed
+                    }
+                }
                 endGame();
             }
             
-            if (gameState.p1Score >= LEVEL_GOAL) {
-                gameState.winner = 1;
-                endGame();
-            }
-            
-            // Only check Player 2 score in multiplayer mode
-            if (gameMode === 'multiplayer' && gameState.p2Score >= LEVEL_GOAL) {
-                gameState.winner = 2;
-                endGame();
+            // Check if player(s) fall below minimum score (instant fail)
+            if (gameMode === 'single') {
+                if (gameState.p1Score < 0) {
+                    gameState.winner = null;
+                    endGame();
+                }
+            } else {
+                // In multiplayer, game continues even if one player goes negative
+                // Both players can still recover
             }
             
             // Update UI
@@ -1234,9 +1300,9 @@
             
             // Update end screen based on game mode
             if (gameMode === 'single') {
-                // Single player mode
-                if (gameState.p1Score >= LEVEL_GOAL) {
-                    endTitle.textContent = '🎉 LEVEL COMPLETE! 🎉';
+                // Single player mode - Check if passed minimum score
+                if (gameState.winner === 1) {
+                    endTitle.textContent = '🎉 MISSION COMPLETE! 🎉';
                     endTitle.style.color = '#2ecc71';
                     didFail = false;
                     
@@ -1244,23 +1310,18 @@
                     successSound.currentTime = 0;
                     successSound.play().catch(err => console.log('Success sound error:', err));
                 } else {
-                    endTitle.textContent = '💔 TIME\'S UP!';
+                    if (gameState.p1Score < 0) {
+                        endTitle.textContent = '💔 MISSION FAILED - Too Many Collisions!';
+                    } else if (gameState.p1Score < MIN_SCORE_TO_PASS) {
+                        endTitle.textContent = '💔 MISSION FAILED - Score Too Low!';
+                    } else {
+                        endTitle.textContent = '💔 TIME\'S UP!';
+                    }
                     endTitle.style.color = '#e74c3c';
                     didFail = true;
                 }
             } else {
-                // Multiplayer mode - Determine winner
-                if (!gameState.winner) {
-                    // Time ran out - compare scores
-                    if (gameState.p1Score > gameState.p2Score) {
-                        gameState.winner = 1;
-                    } else if (gameState.p2Score > gameState.p1Score) {
-                        gameState.winner = 2;
-                    } else {
-                        gameState.winner = 0; // Tie
-                    }
-                }
-                
+                // Multiplayer mode - Determine winner based on score
                 if (gameState.winner === 1) {
                     endTitle.textContent = '🎉 PLAYER 1 WINS! 🎉';
                     endTitle.style.color = '#3498db';
@@ -1275,13 +1336,18 @@
                     // Play success sound for winner
                     successSound.currentTime = 0;
                     successSound.play().catch(err => console.log('Success sound error:', err));
-                } else {
+                } else if (gameState.winner === 0) {
                     endTitle.textContent = '🤝 TIE GAME! 🤝';
                     endTitle.style.color = '#f39c12';
+                } else {
+                    // Both failed
+                    endTitle.textContent = '💔 BOTH PLAYERS FAILED!';
+                    endTitle.style.color = '#e74c3c';
+                    didFail = true;
                 }
                 
-                // Show cycle for multiplayer only if someone lost badly or low scores
-                didFail = (gameState.p1Score < 50 && gameState.p2Score < 50);
+                // Show cycle if both scores are low
+                didFail = didFail || (gameState.p1Score < MIN_SCORE_TO_PASS && gameState.p2Score < MIN_SCORE_TO_PASS);
             }
             
             // Show different facts based on outcome
@@ -1322,10 +1388,10 @@
             finalFish.textContent = gameState.fishProtected;
             performanceRating.textContent = rating;
             
-            // Show Next Level button only if player won
+            // Show Next Level button only if player passed
             if (gameMode === 'single') {
-                // Show button if single player reached the goal
-                nextLevelBtn.style.display = (gameState.p1Score >= LEVEL_GOAL) ? 'inline-block' : 'none';
+                // Show button if single player passed the minimum score
+                nextLevelBtn.style.display = (gameState.winner === 1) ? 'inline-block' : 'none';
             } else {
                 // Show button if either player won in multiplayer
                 nextLevelBtn.style.display = (gameState.winner === 1 || gameState.winner === 2) ? 'inline-block' : 'none';
@@ -1371,12 +1437,12 @@
             }
             
             // Draw Player 1 (always)
-            drawBoat(boat1, '#3498db');
+            drawBoat(boat1, 1);
             drawGrabber(grabber1, boat1, '#3498db');
             
             // Draw Player 2 (only in multiplayer mode)
             if (gameMode === 'multiplayer') {
-                drawBoat(boat2, '#e74c3c');
+                drawBoat(boat2, 2);
                 drawGrabber(grabber2, boat2, '#e74c3c');
             }
             
@@ -1394,27 +1460,52 @@
             }
         }
         
-        // Draw Boat with Asset Image
-        function drawBoat(boat, playerColor) {
+        // Draw Boat with Asset Image and Animation
+        function drawBoat(boat, playerNum) {
             ctx.save();
-            if (assets.boat.complete && assets.boat.naturalWidth > 0) {
-                ctx.drawImage(assets.boat, boat.x - boat.width/2, boat.y - boat.height/2, boat.width, boat.height);
-            } else {
-                // Fallback if image not loaded
-                ctx.fillStyle = '#8B4513';
-                ctx.fillRect(boat.x - 30, boat.y, 60, 20);
-                ctx.fillStyle = '#A52A2A';
-                ctx.fillRect(boat.x - 25, boat.y, 50, 8);
-                ctx.fillStyle = '#CD5C5C';
-                ctx.fillRect(boat.x - 15, boat.y - 15, 30, 15);
-            }
-            ctx.restore();
             
-            // Boat outline with player color
-            ctx.strokeStyle = playerColor;
-            ctx.lineWidth = 3;
-            ctx.strokeRect(boat.x - 30, boat.y, 60, 20);
-            ctx.strokeRect(boat.x - 15, boat.y - 15, 30, 15);
+            // Select the correct boat image based on player and direction
+            let boatImage;
+            if (playerNum === 1) {
+                boatImage = (boat.direction === 'left') ? assets.boat1Left : assets.boat1Right;
+            } else {
+                boatImage = (boat.direction === 'left') ? assets.boat2Left : assets.boat2Right;
+            }
+            
+            // Apply flip animation if currently flipping
+            if (boat.isFlipping) {
+                ctx.translate(boat.x, boat.y);
+                
+                // Create squash effect during flip
+                const scaleX = Math.cos(boat.flipProgress * Math.PI);
+                ctx.scale(scaleX, 1);
+                
+                // Draw boat at origin (already translated)
+                if (boatImage && boatImage.complete && boatImage.naturalWidth > 0) {
+                    ctx.drawImage(boatImage, -boat.width/2, -boat.height/2, boat.width, boat.height);
+                } else {
+                    // Fallback
+                    ctx.fillStyle = (playerNum === 1) ? '#3498db' : '#e74c3c';
+                    ctx.fillRect(-30, 0, 60, 20);
+                    ctx.fillRect(-15, -15, 30, 15);
+                }
+            } else {
+                // Normal drawing (no flip)
+                if (boatImage && boatImage.complete && boatImage.naturalWidth > 0) {
+                    ctx.drawImage(boatImage, boat.x - boat.width/2, boat.y - boat.height/2, boat.width, boat.height);
+                } else {
+                    // Fallback pixel art boat if image not loaded
+                    ctx.fillStyle = (playerNum === 1) ? '#3498db' : '#e74c3c';
+                    ctx.fillRect(boat.x - 30, boat.y, 60, 20);
+                    ctx.fillRect(boat.x - 15, boat.y - 15, 30, 15);
+                    
+                    ctx.fillStyle = '#34495e';
+                    ctx.fillRect(boat.x - 5, boat.y - 25, 10, 10);
+                }
+            }
+            
+            ctx.restore();
+            // Removed colored rectangle outline as requested
         }
         
         // Draw Grabber with Asset Image
@@ -1729,11 +1820,12 @@
                     </div>
                 `;
                 missionInfo.innerHTML = `
-                    <strong>📋 Objectives:</strong><br>
-                    ✓ Collect 100 points worth of plastic waste in 60 seconds<br>
-                    ✓ Protect marine life - avoid fish-plastic collisions<br>
-                    ✓ Learn about ocean pollution impact in Vietnam<br><br>
-                    <em style="color: #f39c12;">⚠️ Each fish-plastic collision harms marine ecosystems!</em>
+                    <strong>📋 Challenge Objectives:</strong><br>
+                    ⏱️ Survive for 60 seconds of intense cleanup<br>
+                    ♻️ Collect as much trash as possible<br>
+                    ⚠️ Maintain at least 50 points to pass<br>
+                    🐠 Avoid hitting marine life (loses points!)<br><br>
+                    <em style="color: #f39c12;">⚠️ Hitting too many fish can cause instant failure!</em>
                 `;
             } else {
                 modeDescription.innerHTML = 'Welcome to <strong>MULTIPLAYER MODE</strong>!<br>Compete to see who can clean more pollution from the South China Sea!';
@@ -1743,10 +1835,11 @@
                 `;
                 missionInfo.innerHTML = `
                     <strong>📋 Competition Rules:</strong><br>
-                    ✓ First player to reach 100 points wins!<br>
-                    ✓ Compete within 60 seconds time limit<br>
-                    ✓ Protect fish - collisions hurt your score<br><br>
-                    <em style="color: #2ecc71;">🤝 Teamwork for a cleaner ocean!</em>
+                    ⏱️ Survive for 60 seconds<br>
+                    ♻️ Collect the most trash to win<br>
+                    ⚠️ Must score at least 50 points to qualify<br>
+                    🐠 Avoid marine life - collisions hurt your score<br><br>
+                    <em style="color: #2ecc71;">🏆 Highest score above 50 wins!</em>
                 `;
             }
         }
@@ -1781,41 +1874,110 @@
             if (gameMode === 'single') {
                 // Single Player: Can use A/D or Arrow Keys
                 if (boat1.canMove) {
-                    if (keys['a'] || keys['A'] || keys['ArrowLeft']) {
-                        boat1.x -= boat1.speed;
-                        if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
+                    const pressingLeft = keys['a'] || keys['A'] || keys['ArrowLeft'];
+                    const pressingRight = keys['d'] || keys['D'] || keys['ArrowRight'];
+                    
+                    if (pressingLeft && !pressingRight) {
+                        // Trigger flip animation if changing direction
+                        if (boat1.direction !== 'left' && !boat1.isFlipping) {
+                            boat1.isFlipping = true;
+                            boat1.targetDirection = 'left';
+                            boat1.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing left or flipping to left
+                        if (boat1.direction === 'left' || (boat1.isFlipping && boat1.targetDirection === 'left')) {
+                            boat1.x -= boat1.speed;
+                            if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
+                        }
                     }
                     
-                    if (keys['d'] || keys['D'] || keys['ArrowRight']) {
-                        boat1.x += boat1.speed;
-                        if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
+                    if (pressingRight && !pressingLeft) {
+                        // Trigger flip animation if changing direction
+                        if (boat1.direction !== 'right' && !boat1.isFlipping) {
+                            boat1.isFlipping = true;
+                            boat1.targetDirection = 'right';
+                            boat1.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing right or flipping to right
+                        if (boat1.direction === 'right' || (boat1.isFlipping && boat1.targetDirection === 'right')) {
+                            boat1.x += boat1.speed;
+                            if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
+                        }
                     }
                 }
             } else {
                 // Multiplayer: Separate controls
                 // Player 1 Controls: A/D
                 if (boat1.canMove) {
-                    if (keys['a'] || keys['A']) {
-                        boat1.x -= boat1.speed;
-                        if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
+                    const p1Left = keys['a'] || keys['A'];
+                    const p1Right = keys['d'] || keys['D'];
+                    
+                    if (p1Left && !p1Right) {
+                        // Trigger flip animation if changing direction
+                        if (boat1.direction !== 'left' && !boat1.isFlipping) {
+                            boat1.isFlipping = true;
+                            boat1.targetDirection = 'left';
+                            boat1.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing left or flipping to left
+                        if (boat1.direction === 'left' || (boat1.isFlipping && boat1.targetDirection === 'left')) {
+                            boat1.x -= boat1.speed;
+                            if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
+                        }
                     }
                     
-                    if (keys['d'] || keys['D']) {
-                        boat1.x += boat1.speed;
-                        if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
+                    if (p1Right && !p1Left) {
+                        // Trigger flip animation if changing direction
+                        if (boat1.direction !== 'right' && !boat1.isFlipping) {
+                            boat1.isFlipping = true;
+                            boat1.targetDirection = 'right';
+                            boat1.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing right or flipping to right
+                        if (boat1.direction === 'right' || (boat1.isFlipping && boat1.targetDirection === 'right')) {
+                            boat1.x += boat1.speed;
+                            if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
+                        }
                     }
                 }
                 
                 // Player 2 Controls: Arrow Keys
                 if (boat2.canMove) {
-                    if (keys['ArrowLeft']) {
-                        boat2.x -= boat2.speed;
-                        if (boat2.x < boat2.width/2) boat2.x = boat2.width/2;
+                    const p2Left = keys['ArrowLeft'];
+                    const p2Right = keys['ArrowRight'];
+                    
+                    if (p2Left && !p2Right) {
+                        // Trigger flip animation if changing direction
+                        if (boat2.direction !== 'left' && !boat2.isFlipping) {
+                            boat2.isFlipping = true;
+                            boat2.targetDirection = 'left';
+                            boat2.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing left or flipping to left
+                        if (boat2.direction === 'left' || (boat2.isFlipping && boat2.targetDirection === 'left')) {
+                            boat2.x -= boat2.speed;
+                            if (boat2.x < boat2.width/2) boat2.x = boat2.width/2;
+                        }
                     }
                     
-                    if (keys['ArrowRight']) {
-                        boat2.x += boat2.speed;
-                        if (boat2.x > canvas.width - boat2.width/2) boat2.x = canvas.width - boat2.width/2;
+                    if (p2Right && !p2Left) {
+                        // Trigger flip animation if changing direction
+                        if (boat2.direction !== 'right' && !boat2.isFlipping) {
+                            boat2.isFlipping = true;
+                            boat2.targetDirection = 'right';
+                            boat2.flipProgress = 0;
+                        }
+                        
+                        // Only move if facing right or flipping to right
+                        if (boat2.direction === 'right' || (boat2.isFlipping && boat2.targetDirection === 'right')) {
+                            boat2.x += boat2.speed;
+                            if (boat2.x > canvas.width - boat2.width/2) boat2.x = canvas.width - boat2.width/2;
+                        }
                     }
                 }
             }
