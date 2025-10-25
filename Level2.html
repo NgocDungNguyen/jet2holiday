@@ -409,6 +409,9 @@
     </div>
 
     <script>
+        // LEVEL 2 - VERSION 2.0.1 - Fixed broken image rendering
+        console.log('🎮 Level 2 Script Loaded - v2.0.1 (Fixed image rendering)');
+        
         // Get game mode from URL parameter (passed from Level 1)
         const urlParams = new URLSearchParams(window.location.search);
         let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
@@ -1772,9 +1775,11 @@
                     binImage = bin.isOpen ? assets.binOpen : assets.bin;
                 }
                 
+                // FIX v2.0: Check naturalWidth to avoid broken images
                 if (binImage && binImage.complete && binImage.naturalWidth > 0) {
                     ctx.drawImage(binImage, drawX, bin.y, bin.width, bin.height);
                 } else {
+                    // Fallback: Draw gray rectangle if image failed to load
                     ctx.fillStyle = '#7f8c8d';
                     ctx.fillRect(drawX, bin.y, bin.width, bin.height);
                 }
