@@ -399,16 +399,16 @@
             lightning: new Image()
         };
         
-        assets.mountain.src = "assets/mountain.png";
-        assets.base.src = "assets/base.png";
-        assets.house.src = "assets/house.png";
-        assets.family.src = "assets/family.png";
-        assets.drone.src = "assets/drone.png";
-        assets.medic.src = "assets/medic.png";
-        assets.food.src = "assets/food.png";
-        assets.bottle.src = "assets/bottle.png";
-        assets.cloud.src = "assets/Cloud.png";
-        assets.lightning.src = "assets/Lightning.png";
+        assets.mountain.src = "assets/level3/mountain.png";
+        assets.base.src = "assets/level3/base.png";
+        assets.house.src = "assets/level3/house.png";
+        assets.family.src = "assets/level3/family.png";
+        assets.drone.src = "assets/level3/drone.png";
+        assets.medic.src = "assets/level3/medic.png";
+        assets.food.src = "assets/level3/FOOD.png";
+        assets.bottle.src = "assets/level3/Bottle.png";
+        assets.cloud.src = "assets/level3/Cloud.png";
+        assets.lightning.src = "assets/level3/Lightning.png";
         
         // UI Elements
         const timeValue = document.getElementById('timeValue');
@@ -903,7 +903,7 @@
                     }
                     
                     endFact.innerHTML = `
-                        <img src="assets/save.jpg" alt="Disaster Relief" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                        <img src="assets/level3/save.jpg" alt="Disaster Relief" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                         <strong>🏆 MULTIPLAYER RESCUE SUCCESS!</strong><br><br>
                         <strong>👦 PLAYER 1:</strong> ${gameState.p1Families} families saved (${gameState.p1Deliveries} deliveries)<br>
                         <strong>👧 PLAYER 2:</strong> ${gameState.p2Families} families saved (${gameState.p2Deliveries} deliveries)<br><br>
@@ -918,7 +918,7 @@
                     endTitle.textContent = '🎉 MISSION ACCOMPLISHED! 🎉';
                     endTitle.style.color = '#2ecc71';
                     endFact.innerHTML = `
-                        <img src="assets/save.jpg" alt="Disaster Relief" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
+                        <img src="assets/level3/save.jpg" alt="Disaster Relief" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
                         <strong>🇻🇳 VIETNAM DISASTER RELIEF - REAL HEROES:</strong><br><br>
                         "You saved <strong>${gameState.familiesSaved} families</strong>! In September 2024, <strong>Super Typhoon Yagi</strong> struck northern Vietnam 
                         as the strongest storm in 30 years, causing catastrophic flooding in Hanoi, Hai Phong, and Quang Ninh provinces. 
