@@ -112,6 +112,24 @@
             max-width: 90vw;
         }
         
+        /* Multiplayer Mobile Controls - Split for P1 and P2 */
+        #mobileControlsP1, #mobileControlsP2 {
+            display: none;
+            position: fixed;
+            bottom: 10px;
+            z-index: 150;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        #mobileControlsP1 {
+            left: 10px;
+        }
+        
+        #mobileControlsP2 {
+            right: 10px;
+        }
+        
         .mobileBtn {
             background: rgba(52, 152, 219, 0.8);
             border: 3px solid #3498db;
@@ -139,13 +157,31 @@
         .mobileBtn.launch {
             width: 90px;
             height: 90px;
-            font-size: 14px;
+            font-size: 11px;
             background: rgba(46, 204, 113, 0.8);
             border-color: #2ecc71;
         }
         
         .mobileBtn.launch:active {
             background: rgba(39, 174, 96, 0.9);
+        }
+        
+        .mobileBtn.p2 {
+            background: rgba(231, 76, 60, 0.8);
+            border-color: #e74c3c;
+        }
+        
+        .mobileBtn.p2:active {
+            background: rgba(192, 57, 43, 0.9);
+        }
+        
+        .mobileBtn.p2.launch {
+            background: rgba(241, 196, 15, 0.8);
+            border-color: #f39c12;
+        }
+        
+        .mobileBtn.p2.launch:active {
+            background: rgba(243, 156, 18, 0.9);
         }
         
         #endScreen {
@@ -398,37 +434,148 @@
             }
         }
         
-        /* Landscape mobile orientation */
+        /* Landscape mobile orientation - OPTIMIZED FOR GAMEPLAY */
         @media (max-height: 600px) and (orientation: landscape) {
-            #gameCanvas {
-                max-height: 50vh;
+            body {
+                padding: 0;
+                overflow: hidden;
             }
             
+            #gameContainer {
+                gap: 0;
+                max-width: 100%;
+            }
+            
+            /* Hide top UI in landscape for more screen space */
+            #topUI {
+                display: none;
+            }
+            
+            /* Full-width canvas in landscape */
+            #canvasWrapper {
+                max-width: 100%;
+                margin: 0;
+            }
+            
+            #gameCanvas {
+                max-height: 100vh;
+                height: 100vh;
+                border-radius: 0;
+                border: none;
+            }
+            
+            /* Hide desktop controls */
+            #controls {
+                display: none;
+            }
+            
+            /* Single player mobile controls - centered */
             #mobileControls {
-                bottom: 5px;
+                display: flex !important;
+                bottom: 15px;
+                gap: 20px;
+            }
+            
+            /* Multiplayer controls - split left and right */
+            #mobileControlsP1 {
+                display: flex;
+                left: 15px;
+                bottom: 15px;
+            }
+            
+            #mobileControlsP2 {
+                display: flex;
+                right: 15px;
+                bottom: 15px;
             }
             
             .mobileBtn {
-                width: 50px;
-                height: 50px;
-                font-size: 18px;
+                width: 55px;
+                height: 55px;
+                font-size: 20px;
+                border-width: 2px;
             }
             
             .mobileBtn.launch {
-                width: 60px;
-                height: 60px;
+                width: 70px;
+                height: 70px;
                 font-size: 10px;
             }
             
-            #topUI {
-                gap: 5px;
+            /* Compact on-screen UI overlay */
+            #gameplayUI {
+                position: fixed;
+                top: 5px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.7);
+                padding: 5px 15px;
+                border-radius: 15px;
+                font-size: 11px;
+                z-index: 100;
+                display: flex;
+                gap: 15px;
+                border: 1px solid rgba(52, 152, 219, 0.5);
+            }
+            
+            #gameplayUI > div {
+                white-space: nowrap;
+            }
+            
+            /* End screen adjustments for landscape */
+            #endScreen {
+                max-height: 95vh;
+                max-width: 80vw;
+                padding: 15px;
+                overflow-y: auto;
+            }
+            
+            #endScreen h2 {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+            
+            #endStats {
+                font-size: 13px;
+                margin: 10px 0;
+            }
+            
+            .factBox {
+                font-size: 11px;
+                padding: 10px;
+                margin: 10px 0;
+            }
+            
+            button {
+                padding: 8px 15px;
+                font-size: 13px;
+                margin: 5px;
+            }
+            
+            /* Mode and start screens - scrollable */
+            #modeScreen, #startScreen {
+                padding: 15px;
+                overflow-y: auto;
+            }
+            
+            #modeScreen h1, #startScreen h1 {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+            
+            #modeScreen h2 {
+                font-size: 18px;
+            }
+            
+            #modeScreen p, #startScreen p {
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <!-- Top UI Panel - Outside Canvas -->
+        <!-- Top UI Panel - Outside Canvas (hidden in landscape mobile) -->
         <div id="topUI">
             <div class="uiPanel" style="border-color: #3498db;" id="p1Panel">
                 <div style="color: #3498db; font-weight: bold;" id="p1Label">PLAYER 1</div>
@@ -450,6 +597,13 @@
             </div>
         </div>
         
+        <!-- Compact Gameplay UI for Mobile Landscape -->
+        <div id="gameplayUI" style="display: none;">
+            <div id="gameplayP1" style="color: #3498db;">P1: <span id="gameplayP1Score">0</span></div>
+            <div id="gameplayTime">⏱️ <span id="gameplayTimeValue">60</span>s</div>
+            <div id="gameplayP2" style="color: #e74c3c; display: none;">P2: <span id="gameplayP2Score">0</span></div>
+        </div>
+        
         <!-- Canvas Wrapper -->
         <div id="canvasWrapper">
             <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -462,11 +616,25 @@
             </div>
         </div>
         
-        <!-- Mobile Touch Controls -->
+        <!-- Mobile Touch Controls - Single Player (centered) -->
         <div id="mobileControls">
             <div class="mobileBtn" id="mobileLeft">◄</div>
             <div class="mobileBtn launch" id="mobileLaunch">LAUNCH</div>
             <div class="mobileBtn" id="mobileRight">►</div>
+        </div>
+        
+        <!-- Multiplayer Mobile Controls - Player 1 (left side) -->
+        <div id="mobileControlsP1">
+            <div class="mobileBtn" id="mobileP1Left">◄</div>
+            <div class="mobileBtn launch" id="mobileP1Launch">P1<br>GO!</div>
+            <div class="mobileBtn" id="mobileP1Right">►</div>
+        </div>
+        
+        <!-- Multiplayer Mobile Controls - Player 2 (right side) -->
+        <div id="mobileControlsP2">
+            <div class="mobileBtn p2" id="mobileP2Left">◄</div>
+            <div class="mobileBtn p2 launch" id="mobileP2Launch">P2<br>GO!</div>
+            <div class="mobileBtn p2" id="mobileP2Right">►</div>
         </div>
         
         <!-- Old overlay hidden -->
@@ -752,12 +920,28 @@
             const p1Label = document.getElementById('p1Label');
             const p2Panel = document.getElementById('p2Panel');
             const controlsDisplay = document.getElementById('controlsDisplay');
+            const gameplayUI = document.getElementById('gameplayUI');
+            const gameplayP2 = document.getElementById('gameplayP2');
+            
+            // Mobile controls
+            const mobileControls = document.getElementById('mobileControls');
+            const mobileControlsP1 = document.getElementById('mobileControlsP1');
+            const mobileControlsP2 = document.getElementById('mobileControlsP2');
             
             if (gameMode === 'single') {
                 // Single player mode
                 p1Label.textContent = 'YOUR SCORE';
                 p2Panel.style.display = 'none';
                 controlsDisplay.innerHTML = '<span class="key">A/D</span> or <span class="key">←/→</span> to move | <span class="key">SPACEBAR</span> to launch';
+                
+                // Show mobile gameplay UI in landscape
+                gameplayUI.style.display = 'flex';
+                gameplayP2.style.display = 'none';
+                
+                // Show single player mobile controls
+                mobileControls.style.display = window.innerHeight < 600 && window.innerWidth > window.innerHeight ? 'flex' : 'none';
+                mobileControlsP1.style.display = 'none';
+                mobileControlsP2.style.display = 'none';
                 
                 // Position boat in center for single player
                 boat1.x = canvas.width / 2;
@@ -767,6 +951,16 @@
                 p1Label.textContent = 'PLAYER 1';
                 p2Panel.style.display = 'block';
                 controlsDisplay.innerHTML = '<span style="color: #3498db;">P1:</span> <span class="key">A/D</span> + <span class="key">SPACE</span> | <span style="color: #e74c3c;">P2:</span> <span class="key">←/→</span> + <span class="key">ENTER</span>';
+                
+                // Show mobile gameplay UI with both players in landscape
+                gameplayUI.style.display = 'flex';
+                gameplayP2.style.display = 'block';
+                
+                // Show multiplayer mobile controls (split left/right)
+                mobileControls.style.display = 'none';
+                const isLandscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
+                mobileControlsP1.style.display = isLandscape ? 'flex' : 'none';
+                mobileControlsP2.style.display = isLandscape ? 'flex' : 'none';
                 
                 // Position boats for multiplayer
                 boat1.x = canvas.width / 4;
@@ -834,6 +1028,10 @@
             updateUI();
             startScreen.style.display = 'none';
             endScreen.style.display = 'none';
+            
+            // Show mobile gameplay UI in landscape mode
+            const isLandscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
+            gameplayUI.style.display = isLandscape ? 'flex' : 'none';
             
             // Start background music
             bgMusic.play().catch(err => console.log('Audio autoplay prevented:', err));
@@ -1271,6 +1469,7 @@
         
         // Update UI
         function updateUI() {
+            // Update desktop UI
             p1Score.textContent = gameState.p1Score;
             p2Score.textContent = gameState.p2Score;
             p1Trash.textContent = gameState.p1Trash;
@@ -1278,6 +1477,15 @@
             timeValue.textContent = Math.max(0, Math.ceil(gameState.timeLeft));
             fishProtected.textContent = gameState.fishProtected;
             collisionCount.textContent = gameState.collisions;
+            
+            // Update mobile overlay UI
+            const gameplayP1Score = document.getElementById('gameplayP1Score');
+            const gameplayP2Score = document.getElementById('gameplayP2Score');
+            const gameplayTimeValue = document.getElementById('gameplayTimeValue');
+            
+            if (gameplayP1Score) gameplayP1Score.textContent = gameState.p1Score;
+            if (gameplayP2Score) gameplayP2Score.textContent = gameState.p2Score;
+            if (gameplayTimeValue) gameplayTimeValue.textContent = Math.max(0, Math.ceil(gameState.timeLeft));
         }
         
         // End Game
@@ -1396,6 +1604,10 @@
                 // Show button if either player won in multiplayer
                 nextLevelBtn.style.display = (gameState.winner === 1 || gameState.winner === 2) ? 'inline-block' : 'none';
             }
+            
+            // Hide mobile gameplay UI
+            const gameplayUI = document.getElementById('gameplayUI');
+            if (gameplayUI) gameplayUI.style.display = 'none';
             
             endScreen.style.display = 'block';
         }
@@ -1867,6 +2079,72 @@
             keys[e.key] = false;
         });
         
+        // Mobile Controls Event Handlers
+        // Single Player Mobile Controls
+        const mobileLeft = document.getElementById('mobileLeft');
+        const mobileRight = document.getElementById('mobileRight');
+        const mobileLaunch = document.getElementById('mobileLaunch');
+        
+        // P1 Multiplayer Mobile Controls
+        const mobileP1Left = document.getElementById('mobileP1Left');
+        const mobileP1Right = document.getElementById('mobileP1Right');
+        const mobileP1Launch = document.getElementById('mobileP1Launch');
+        
+        // P2 Multiplayer Mobile Controls
+        const mobileP2Left = document.getElementById('mobileP2Left');
+        const mobileP2Right = document.getElementById('mobileP2Right');
+        const mobileP2Launch = document.getElementById('mobileP2Launch');
+        
+        // Helper function to handle button press
+        function handleMobileButton(button, key, launchPlayer) {
+            if (!button) return;
+            
+            // Touch start / Mouse down
+            const startHandler = (e) => {
+                e.preventDefault();
+                if (launchPlayer && gameState.gameActive) {
+                    // Launch grabber
+                    if (launchPlayer === 1 && grabber1.state === 'swinging') {
+                        grabber1.state = 'extending';
+                    } else if (launchPlayer === 2 && grabber2.state === 'swinging') {
+                        grabber2.state = 'extending';
+                    }
+                } else {
+                    // Movement key
+                    keys[key] = true;
+                }
+            };
+            
+            // Touch end / Mouse up
+            const endHandler = (e) => {
+                e.preventDefault();
+                if (!launchPlayer) {
+                    keys[key] = false;
+                }
+            };
+            
+            button.addEventListener('touchstart', startHandler, { passive: false });
+            button.addEventListener('mousedown', startHandler);
+            button.addEventListener('touchend', endHandler, { passive: false });
+            button.addEventListener('mouseup', endHandler);
+            button.addEventListener('contextmenu', (e) => e.preventDefault());
+        }
+        
+        // Single Player Controls
+        handleMobileButton(mobileLeft, 'a', null);
+        handleMobileButton(mobileRight, 'd', null);
+        handleMobileButton(mobileLaunch, ' ', 1);
+        
+        // P1 Multiplayer Controls
+        handleMobileButton(mobileP1Left, 'a', null);
+        handleMobileButton(mobileP1Right, 'd', null);
+        handleMobileButton(mobileP1Launch, ' ', 1);
+        
+        // P2 Multiplayer Controls
+        handleMobileButton(mobileP2Left, 'ArrowLeft', null);
+        handleMobileButton(mobileP2Right, 'ArrowRight', null);
+        handleMobileButton(mobileP2Launch, 'Enter', 2);
+        
         // Handle continuous key presses for movement
         function handleInput() {
             if (!gameState.gameActive) return;
@@ -1993,90 +2271,6 @@
                 requestAnimationFrame(gameLoop);
             }
         };
-        
-        // Mobile Touch Controls
-        const mobileLeft = document.getElementById('mobileLeft');
-        const mobileRight = document.getElementById('mobileRight');
-        const mobileLaunch = document.getElementById('mobileLaunch');
-        
-        let mobileLeftPressed = false;
-        let mobileRightPressed = false;
-        
-        // Touch start events
-        mobileLeft.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            mobileLeftPressed = true;
-            keys['ArrowLeft'] = true;
-        });
-        
-        mobileRight.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            mobileRightPressed = true;
-            keys['ArrowRight'] = true;
-        });
-        
-        mobileLaunch.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            if (gameState.gameActive) {
-                if (gameMode === 'single' && grabber1.state === 'swinging') {
-                    grabber1.state = 'extending';
-                }
-            }
-        });
-        
-        // Touch end events
-        mobileLeft.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            mobileLeftPressed = false;
-            keys['ArrowLeft'] = false;
-        });
-        
-        mobileRight.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            mobileRightPressed = false;
-            keys['ArrowRight'] = false;
-        });
-        
-        // Mouse events for testing on desktop
-        mobileLeft.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            mobileLeftPressed = true;
-            keys['ArrowLeft'] = true;
-        });
-        
-        mobileRight.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            mobileRightPressed = true;
-            keys['ArrowRight'] = true;
-        });
-        
-        mobileLaunch.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            if (gameState.gameActive) {
-                if (gameMode === 'single' && grabber1.state === 'swinging') {
-                    grabber1.state = 'extending';
-                }
-            }
-        });
-        
-        mobileLeft.addEventListener('mouseup', function(e) {
-            e.preventDefault();
-            mobileLeftPressed = false;
-            keys['ArrowLeft'] = false;
-        });
-        
-        mobileRight.addEventListener('mouseup', function(e) {
-            e.preventDefault();
-            mobileRightPressed = false;
-            keys['ArrowRight'] = false;
-        });
-        
-        // Prevent context menu on mobile
-        document.addEventListener('contextmenu', function(e) {
-            if (e.target.classList.contains('mobileBtn')) {
-                e.preventDefault();
-            }
-        });
         
         // Handle canvas responsiveness
         function resizeCanvas() {
