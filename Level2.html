@@ -562,11 +562,12 @@
             if (assets[key] instanceof Image) {
                 assets[key].addEventListener('load', () => {
                     loadedAssets++;
+                    console.log(`✓ Loaded: ${key}`);
                     updateLoadingProgress();
                 });
                 
                 assets[key].addEventListener('error', (e) => {
-                    console.error(`Failed to load asset: ${key}`, e);
+                    console.error(`✗ FAILED to load asset: ${key} (${assets[key].src})`);
                     loadedAssets++; // Count as loaded to prevent stuck loading
                     updateLoadingProgress();
                 });
@@ -1680,7 +1681,7 @@
             ctx.clearRect(0, 0, 800, 600);
             
             // Background
-            if (assets.background.complete) {
+            if (assets.background.complete && assets.background.naturalWidth > 0) {
                 ctx.drawImage(assets.background, 0, 0, 800, 600);
             } else {
                 const gradient = ctx.createLinearGradient(0, 0, 0, 600);
@@ -1692,7 +1693,7 @@
             }
             
             // Clouds during rain
-            if (gameState.phase === 'raining' && assets.cloud.complete) {
+            if (gameState.phase === 'raining' && assets.cloud.complete && assets.cloud.naturalWidth > 0) {
                 clouds.forEach(cloud => {
                     ctx.globalAlpha = 0.75;
                     ctx.drawImage(assets.cloud, cloud.x, cloud.y, cloud.width, cloud.height);
@@ -1701,7 +1702,7 @@
             }
             
             // Lightning - Draw multiple bolts for better visibility
-            if (lightningFlash && assets.lightning.complete) {
+            if (lightningFlash && assets.lightning.complete && assets.lightning.naturalWidth > 0) {
                 // Flash the entire screen briefly
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
                 ctx.fillRect(0, 0, 800, 600);
@@ -1731,7 +1732,7 @@
             // Sewers (draw before water so they appear submerged)
             sewers.forEach(sewer => {
                 // Draw sewer image
-                if (assets.sewer.complete) {
+                if (assets.sewer.complete && assets.sewer.naturalWidth > 0) {
                     ctx.drawImage(assets.sewer, sewer.x - 27, sewer.y - 15, sewer.width, sewer.height);
                 } else {
                     // Fallback: Draw sewer grate with bars
@@ -1771,7 +1772,7 @@
                     binImage = bin.isOpen ? assets.binOpen : assets.bin;
                 }
                 
-                if (binImage && binImage.complete) {
+                if (binImage && binImage.complete && binImage.naturalWidth > 0) {
                     ctx.drawImage(binImage, drawX, bin.y, bin.width, bin.height);
                 } else {
                     ctx.fillStyle = '#7f8c8d';
@@ -1789,7 +1790,7 @@
             // Trash
             trashItems.forEach(trash => {
                 const img = trash.type === 'bottle' ? assets.bottle : assets.plastic;
-                if (img.complete) {
+                if (img.complete && img.naturalWidth > 0) {
                     ctx.drawImage(img, trash.x - 16, trash.y - 16, trash.width, trash.height);
                 } else {
                     ctx.fillStyle = trash.type === 'bottle' ? '#3498db' : '#e67e22';
@@ -1806,7 +1807,7 @@
             
             // Player 1
             const p1Sprite = getCharacterSprite(player1);
-            if (p1Sprite && p1Sprite.complete) {
+            if (p1Sprite && p1Sprite.complete && p1Sprite.naturalWidth > 0) {
                 // Draw sprite: x centered, y is feet position, sprite drawn upward (y - height)
                 ctx.drawImage(p1Sprite, player1.x - (player1.width / 2), player1.y - player1.height, player1.width, player1.height);
             } else {
@@ -1816,7 +1817,7 @@
             
             if (player1.carrying) {
                 const carryImg = player1.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
-                if (carryImg.complete) {
+                if (carryImg.complete && carryImg.naturalWidth > 0) {
                     ctx.drawImage(carryImg, player1.x - 16, player1.y - player1.height - 10, 32, 32);
                 }
             }
@@ -1824,7 +1825,7 @@
             // Player 2 (multiplayer only)
             if (gameMode === 'multiplayer') {
                 const p2Sprite = getCharacterSprite(player2);
-                if (p2Sprite && p2Sprite.complete) {
+                if (p2Sprite && p2Sprite.complete && p2Sprite.naturalWidth > 0) {
                     // Draw sprite: x centered, y is feet position, sprite drawn upward (y - height)
                     ctx.drawImage(p2Sprite, player2.x - (player2.width / 2), player2.y - player2.height, player2.width, player2.height);
                 } else {
@@ -1834,7 +1835,7 @@
                 
                 if (player2.carrying) {
                     const carryImg = player2.carrying.type === 'bottle' ? assets.bottle : assets.plastic;
-                    if (carryImg.complete) {
+                    if (carryImg.complete && carryImg.naturalWidth > 0) {
                         ctx.drawImage(carryImg, player2.x - 16, player2.y - player2.height - 10, 32, 32);
                     }
                 }
