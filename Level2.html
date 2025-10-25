@@ -539,7 +539,10 @@
             loadingBar.textContent = progress + '%';
             loadingText.textContent = `Loading assets... ${loadedAssets}/${totalAssets}`;
             
+            console.log(`Loading progress: ${loadedAssets}/${totalAssets} (${progress}%)`);
+            
             if (loadedAssets >= totalAssets) {
+                console.log('All assets loaded! Showing start screen...');
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                     // Show appropriate screen after loading
@@ -549,6 +552,7 @@
                         startScreen.style.display = 'flex';
                     }
                     initUI();
+                    console.log('Start screen should now be visible');
                 }, 500); // Small delay to show 100%
             }
         }
@@ -876,6 +880,8 @@
         }
         
         function initGame() {
+            console.log('initGame() called - mode:', gameMode);
+            
             gameState = {
                 phase: 'preRain',
                 preRainTimeLeft: PRE_RAIN_TIME,
@@ -958,6 +964,14 @@
             createSewers();
             createBins();
             createInitialTrash();
+            
+            console.log('Game initialized:', {
+                sewers: sewers.length,
+                bins: bins.length,
+                trashItems: trashItems.length,
+                player1: { x: player1.x, y: player1.y, isBoy: player1.isBoy },
+                player2: gameMode === 'multiplayer' ? { x: player2.x, y: player2.y, isBoy: player2.isBoy } : 'N/A'
+            });
             
             // Don't create clouds yet - they should spawn when rain starts
             clouds = [];
@@ -1927,18 +1941,25 @@
             const deltaTime = (currentTime - lastFrameTime) / 1000; // Convert to seconds
             lastFrameTime = currentTime;
             
-            if (gameState.gameActive) {
-                handleInput();
-                updateGame(deltaTime); // Pass delta time for frame-independent updates
-                updateUI();
+            try {
+                if (gameState.gameActive) {
+                    handleInput();
+                    updateGame(deltaTime); // Pass delta time for frame-independent updates
+                    updateUI();
+                }
+                drawGame();
+            } catch (error) {
+                console.error('Game loop error:', error);
+                // Continue the loop even if there's an error
             }
-            drawGame();
+            
             requestAnimationFrame(gameLoop);
         }
         
         // Event Listeners
         // Character selection (for single player mode only)
         selectBoy.addEventListener('click', () => {
+            console.log('Boy character selected');
             selectedCharacter = 'boy';
             player1.isBoy = true;
             characterScreen.style.display = 'none';
@@ -1946,6 +1967,7 @@
         });
         
         selectGirl.addEventListener('click', () => {
+            console.log('Girl character selected');
             selectedCharacter = 'girl';
             player1.isBoy = false;
             characterScreen.style.display = 'none';
@@ -1968,12 +1990,15 @@
         });
         
         startBtn.addEventListener('click', () => {
+            console.log('Start button clicked, gameMode:', gameMode);
             if (gameMode === 'single') {
                 // Show character selection for single player
                 startScreen.style.display = 'none';
                 characterScreen.style.display = 'flex';
+                console.log('Showing character selection screen');
             } else {
                 // Start game directly for multiplayer
+                console.log('Starting multiplayer game directly');
                 initGame();
             }
         });
@@ -2161,9 +2186,12 @@
             player1.x = Math.max(22, Math.min(778, player1.x));
         }
         
-        // Initialize UI and draw initial screen
+        // Initialize UI and start continuous rendering
         initUI();
-        drawGame();
+        
+        // Start game loop immediately for continuous rendering
+        // (game logic only runs when gameState.gameActive is true)
+        requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
