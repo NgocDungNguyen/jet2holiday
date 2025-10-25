@@ -634,6 +634,9 @@
         const successSound = new Audio('SFX/Success.mp3');
         successSound.volume = 1.0;
         
+        const catchSound = new Audio('SFX/Catch.mp3');
+        catchSound.volume = 0.8;
+        
         // Game State
         let gameState = {
             phase: 'preRain',
@@ -1474,6 +1477,10 @@
                                 player.carrying = null;
                                 if (playerNum === 1) gameState.p1Trash++;
                                 else gameState.p2Trash++;
+                                
+                                // Play catch sound effect
+                                catchSound.currentTime = 0;
+                                catchSound.play().catch(err => console.log('Catch sound error:', err));
                             }
                         }, 250); // 250ms delay for bow animation
                         return;
