@@ -670,12 +670,10 @@
             <h2 style="color: #3498db; font-size: 20px; margin: 10px 0;">Level 1: South China Sea Protection</h2>
             <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0; max-width: 600px; margin-left: auto; margin-right: auto;">
                 <p style="font-size: 16px; line-height: 1.6; margin-bottom: 10px;">
-                    🌍 <strong>THE CHALLENGE:</strong> Vietnam's coastal waters face severe plastic pollution.<br>
-                    Over <strong>280,000 tons of plastic waste</strong> enter the South China Sea annually,<br>
-                    threatening marine ecosystems and coastal communities.
+                    🌍 <strong>280,000 tons of plastic</strong> enter the South China Sea annually!
                 </p>
                 <p style="font-size: 14px; color: #3498db; margin-top: 15px;">
-                    ♻️ Your mission: Clean the ocean, protect marine life, and learn about sustainable practices!
+                    ♻️ Clean the ocean and protect marine life!
                 </p>
             </div>
             <div style="margin: 30px 0;">
@@ -1562,29 +1560,21 @@
             if (didFail || gameState.collisions > 5) {
                 // Show warning message with cycle diagram
                 endFact.innerHTML = `
-                    <strong>⚠️ ENVIRONMENTAL IMPACT - VIETNAM'S CHALLENGE:</strong><br>
-                    "Vietnam is among the top 10 countries contributing to ocean plastic pollution globally. 
-                    When fish ingest microplastics in the South China Sea Sea, these toxins enter our food chain. 
-                    Studies show Vietnamese seafood contains alarming levels of microplastics, 
-                    posing serious health risks to coastal communities."<br><br>
-                    <strong>🐟 THE DANGEROUS CYCLE:</strong><br>
-                    "An estimated <strong>74,000 tons of plastic</strong> enter Vietnam's coastal waters each year. 
-                    This affects 3,200+ marine species and ultimately impacts human health through seafood consumption.<br>
-                    <em>Source: World Bank & Vietnam Environment Administration, 2024</em>"
+                    <strong>⚠️ MARINE LIFE AT RISK:</strong><br>
+                    Vietnam is top 10 in ocean plastic pollution. Fish ingest microplastics, 
+                    entering our food chain and threatening coastal communities.<br><br>
+                    <strong>🐟 THE CYCLE:</strong> 74,000 tons of plastic enter Vietnam's waters yearly, 
+                    affecting 3,200+ marine species.<br>
+                    <em>Source: World Bank, 2024</em>
                 `;
                 cycleImageContainer.style.display = 'block';
             } else {
                 // Show positive message without cycle
                 endFact.innerHTML = `
-                    <strong>🌊 EXCELLENT WORK - MAKING A DIFFERENCE!</strong><br>
-                    "Vietnam has committed to reducing ocean plastic by 50% by 2025 and eliminating it by 2030. 
-                    Your cleanup efforts represent the important work being done by local communities, 
-                    environmental organizations, and government initiatives to protect our seas."<br><br>
-                    <strong>💪 REAL-WORLD IMPACT:</strong><br>
-                    "Every piece of plastic removed prevents harm to marine life. Organizations like Ocean Conservancy 
-                    have collected over 500,000 kg of waste from Vietnam's beaches in recent years. 
-                    Small actions create big change!<br>
-                    <em>Together, we can achieve a cleaner South China Sea! 🌍</em>"
+                    <strong>🌊 GREAT JOB!</strong><br>
+                    Vietnam aims to reduce ocean plastic 50% by 2025. Every piece removed helps!<br><br>
+                    <strong>💪 REAL IMPACT:</strong> 500,000+ kg collected from Vietnam's beaches in recent years.<br>
+                    <em>Small actions create big change! 🌍</em>
                 `;
                 cycleImageContainer.style.display = 'none';
             }
@@ -2025,33 +2015,29 @@
             startScreen.style.display = 'flex';
             
             if (gameMode === 'single') {
-                modeDescription.innerHTML = 'Welcome to <strong>SINGLE PLAYER MODE</strong>!<br>Help clean Vietnam\'s coastal waters and protect marine ecosystems!';
+                modeDescription.innerHTML = 'Welcome to <strong>SINGLE PLAYER MODE</strong>!';
                 controlsInfo.innerHTML = `
                     <div style="color: #3498db; margin: 10px 0;">
-                        <strong>🎮 CONTROLS:</strong> <span class="key">A</span> <span class="key">D</span> or <span class="key">←</span> <span class="key">→</span> Move Boat | <span class="key">SPACE</span> Launch Grabber
+                        <strong>🎮 CONTROLS:</strong> <span class="key">A</span> <span class="key">D</span> or <span class="key">←</span> <span class="key">→</span> Move | <span class="key">SPACE</span> Launch Grabber
                     </div>
                 `;
                 missionInfo.innerHTML = `
-                    <strong>📋 Challenge Objectives:</strong><br>
-                    ⏱️ Survive for 60 seconds of intense cleanup<br>
-                    ♻️ Collect as much trash as possible<br>
-                    ⚠️ Maintain at least 50 points to pass<br>
-                    🐠 Avoid hitting marine life (loses points!)<br><br>
-                    <em style="color: #f39c12;">⚠️ Hitting too many fish can cause instant failure!</em>
+                    <strong>🎯 GOAL:</strong><br>
+                    ⏱️ Survive 60 seconds<br>
+                    ♻️ Collect trash (avoid fish!)<br>
+                    ⚠️ Keep score above 50 to pass
                 `;
             } else {
-                modeDescription.innerHTML = 'Welcome to <strong>MULTIPLAYER MODE</strong>!<br>Compete to see who can clean more pollution from the South China Sea!';
+                modeDescription.innerHTML = 'Welcome to <strong>MULTIPLAYER MODE</strong>!';
                 controlsInfo.innerHTML = `
-                    <div style="color: #3498db; margin: 10px 0;"><strong>🎮 PLAYER 1:</strong> <span class="key">A</span> <span class="key">D</span> Move | <span class="key">SPACE</span> Launch</div>
-                    <div style="color: #e74c3c; margin: 10px 0;"><strong>🎮 PLAYER 2:</strong> <span class="key">←</span> <span class="key">→</span> Move | <span class="key">ENTER</span> Launch</div>
+                    <div style="color: #3498db; margin: 10px 0;"><strong>🎮 P1:</strong> <span class="key">A</span> <span class="key">D</span> Move | <span class="key">SPACE</span> Launch</div>
+                    <div style="color: #e74c3c; margin: 10px 0;"><strong>🎮 P2:</strong> <span class="key">←</span> <span class="key">→</span> Move | <span class="key">ENTER</span> Launch</div>
                 `;
                 missionInfo.innerHTML = `
-                    <strong>📋 Competition Rules:</strong><br>
-                    ⏱️ Survive for 60 seconds<br>
-                    ♻️ Collect the most trash to win<br>
-                    ⚠️ Must score at least 50 points to qualify<br>
-                    🐠 Avoid marine life - collisions hurt your score<br><br>
-                    <em style="color: #2ecc71;">🏆 Highest score above 50 wins!</em>
+                    <strong>🎯 GOAL:</strong><br>
+                    ⏱️ Survive 60 seconds<br>
+                    ♻️ Collect most trash to win<br>
+                    ⚠️ Score 50+ to qualify
                 `;
             }
         }

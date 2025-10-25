@@ -379,77 +379,47 @@
             <h2 id="modeTitle" style="color: #3498db; margin: 10px 0;">LEVEL 2: Urban Flood Challenge</h2>
             
             <div class="missionBox">
-                <p style="font-size: clamp(12px, 2vw, 16px); line-height: 1.6; margin-bottom: 10px;">
-                    🏙️ <strong>THE CHALLENGE:</strong> Hanoi faces severe urban flooding during monsoon season.<br>
-                    Blocked sewers from plastic waste cause streets to flood in minutes, affecting thousands of families.
-                </p>
-                <p style="font-size: clamp(11px, 1.8vw, 14px); color: #3498db; margin-top: 10px;">
-                    🚨 Heavy rain is approaching! Clear trash from sewers before flooding becomes catastrophic!
+                <p style="font-size: clamp(14px, 2vw, 18px); line-height: 1.6; margin-bottom: 10px;">
+                    🚨 <strong>Heavy rain is coming! Clear trash from sewers before the city floods!</strong>
                 </p>
             </div>
             
-            <div style="max-width: 700px; width: 90%; margin: 20px auto; background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
-                <h3 style="color: #2ecc71; font-size: clamp(14px, 2vw, 18px); margin-bottom: 12px;">📋 HOW TO PLAY:</h3>
+            <div style="max-width: 600px; width: 90%; margin: 20px auto; background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
+                <h3 style="color: #2ecc71; font-size: clamp(14px, 2vw, 18px); margin-bottom: 12px;">🎯 OBJECTIVE:</h3>
                 
-                <div style="text-align: left; font-size: clamp(11px, 1.6vw, 14px); line-height: 1.8;">
-                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">🎯 OBJECTIVE:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;">
-                        <li>Pick up plastic bottles and bags scattered near 3 sewer drains</li>
-                        <li>Drop them into recycling bins (left bin or trash car)</li>
-                        <li>Clear ALL trash from each sewer to unblock it ✓</li>
-                        <li>Prevent water level from reaching 50% (FLOOD LIMIT!)</li>
+                <div style="text-align: left; font-size: clamp(12px, 1.8vw, 15px); line-height: 1.8;">
+                    <ul style="margin: 5px 0 15px 20px;">
+                        <li>Pick up trash and drop into bins (left bin or trash car)</li>
+                        <li>Clear ALL trash from sewers to unblock them ✓</li>
+                        <li><strong style="color: #e74c3c;">Keep water below 50% or you LOSE!</strong></li>
                     </ul>
                     
-                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">⏱️ TIMELINE:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;">
-                        <li><strong>0-10 seconds:</strong> Preparation time - collect trash before rain starts</li>
-                        <li><strong>10-70 seconds:</strong> HEAVY RAIN! Water rises if sewers blocked</li>
-                        <li><strong>After 70 seconds:</strong> Mission complete if city saved!</li>
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #f39c12;">⏱️ TIMELINE:</strong></p>
+                    <ul style="margin: 5px 0 15px 20px;">
+                        <li>0-10s: Prep time (collect trash fast!)</li>
+                        <li>10-70s: HEAVY RAIN - water rises if sewers blocked!</li>
                     </ul>
                     
-                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">🎮 CONTROLS:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;" id="controlsList">
-                        <li><span class="key">A</span> or <span class="key">←</span> = Move LEFT</li>
-                        <li><span class="key">D</span> or <span class="key">→</span> = Move RIGHT</li>
-                        <li><span class="key">W</span> or <span class="key">↑</span> = JUMP (use underwater to swim up!)</li>
-                        <li><span class="key">SPACEBAR</span> = PICK UP trash (when near) / DROP into bin (when carrying)</li>
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #f39c12;">🎮 CONTROLS:</strong></p>
+                    <ul style="margin: 5px 0 15px 20px;" id="controlsList">
+                        <li><span class="key">A</span>/<span class="key">D</span> or <span class="key">←</span>/<span class="key">→</span> = Move</li>
+                        <li><span class="key">W</span> or <span class="key">↑</span> = JUMP (swim when underwater)</li>
+                        <li><span class="key">SPACEBAR</span> = Pick Up / Drop</li>
                     </ul>
                     
-                    <p style="margin: 8px 0;"><strong style="color: #e74c3c;">⚠️ IMPORTANT MECHANICS:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;">
-                        <li><strong>Water Rises:</strong> Blocked sewers cause +0.8% water/sec. Clear sewers drain -0.4% water/sec!</li>
-                        <li><strong>Stamina System:</strong> Running drains stamina. Rest to recover. Low stamina = slower movement!</li>
-                        <li><strong>Drowning Risk:</strong> If water goes 1.2x above your head for 5 seconds = DROWN!</li>
-                        <li><strong>Underwater Physics:</strong> Jumping is 60% weaker, falling is slower, movement is 50% slower</li>
-                        <li><strong>Bow Animation:</strong> Character bows when picking up/dropping (uses 2 stamina)</li>
-                        <li><strong>Bins Float:</strong> When water rises, bins float up! Jump to reach them!</li>
-                    </ul>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #2ecc71;">✅ VICTORY CONDITIONS:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;">
-                        <li>Clear ALL 3 sewers (12 trash items per sewer = 36 total)</li>
-                        <li>Keep water level below 50% until time runs out</li>
-                        <li>Survive without drowning!</li>
-                    </ul>
-                    
-                    <p style="margin: 8px 0;"><strong style="color: #e74c3c;">💔 FAILURE CONDITIONS:</strong></p>
-                    <ul style="margin: 5px 0 12px 20px;">
-                        <li>Water reaches 50% or higher (FLOOD!)</li>
-                        <li>You drown (underwater too long)</li>
-                        <li>Time runs out with sewers still blocked</li>
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #e74c3c;">⚠️ KEY TIPS:</strong></p>
+                    <ul style="margin: 5px 0 0 20px;">
+                        <li>Bins float when water rises - jump to reach them!</li>
+                        <li>Underwater 5+ seconds = DROWN! Watch your air!</li>
+                        <li>Clear sewers FAST - they drain water when unblocked ✓</li>
                     </ul>
                 </div>
             </div>
             
-            <p style="color: #f39c12; font-size: clamp(12px, 1.8vw, 15px); margin: 15px auto; max-width: 650px;">
-                <strong>💡 PRO TIP:</strong> Clear sewers closest to each other first! Once a sewer is unblocked ✓, water starts draining. Work FAST during the 10-second prep time!
-            </p>
-            
             <button id="startBtn" style="font-size: clamp(14px, 2.5vw, 18px); padding: 15px 40px; margin: 10px;">🚀 START MISSION</button>
             
             <div class="impactBox">
-                <strong>🌍 REAL IMPACT:</strong> 80% of Hanoi's urban flooding is caused by blocked drainage systems.<br>
-                Proper waste management can prevent disasters and protect communities!
+                <strong>🌍 REAL IMPACT:</strong> 80% of Hanoi's flooding is caused by blocked drains. Clear sewers save lives!
             </div>
         </div>
     </div>
@@ -1576,13 +1546,11 @@
                     
                     endFact.innerHTML = `
                         <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
-                        <strong>🌍 HANOI'S FLOOD PREVENTION SUCCESS:</strong><br>
-• Hanoi experiences <strong>severe flooding during monsoon season</strong> (May-October)<br>
-• Plastic waste in sewers is identified as a <strong>major cause of urban flooding</strong><br>
-• The drainage system, built during French colonial era, struggles with modern waste volume<br>
-• A single blocked sewer can cause flooding across <strong>multiple city blocks</strong><br>
-• Citizens working together to maintain clear sewers have reduced flood incidents by 40%<br>
-<em style="color: #2ecc71;">🎉 You've demonstrated effective community disaster prevention!</em>`;
+                        <strong>🌍 HANOI SAVED!</strong><br>
+• 80% of Hanoi's flooding is caused by blocked sewers<br>
+• One blocked drain can flood multiple city blocks<br>
+• Clear sewers reduce flood incidents by 40%<br>
+<em style="color: #2ecc71;">You prevented disaster! 🎉</em>`;
                     
                     // Show Next Level button on victory
                     nextLevelBtn.style.display = 'inline-block';
@@ -1597,19 +1565,15 @@
                     `;
                     
                     if (gameState.waterLevel >= MAX_WATER_LEVEL) {
-                        endFact.innerHTML = `<strong>⚠️ FLOOD DISASTER - HANOI'S REALITY:</strong><br>
-• Urban flooding in Hanoi displaces <strong>thousands of families</strong> each year during monsoon season<br>
-• Blocked sewers can turn streets into dangerous rivers in <strong>under 15 minutes</strong><br>
-• Studies show <strong>80% of urban flooding</strong> could be prevented with proper waste management<br>
-• Vietnam loses millions of USD annually due to flood damage from blocked drainage<br>
-<em style="color: #3498db;">Source: Hanoi Department of Natural Resources & Environment, 2024</em>`;
+                        endFact.innerHTML = `<strong>⚠️ FLOODED!</strong><br>
+• Blocked sewers turn streets into rivers in 15 minutes<br>
+• 80% of flooding is preventable with proper waste management<br>
+<em style="color: #e74c3c;">Clear sewers faster next time!</em>`;
                     } else {
-                        endFact.innerHTML = `<strong>⏰ TIME MANAGEMENT - LESSONS FROM HANOI:</strong><br>
-• Quick action is crucial during heavy rain events in urban areas<br>
-• Hanoi receives over <strong>1,600mm of rain annually</strong>, mostly during monsoon season (May-October)<br>
-• Communities that prepare infrastructure <strong>before</strong> rain have 70% fewer flood issues<br>
-• Regular sewer maintenance saves lives and property<br>
-<em style="color: #2ecc71;">Prevention is better than emergency response!</em>`;
+                        endFact.innerHTML = `<strong>⏰ TOO SLOW!</strong><br>
+• Quick action is crucial during heavy rain<br>
+• Prepare before the rain starts!<br>
+<em style="color: #f39c12;">Try again and work faster!</em>`;
                     }
                 }
             } else {
@@ -1650,12 +1614,10 @@
                     
                     endFact.innerHTML = `
                         <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
-                        <strong>🏆 EXCELLENT TEAMWORK - HANOI SAVED!</strong><br>
-• Working together, you prevented a major flood disaster in Hanoi!<br>
-• <strong>${totalTrashCleared} pieces of plastic waste</strong> removed from critical sewer systems<br>
-• Every community member's effort counts in disaster prevention<br>
-• Real Hanoi cleanup initiatives have cleared over <strong>200 tons</strong> of waste from drainage systems in 2024<br>
-<em style="color: #3498db;">🌍 Community action creates resilient cities!</em>`;
+                        <strong>🏆 EXCELLENT TEAMWORK!</strong><br>
+• ${totalTrashCleared} pieces removed from sewers - Hanoi saved!<br>
+• Real Hanoi cleanups cleared 200+ tons in 2024<br>
+<em style="color: #3498db;">🌍 Community action saves cities!</em>`;
                     
                     // Show Next Level button on multiplayer victory
                     nextLevelBtn.style.display = 'inline-block';
@@ -1671,11 +1633,9 @@
                     
                     endFact.innerHTML = `
                         <img src="assets/level2/sew.jpg" alt="Hanoi Flood Prevention" style="width: 100%; max-width: 400px; border-radius: 8px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
-                        <strong>🤝 PERFECT BALANCE - COMMUNITY SUCCESS!</strong><br>
-• Both players contributed equally to protecting Hanoi from flooding!<br>
-• <strong>${totalTrashCleared} pieces of trash</strong> cleared together from drainage systems<br>
-• Collaborative disaster prevention reflects real community resilience in Vietnam<br>
-<em style="color: #2ecc71;">Together, we build flood-resistant cities! 💪</em>`;
+                        <strong>🤝 PERFECT TEAMWORK!</strong><br>
+• ${totalTrashCleared} pieces cleared together - Hanoi saved!<br>
+<em style="color: #2ecc71;">Together we build flood-proof cities! 💪</em>`;
                     
                     // Show Next Level button on tie victory
                     nextLevelBtn.style.display = 'inline-block';
@@ -1689,10 +1649,10 @@
                         <p><strong>💧 Water Level:</strong> ${Math.floor(gameState.waterLevel)}% - TOO HIGH!</p>
                     `;
                     
-                    endFact.innerHTML = `<strong>⚠️ The Flood Won!</strong><br>
-• You needed to work faster to clear the sewers<br>
-• Urban flooding is a serious threat requiring quick action<br>
-• Try again and coordinate better to save the city!`;
+                    endFact.innerHTML = `<strong>⚠️ FLOODED!</strong><br>
+• Work faster to clear sewers before water rises<br>
+• Coordinate better to save the city!<br>
+<em style="color: #e74c3c;">Try again!</em>`;
                 }
             }
             
