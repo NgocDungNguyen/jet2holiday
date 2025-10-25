@@ -407,8 +407,8 @@
         assets.medic.src = "assets/level3/medic.png";
         assets.food.src = "assets/level3/FOOD.png";
         assets.bottle.src = "assets/level3/Bottle.png";
-        assets.cloud.src = "assets/level3/Cloud.png";
-        assets.lightning.src = "assets/level3/Lightning.png";
+        assets.cloud.src = "assets/level2/Cloud.png";
+        assets.lightning.src = "assets/level2/Lightning.png";
         
         // UI Elements
         const timeValue = document.getElementById('timeValue');
@@ -990,7 +990,7 @@
             ctx.fillRect(0, 0, canvas.width, 400);
             
             // Draw clouds
-            if (assets.cloud.complete) {
+            if (assets.cloud.complete && assets.cloud.naturalWidth > 0) {
                 clouds.forEach(cloud => {
                     ctx.globalAlpha = 0.7;
                     ctx.drawImage(assets.cloud, cloud.x, cloud.y, cloud.width, cloud.height);
@@ -999,7 +999,7 @@
             }
             
             // Lightning flash
-            if (lightningFlash && assets.lightning.complete) {
+            if (lightningFlash && assets.lightning.complete && assets.lightning.naturalWidth > 0) {
                 // Flash the entire screen
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.fillRect(0, 0, 800, 600);
@@ -1025,12 +1025,12 @@
             });
             
             // Draw mountain background (above water) - original size
-            if (assets.mountain.complete) {
+            if (assets.mountain.complete && assets.mountain.naturalWidth > 0) {
                 ctx.drawImage(assets.mountain, 30, 0, 240, 200); // Original size
             }
             
             // Draw base (above water) - original size
-            if (assets.base.complete) {
+            if (assets.base.complete && assets.base.naturalWidth > 0) {
                 ctx.drawImage(assets.base, 80, 150, 140, 60); // Original size
             }
             
@@ -1066,7 +1066,7 @@
             
             // Draw houses
             houses.forEach((h, i) => {
-                if (assets.house.complete) {
+                if (assets.house.complete && assets.house.naturalWidth > 0) {
                     ctx.drawImage(assets.house, h.x, h.y, h.width, h.height);
                 }
                 
@@ -1088,13 +1088,13 @@
                 
                 // Draw family on roof
                 const f = families[i];
-                if (assets.family.complete) {
+                if (assets.family.complete && assets.family.naturalWidth > 0) {
                     ctx.drawImage(assets.family, f.x, f.y, f.width, f.height);
                 }
             });
             
             // Draw drone 1
-            if (assets.drone.complete) {
+            if (assets.drone.complete && assets.drone.naturalWidth > 0) {
                 ctx.drawImage(assets.drone, drone.x, drone.y, drone.width, drone.height);
             }
             
@@ -1117,7 +1117,7 @@
             
             // Draw drone 2 (multiplayer only)
             if (gameMode === 'multiplayer') {
-                if (assets.drone.complete) {
+                if (assets.drone.complete && assets.drone.naturalWidth > 0) {
                     ctx.drawImage(assets.drone, drone2.x, drone2.y, drone2.width, drone2.height);
                 }
                 
