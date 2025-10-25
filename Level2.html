@@ -388,16 +388,62 @@
                 </p>
             </div>
             
-            <p id="missionDesc" style="max-width: 650px; width: 90%; margin: 15px auto; font-size: clamp(12px, 1.8vw, 15px); line-height: 1.6;">
-                <strong>⏱️ You have 3 seconds preparation time before the rain starts!</strong><br>
-                Move plastic waste to recycling bins to clear sewers and prevent dangerous flooding.<br>
-                <em style="color: #f39c12;">⚠️ Water level rises when sewers are blocked! Keep drains clear to save the city!</em>
-            </p>
-            
-            <div style="margin: 15px auto; font-size: clamp(11px, 1.8vw, 14px);" id="controlsDisplay">
-                <span class="key">A/D</span> or <span class="key">←/→</span> = Move
-                <span class="key" style="margin-left: 15px;">SPACEBAR</span> = Pick Up / Drop
+            <div style="max-width: 700px; width: 90%; margin: 20px auto; background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
+                <h3 style="color: #2ecc71; font-size: clamp(14px, 2vw, 18px); margin-bottom: 12px;">📋 HOW TO PLAY:</h3>
+                
+                <div style="text-align: left; font-size: clamp(11px, 1.6vw, 14px); line-height: 1.8;">
+                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">🎯 OBJECTIVE:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;">
+                        <li>Pick up plastic bottles and bags scattered near 3 sewer drains</li>
+                        <li>Drop them into recycling bins (left bin or trash car)</li>
+                        <li>Clear ALL trash from each sewer to unblock it ✓</li>
+                        <li>Prevent water level from reaching 50% (FLOOD LIMIT!)</li>
+                    </ul>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">⏱️ TIMELINE:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;">
+                        <li><strong>0-10 seconds:</strong> Preparation time - collect trash before rain starts</li>
+                        <li><strong>10-70 seconds:</strong> HEAVY RAIN! Water rises if sewers blocked</li>
+                        <li><strong>After 70 seconds:</strong> Mission complete if city saved!</li>
+                    </ul>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #f39c12;">🎮 CONTROLS:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;" id="controlsList">
+                        <li><span class="key">A</span> or <span class="key">←</span> = Move LEFT</li>
+                        <li><span class="key">D</span> or <span class="key">→</span> = Move RIGHT</li>
+                        <li><span class="key">W</span> or <span class="key">↑</span> = JUMP (use underwater to swim up!)</li>
+                        <li><span class="key">SPACEBAR</span> = PICK UP trash (when near) / DROP into bin (when carrying)</li>
+                    </ul>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #e74c3c;">⚠️ IMPORTANT MECHANICS:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;">
+                        <li><strong>Water Rises:</strong> Blocked sewers cause +0.8% water/sec. Clear sewers drain -0.4% water/sec!</li>
+                        <li><strong>Stamina System:</strong> Running drains stamina. Rest to recover. Low stamina = slower movement!</li>
+                        <li><strong>Drowning Risk:</strong> If water goes 1.2x above your head for 5 seconds = DROWN!</li>
+                        <li><strong>Underwater Physics:</strong> Jumping is 60% weaker, falling is slower, movement is 50% slower</li>
+                        <li><strong>Bow Animation:</strong> Character bows when picking up/dropping (uses 2 stamina)</li>
+                        <li><strong>Bins Float:</strong> When water rises, bins float up! Jump to reach them!</li>
+                    </ul>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #2ecc71;">✅ VICTORY CONDITIONS:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;">
+                        <li>Clear ALL 3 sewers (12 trash items per sewer = 36 total)</li>
+                        <li>Keep water level below 50% until time runs out</li>
+                        <li>Survive without drowning!</li>
+                    </ul>
+                    
+                    <p style="margin: 8px 0;"><strong style="color: #e74c3c;">💔 FAILURE CONDITIONS:</strong></p>
+                    <ul style="margin: 5px 0 12px 20px;">
+                        <li>Water reaches 50% or higher (FLOOD!)</li>
+                        <li>You drown (underwater too long)</li>
+                        <li>Time runs out with sewers still blocked</li>
+                    </ul>
+                </div>
             </div>
+            
+            <p style="color: #f39c12; font-size: clamp(12px, 1.8vw, 15px); margin: 15px auto; max-width: 650px;">
+                <strong>💡 PRO TIP:</strong> Clear sewers closest to each other first! Once a sewer is unblocked ✓, water starts draining. Work FAST during the 10-second prep time!
+            </p>
             
             <button id="startBtn" style="font-size: clamp(14px, 2.5vw, 18px); padding: 15px 40px; margin: 10px;">🚀 START MISSION</button>
             
@@ -740,32 +786,31 @@
         
         // Initialize UI based on game mode
         function initUI() {
+            const controlsList = document.getElementById('controlsList');
+            
             if (gameMode === 'multiplayer') {
                 modeTitle.textContent = 'LEVEL 2 - MULTIPLAYER MODE';
-                missionDesc.innerHTML = `
-                    Welcome to Hanoi! Heavy rain is coming to the city streets.<br>
-                    <strong>Player 1 (Boy) vs Player 2 (Girl)</strong><br>
-                    Compete to clear the most trash and save the city!<br><br>
-                    <strong>⏱️ You have 10 seconds before the rain starts!</strong>
-                `;
-                controlsDisplay.innerHTML = `
-                    P1: <span class="key">A/D</span> + <span class="key">SPACE</span> |
-                    P2: <span class="key">←/→</span> + <span class="key">ENTER</span>
-                `;
+                
+                // Update controls list for multiplayer
+                if (controlsList) {
+                    controlsList.innerHTML = `
+                        <li><strong style="color: #3498db;">PLAYER 1 (BOY):</strong></li>
+                        <li><span class="key">A</span> / <span class="key">D</span> = Move LEFT/RIGHT</li>
+                        <li><span class="key">W</span> = JUMP / Swim Up</li>
+                        <li><span class="key">SPACEBAR</span> = Pick Up / Drop Trash</li>
+                        <li style="margin-top: 8px;"><strong style="color: #e91e63;">PLAYER 2 (GIRL):</strong></li>
+                        <li><span class="key">←</span> / <span class="key">→</span> = Move LEFT/RIGHT</li>
+                        <li><span class="key">↑</span> = JUMP / Swim Up</li>
+                        <li><span class="key">ENTER</span> = Pick Up / Drop Trash</li>
+                    `;
+                }
+                
                 player2UI.style.display = 'block';
-                singleControls.style.display = 'none';
-                multiControls.style.display = 'inline';
             } else {
                 modeTitle.textContent = 'LEVEL 2 - SINGLE PLAYER';
-                missionDesc.innerHTML = `
-                    Welcome to Hanoi! Heavy rain is coming to the city streets.<br>
-                    Clear trash from sewer drains before flooding becomes dangerous.<br><br>
-                    <strong>⏱️ You have 10 seconds before the rain starts!</strong><br>
-                    Move trash to bins to clear sewers and prevent flooding.
-                `;
+                
+                // Controls list already set in HTML for single player
                 player2UI.style.display = 'none';
-                singleControls.style.display = 'inline';
-                multiControls.style.display = 'none';
             }
         }
         
