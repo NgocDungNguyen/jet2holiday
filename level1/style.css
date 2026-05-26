@@ -1,0 +1,561 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    --accent-blue:   #3498db;
+    --accent-green:  #2ecc71;
+    --accent-red:    #e74c3c;
+    --accent-orange: #f39c12;
+    --panel-bg:  rgba(0, 0, 0, 0.8);
+    --screen-bg: rgba(0, 0, 0, 0.92);
+    --touch-btn-size:           60px;
+    --touch-btn-size-landscape: 52px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-gradient);
+    font-family: 'Courier New', monospace;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+    image-rendering: pixelated;
+    padding: 10px;
+    touch-action: manipulation;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#topUI {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#canvasWrapper {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    touch-action: none;
+}
+
+#gameCanvas {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: linear-gradient(to bottom, #1e3c72, #2a5298);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    image-rendering: pixelated;
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+#uiOverlay {
+    display: none;
+}
+
+.uiPanel {
+    background: var(--panel-bg);
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid var(--accent-blue);
+    font-size: 14px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.uiPanel strong {
+    color: var(--accent-blue);
+}
+
+.uiPanel > div {
+    margin: 4px 0;
+}
+
+#controls {
+    background: var(--panel-bg);
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid var(--accent-green);
+    text-align: center;
+    font-size: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* Mobile Controls */
+#mobileControls {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 90vw;
+}
+
+#mobileControlsP1, #mobileControlsP2 {
+    display: none;
+    position: fixed;
+    bottom: 10px;
+    z-index: 150;
+    gap: 8px;
+    align-items: center;
+}
+
+#mobileControlsP1 { left: 10px; }
+#mobileControlsP2 { right: 10px; }
+
+.mobileBtn {
+    background: rgba(52, 152, 219, 0.85);
+    border: 3px solid var(--accent-blue);
+    border-radius: 50%;
+    width: var(--touch-btn-size);
+    height: var(--touch-btn-size);
+    font-size: 22px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobileBtn:active {
+    transform: scale(0.93);
+    background: rgba(41, 128, 185, 0.95);
+}
+
+.mobileBtn.launch {
+    width: 80px;
+    height: 80px;
+    font-size: 11px;
+    background: rgba(46, 204, 113, 0.85);
+    border-color: var(--accent-green);
+}
+
+.mobileBtn.launch:active {
+    background: rgba(39, 174, 96, 0.95);
+}
+
+.mobileBtn.p2 {
+    background: rgba(231, 76, 60, 0.85);
+    border-color: var(--accent-red);
+}
+
+.mobileBtn.p2:active {
+    background: rgba(192, 57, 43, 0.95);
+}
+
+.mobileBtn.p2.launch {
+    background: rgba(241, 196, 15, 0.85);
+    border-color: var(--accent-orange);
+}
+
+.mobileBtn.p2.launch:active {
+    background: rgba(243, 156, 18, 0.95);
+}
+
+#endScreen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--screen-bg);
+    backdrop-filter: blur(4px);
+    padding: 20px;
+    border-radius: 15px;
+    border: 4px solid var(--accent-red);
+    text-align: center;
+    display: none;
+    max-width: 90vw;
+    width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+#endScreen h2 {
+    color: var(--accent-red);
+    margin-bottom: 15px;
+    font-size: clamp(20px, 5vw, 28px);
+}
+
+#endStats {
+    margin: 15px 0;
+    font-size: clamp(14px, 3.5vw, 18px);
+}
+
+.factBox {
+    background: rgba(52, 152, 219, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border-left: 4px solid var(--accent-blue);
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+}
+
+#cycleImageContainer {
+    background: rgba(231, 76, 60, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 2px solid var(--accent-red);
+}
+
+#cycleImageContainer img {
+    image-rendering: auto;
+}
+
+button {
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    margin: 8px;
+    border-radius: 6px;
+    font-size: clamp(14px, 3vw, 16px);
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    min-height: 44px;
+}
+
+button:hover, button:active {
+    background: #27ae60;
+    transform: scale(1.05);
+}
+
+#modeScreen, #startScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-gradient);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    text-align: center;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#modeScreen h1, #startScreen h1 {
+    font-size: clamp(32px, 8vw, 48px);
+    color: var(--accent-blue);
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+#modeScreen h2 {
+    font-size: clamp(20px, 5vw, 28px);
+    color: var(--accent-blue);
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+#modeScreen p, #startScreen p {
+    font-size: clamp(14px, 3.5vw, 18px);
+    max-width: 600px;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    padding: 0 10px;
+}
+
+.key {
+    display: inline-block;
+    background: #34495e;
+    padding: 4px 8px;
+    margin: 0 3px;
+    border-radius: 4px;
+    border: 1px solid #7f8c8d;
+    font-family: monospace;
+    font-size: clamp(10px, 2.5vw, 14px);
+}
+
+.progressBar {
+    width: 100%;
+    max-width: 200px;
+    height: 20px;
+    background: #34495e;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px auto;
+    border: 2px solid #2c3e50;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(to right, var(--accent-red), var(--accent-orange), var(--accent-green));
+    transition: width 0.3s;
+}
+
+.pixel-art {
+    image-rendering: pixelated;
+}
+
+/* ============================================================
+   RESPONSIVE — TABLET (max-width: 900px)
+============================================================ */
+@media (max-width: 900px) {
+    #topUI {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .uiPanel {
+        min-width: 100%;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    #controls {
+        font-size: 11px;
+        padding: 10px 12px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE PORTRAIT (max-width: 768px)
+============================================================ */
+@media (max-width: 768px) {
+    body {
+        padding: 5px;
+        align-items: flex-start;
+    }
+
+    #gameContainer {
+        gap: 8px;
+    }
+
+    #gameCanvas {
+        max-height: 55vh;
+    }
+
+    #mobileControls {
+        display: flex !important;
+        bottom: 10px;
+        gap: 10px;
+    }
+
+    #controls {
+        display: none;
+    }
+
+    .uiPanel {
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+
+    #endScreen {
+        padding: 15px;
+        max-width: 95vw;
+    }
+
+    .factBox {
+        font-size: 12px;
+        padding: 12px;
+    }
+
+    button {
+        padding: 10px 20px;
+        margin: 6px;
+        font-size: 14px;
+    }
+
+    #cycleImageContainer { padding: 10px; }
+    #cycleImageContainer div { font-size: 11px; }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL MOBILE (max-width: 480px)
+============================================================ */
+@media (max-width: 480px) {
+    #topUI { gap: 5px; }
+
+    .uiPanel {
+        font-size: 10px;
+        padding: 6px 8px;
+    }
+
+    .uiPanel > div { margin: 2px 0; }
+
+    .mobileBtn {
+        width: 54px;
+        height: 54px;
+        font-size: 20px;
+    }
+
+    .mobileBtn.launch {
+        width: 68px;
+        height: 68px;
+        font-size: 10px;
+    }
+
+    #mobileControls {
+        gap: 8px;
+        bottom: 5px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — LANDSCAPE PHONE (max-height: 600px + landscape)
+============================================================ */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        padding: 0;
+        overflow: hidden;
+    }
+
+    #gameContainer {
+        gap: 0;
+        max-width: 100%;
+    }
+
+    #topUI { display: none; }
+
+    #canvasWrapper {
+        max-width: 100%;
+        margin: 0;
+    }
+
+    #gameCanvas {
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+
+    #controls { display: none; }
+
+    #mobileControls {
+        display: flex !important;
+        bottom: 15px;
+        gap: 18px;
+    }
+
+    #mobileControlsP1 {
+        display: flex;
+        left: 15px;
+        bottom: 15px;
+    }
+
+    #mobileControlsP2 {
+        display: flex;
+        right: 15px;
+        bottom: 15px;
+    }
+
+    .mobileBtn {
+        width: var(--touch-btn-size-landscape);
+        height: var(--touch-btn-size-landscape);
+        font-size: 20px;
+        border-width: 2px;
+    }
+
+    .mobileBtn.launch {
+        width: 66px;
+        height: 66px;
+        font-size: 10px;
+    }
+
+    #gameplayUI {
+        position: fixed;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-size: 11px;
+        z-index: 100;
+        display: flex;
+        gap: 15px;
+        border: 1px solid rgba(52, 152, 219, 0.5);
+        white-space: nowrap;
+    }
+
+    #endScreen {
+        max-height: 92vh;
+        max-width: 80vw;
+        padding: 14px;
+        overflow-y: auto;
+    }
+
+    #endScreen h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    #endStats {
+        font-size: 13px;
+        margin: 8px 0;
+    }
+
+    .factBox {
+        font-size: 11px;
+        padding: 10px;
+        margin: 8px 0;
+    }
+
+    button {
+        padding: 8px 14px;
+        font-size: 12px;
+        margin: 4px;
+    }
+
+    #modeScreen, #startScreen {
+        padding: 12px;
+        overflow-y: auto;
+        justify-content: flex-start;
+        padding-top: 16px;
+    }
+
+    #modeScreen h1, #startScreen h1 {
+        font-size: 26px;
+        margin-bottom: 8px;
+    }
+
+    #modeScreen h2 {
+        font-size: 17px;
+        margin-bottom: 10px;
+    }
+
+    #modeScreen p, #startScreen p {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+}

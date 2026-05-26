@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Flood Rescue - Level 3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Compact landscape overlay (shown only when topUI is hidden) -->
+        <div id="gameplayUI3" style="display:none;">
+            <div>⏱️ <span id="gameplay3TimeVal">60</span>s</div>
+            <div>📦 <span id="gameplay3DeliveryVal">0</span>/15</div>
+            <div style="color:#3498db;">🔋 P1: <span id="gameplay3BatVal">100</span>%</div>
+            <div id="gameplay3P2Info" style="color:#e74c3c;display:none;">🔋 P2: <span id="gameplay3P2Bat">100</span>%</div>
+        </div>
+
+        <!-- Top UI Panel - Outside Canvas -->
+        <div id="topUI">
+            <div class="uiPanel">
+                <div><strong>⏱️ TIME:</strong> <span id="timeValue">60</span>s</div>
+                <div><strong>📦 DELIVERIES:</strong> <span id="deliveriesCount">0</span>/15</div>
+                <div><strong>🏠 HOUSES:</strong> <span id="housesSaved">0</span>/5</div>
+            </div>
+
+            <div class="uiPanel" style="text-align: center;">
+                <div><strong id="levelTitle">LEVEL 3: FLOOD RESCUE DRONE</strong></div>
+                <div class="progressBar">
+                    <div class="progressFill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div>MISSION: <span id="missionProgress">0</span>% COMPLETE</div>
+            </div>
+
+            <div class="uiPanel" id="singlePlayerStats">
+                <div><strong>🔋 BATTERY:</strong> <span id="batteryValue">100</span>%</div>
+                <div><strong>📦 CARGO:</strong> <span id="cargoStatus">EMPTY</span></div>
+                <div><strong>👨‍👩‍👧‍👦 FAMILIES:</strong> <span id="familiesSaved">0</span>/5</div>
+            </div>
+
+            <!-- Multiplayer Stats - Hidden by default -->
+            <div class="uiPanel" id="player1Stats" style="display: none; background: rgba(52, 152, 219, 0.2); border-color: #3498db;">
+                <div><strong style="color: #3498db;">👦 PLAYER 1</strong></div>
+                <div><strong>🔋 Battery:</strong> <span id="p1Battery">100</span>%</div>
+                <div><strong>📦 Deliveries:</strong> <span id="p1Deliveries">0</span></div>
+                <div><strong>👨‍👩‍👧‍👦 Families:</strong> <span id="p1Families">0</span></div>
+            </div>
+
+            <div class="uiPanel" id="player2Stats" style="display: none; background: rgba(231, 76, 60, 0.2); border-color: #e74c3c;">
+                <div><strong style="color: #e74c3c;">👧 PLAYER 2</strong></div>
+                <div><strong>🔋 Battery:</strong> <span id="p2Battery">100</span>%</div>
+                <div><strong>📦 Deliveries:</strong> <span id="p2Deliveries">0</span></div>
+                <div><strong>👨‍👩‍👧‍👦 Families:</strong> <span id="p2Families">0</span></div>
+            </div>
+        </div>
+
+        <!-- Canvas Wrapper -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+
+        <!-- Controls - Outside Canvas -->
+        <div id="controls">
+            <span id="controlsText">
+                <span class="key">WASD</span> or <span class="key">↑←↓→</span> Fly Drone | <span class="key">SPACEBAR</span> Pick Up/Drop Items
+            </span>
+        </div>
+
+        <!-- Single player touch controls (D-pad + drop) -->
+        <div id="mobileControls3">
+            <div class="mobileBtn" id="mob3Left">◄</div>
+            <div class="mobileBtn" id="mob3Up">▲</div>
+            <div class="mobileBtn" id="mob3Down">▼</div>
+            <div class="mobileBtn" id="mob3Right">►</div>
+            <div class="mobileBtn action" id="mob3Action">DROP</div>
+        </div>
+
+        <!-- Multiplayer P1 touch controls (left side) -->
+        <div id="mobileControls3P1">
+            <div class="mobileBtn" id="mob3P1Left">◄</div>
+            <div class="mobileBtn" id="mob3P1Up">▲</div>
+            <div class="mobileBtn" id="mob3P1Down">▼</div>
+            <div class="mobileBtn" id="mob3P1Right">►</div>
+            <div class="mobileBtn action" id="mob3P1Action">DROP</div>
+        </div>
+
+        <!-- Multiplayer P2 touch controls (right side) -->
+        <div id="mobileControls3P2">
+            <div class="mobileBtn p2" id="mob3P2Left">◄</div>
+            <div class="mobileBtn p2" id="mob3P2Up">▲</div>
+            <div class="mobileBtn p2" id="mob3P2Down">▼</div>
+            <div class="mobileBtn p2" id="mob3P2Right">►</div>
+            <div class="mobileBtn p2 action" id="mob3P2Action">DROP</div>
+        </div>
+    </div>
+
+    <div id="endScreen">
+        <h2 id="endTitle">RESCUE COMPLETE!</h2>
+        <div id="endStats">
+            <div>Time Remaining: <span id="finalTime">0</span>s</div>
+            <div>Deliveries Made: <span id="finalDeliveries">0</span>/15</div>
+            <div>Houses Saved: <span id="finalHouses">0</span>/5</div>
+            <div>Families Rescued: <span id="finalFamilies">0</span>/5</div>
+        </div>
+        <div class="factBox" id="endFact">
+            <!-- Fact will be inserted here -->
+        </div>
+        <div>
+            <button id="nextLevelBtn">Continue</button>
+            <button id="retryBtn">Play Again</button>
+            <button id="backBtn" style="background: #e74c3c;">Back to Level 2</button>
+        </div>
+    </div>
+
+    <div id="startScreen">
+        <h1>🚁 DISASTER RELIEF MISSION</h1>
+        <h2 id="modeTitle" style="color: #3498db; margin: 10px 0;">Level 3: Emergency Humanitarian Response</h2>
+
+        <div class="missionBox">
+            <p style="font-size: clamp(12px, 2vw, 16px); line-height: 1.6; margin-bottom: 10px;">
+                🏔️ <strong>THE CRISIS:</strong> Severe flooding has isolated mountain communities in Northern Vietnam.<br>
+                Roads are destroyed. Families are stranded without food, water, or medical supplies.
+            </p>
+            <p style="font-size: clamp(11px, 1.8vw, 14px); color: #e74c3c; margin-top: 10px;">
+                🚨 Time is critical! Use your drone to deliver life-saving supplies!
+            </p>
+        </div>
+
+        <p id="missionDesc" style="max-width: 650px; width: 90%; margin: 15px auto; font-size: clamp(12px, 1.8vw, 15px); line-height: 1.6;">
+            Deploy emergency relief drone to deliver medical supplies, food, and water to 5 stranded families.<br>
+            <strong>Each family needs ALL THREE supplies</strong> to survive until rescue teams arrive.<br>
+            <em style="color: #f39c12;">⚠️ Watch your battery! Return to base to recharge and grab more supplies!</em>
+        </p>
+
+        <div id="controlsDisplay" style="margin: 15px auto; background: rgba(52,152,219,0.2); padding: 15px; border-radius: 8px; max-width: 650px; width: 90%;">
+            <div style="font-size: clamp(12px, 2vw, 14px);"><strong>🎮 CONTROLS:</strong></div>
+            <div style="font-size: clamp(11px, 1.8vw, 13px); margin-top: 8px;">
+                <span class="key">WASD</span> or <span class="key">↑←↓→</span> Fly Drone | <span class="key">SPACEBAR</span> Pick Up/Drop Supplies
+            </div>
+        </div>
+
+        <button id="startBtn" style="font-size: clamp(14px, 2.5vw, 18px); padding: 15px 40px; margin: 10px;">🚀 LAUNCH RESCUE DRONE</button>
+        <button id="backBtnStart" style="background: #e74c3c; font-size: clamp(12px, 2vw, 16px); padding: 12px 25px;">← BACK TO LEVEL 2</button>
+
+        <div class="impactBox">
+            <strong>🌍 REAL IMPACT:</strong> Every year, floods in Vietnam affect over 200,000 people in remote areas.<br>
+            Drone technology is revolutionizing disaster response, delivering aid where roads cannot reach!
+        </div>
+    </div>
+    </div>
+
+    <audio id="successSound" src="SFX/Success.mp3"></audio>
+    <audio id="catchSound" src="SFX/Catch.mp3"></audio>
+    <audio id="rainMusic" src="SFX/Rain.mp3" loop></audio>
+    <audio id="thunderSound" src="SFX/Thunder.mp3"></audio>
+
+    <script src="game.js"></script>
+</body>
+</html>

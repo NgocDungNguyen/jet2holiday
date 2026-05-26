@@ -2,2292 +2,508 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>Ocean Cleanup - South China Sea</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vietnam Environmental Heroes</title>
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --accent-blue:   #3498db;
+            --accent-green:  #2ecc71;
+            --accent-red:    #e74c3c;
+            --accent-orange: #f39c12;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            background: linear-gradient(to bottom, #1a2980, #26d0ce);
+            background: var(--bg-gradient);
             font-family: 'Courier New', monospace;
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: white;
             min-height: 100vh;
-            color: white;
-            image-rendering: pixelated;
-            padding: 10px;
-            touch-action: manipulation;
+            overflow-x: hidden;
         }
-        
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        #topUI {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        #canvasWrapper {
-            position: relative;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            touch-action: none;
-        }
-        
-        #gameCanvas {
-            border: 3px solid #2c3e50;
-            border-radius: 8px;
-            background: linear-gradient(to bottom, #1e3c72, #2a5298);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            image-rendering: pixelated;
-            width: 100%;
-            height: auto;
-            display: block;
-            max-height: 70vh;
-            object-fit: contain;
-        }
-        
-        #uiOverlay {
-            display: none; /* Hide the old overlay */
-        }
-        
-        .uiPanel {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 2px solid #3498db;
-            font-size: 14px;
-            flex: 1;
-            min-width: 150px;
-        }
-        
-        .uiPanel strong {
-            color: #3498db;
-        }
-        
-        .uiPanel > div {
-            margin: 4px 0;
-        }
-        
-        #controls {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px 15px;
-            border-radius: 8px;
-            border: 2px solid #2ecc71;
-            text-align: center;
-            font-size: 12px;
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-        
-        /* Mobile Controls */
-        #mobileControls {
-            display: none;
+
+        /* Animated background particles */
+        .bg-particles {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 150;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 90vw;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
-        
-        /* Multiplayer Mobile Controls - Split for P1 and P2 */
-        #mobileControlsP1, #mobileControlsP2 {
-            display: none;
-            position: fixed;
-            bottom: 10px;
-            z-index: 150;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        #mobileControlsP1 {
-            left: 10px;
-        }
-        
-        #mobileControlsP2 {
-            right: 10px;
-        }
-        
-        .mobileBtn {
-            background: rgba(52, 152, 219, 0.8);
-            border: 3px solid #3498db;
+
+        .particle {
+            position: absolute;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            font-size: 24px;
+            opacity: 0.15;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.15; }
+            90% { opacity: 0.15; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Layout */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 20px 60px;
+        }
+
+        /* Header */
+        .hero {
+            text-align: center;
+            padding: 50px 20px 40px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid #2ecc71;
+            color: #2ecc71;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 6px 18px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 6vw, 64px);
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #2ecc71, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #bdc3c7;
+            max-width: 600px;
+            margin: 0 auto 12px;
+            line-height: 1.6;
+        }
+
+        .hero .location {
+            font-size: 13px;
+            color: #7f8c8d;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        /* Play button */
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            user-select: none;
-            touch-action: manipulation;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-decoration: none;
             font-family: 'Courier New', monospace;
+            font-size: clamp(16px, 3vw, 22px);
+            font-weight: bold;
+            padding: 18px 60px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 30px rgba(46, 204, 113, 0.4);
+            letter-spacing: 1px;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.06) translateY(-2px);
+            box-shadow: 0 14px 40px rgba(46, 204, 113, 0.55);
+        }
+
+        .play-btn span {
+            margin-right: 10px;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin: 50px 0 60px;
+            padding: 24px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: clamp(22px, 4vw, 36px);
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #7f8c8d;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Section heading */
+        .section-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #7f8c8d;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        /* Level cards */
+        .levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .level-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px 24px;
+            transition: transform 0.2s, border-color 0.2s, background 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .level-card.ocean::before   { background: linear-gradient(90deg, #3498db, #2980b9); }
+        .level-card.flood::before   { background: linear-gradient(90deg, #e67e22, #f39c12); }
+        .level-card.rescue::before  { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+
+        .level-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .level-num {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .level-card.ocean  .level-num { color: #3498db; }
+        .level-card.flood  .level-num { color: #e67e22; }
+        .level-card.rescue .level-num { color: #9b59b6; }
+
+        .level-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .level-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #ecf0f1;
+        }
+
+        .level-card p {
+            font-size: 13px;
+            color: #95a5a6;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .level-tag {
+            display: inline-block;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            color: #bdc3c7;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        /* Context section */
+        .context-box {
+            background: rgba(52, 152, 219, 0.08);
+            border: 1px solid rgba(52, 152, 219, 0.25);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 60px;
+        }
+
+        .context-box h2 {
+            font-size: clamp(18px, 3vw, 24px);
+            color: #3498db;
+            margin-bottom: 16px;
+        }
+
+        .context-box p {
+            font-size: clamp(13px, 2vw, 15px);
+            color: #bdc3c7;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .context-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            color: #2ecc71;
             font-weight: bold;
         }
-        
-        .mobileBtn:active {
-            transform: scale(0.95);
-            background: rgba(41, 128, 185, 0.9);
-        }
-        
-        .mobileBtn.launch {
-            width: 90px;
-            height: 90px;
-            font-size: 11px;
-            background: rgba(46, 204, 113, 0.8);
-            border-color: #2ecc71;
-        }
-        
-        .mobileBtn.launch:active {
-            background: rgba(39, 174, 96, 0.9);
-        }
-        
-        .mobileBtn.p2 {
-            background: rgba(231, 76, 60, 0.8);
-            border-color: #e74c3c;
-        }
-        
-        .mobileBtn.p2:active {
-            background: rgba(192, 57, 43, 0.9);
-        }
-        
-        .mobileBtn.p2.launch {
-            background: rgba(241, 196, 15, 0.8);
-            border-color: #f39c12;
-        }
-        
-        .mobileBtn.p2.launch:active {
-            background: rgba(243, 156, 18, 0.9);
-        }
-        
-        #endScreen {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            padding: 20px;
-            border-radius: 15px;
-            border: 4px solid #e74c3c;
+
+        /* CTA bottom */
+        .cta-bottom {
             text-align: center;
-            display: none;
-            max-width: 90vw;
-            width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            z-index: 100;
+            padding: 20px 0 10px;
         }
-        
-        #endScreen h2 {
-            color: #e74c3c;
-            margin-bottom: 15px;
-            font-size: clamp(20px, 5vw, 28px);
+
+        .cta-bottom p {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 16px;
         }
-        
-        #endStats {
-            margin: 15px 0;
-            font-size: clamp(14px, 3.5vw, 18px);
-        }
-        
-        .factBox {
-            background: rgba(52, 152, 219, 0.3);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid #3498db;
-            font-size: 14px;
-            line-height: 1.4;
-            text-align: left;
-        }
-        
-        #cycleImageContainer {
-            background: rgba(231, 76, 60, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border: 2px solid #e74c3c;
-        }
-        
-        #cycleImageContainer img {
-            image-rendering: auto;
-        }
-        
-        button {
-            background: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            margin: 8px;
-            border-radius: 6px;
-            font-size: clamp(14px, 3vw, 16px);
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s;
-            touch-action: manipulation;
-        }
-        
-        button:hover, button:active {
-            background: #27ae60;
-            transform: scale(1.05);
-        }
-        
-        #modeScreen, #startScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
+
+        /* Footer */
+        footer {
             text-align: center;
-            padding: 20px;
-            overflow-y: auto;
+            padding: 30px 20px;
+            font-size: 12px;
+            color: #4a5568;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            z-index: 1;
         }
-        
-        #modeScreen h1, #startScreen h1 {
-            font-size: clamp(32px, 8vw, 48px);
-            color: #3498db;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
-        }
-        
-        #modeScreen h2 {
-            font-size: clamp(20px, 5vw, 28px);
-            color: #3498db;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
-        }
-        
-        #modeScreen p, #startScreen p {
-            font-size: clamp(14px, 3.5vw, 18px);
-            max-width: 600px;
-            text-align: center;
-            margin-bottom: 20px;
-            line-height: 1.6;
-            padding: 0 10px;
-        }
-        
-        .key {
-            display: inline-block;
-            background: #34495e;
-            padding: 4px 8px;
-            margin: 0 3px;
-            border-radius: 4px;
-            border: 1px solid #7f8c8d;
-            font-family: monospace;
-            font-size: clamp(10px, 2.5vw, 14px);
-        }
-        
-        .progressBar {
-            width: 100%;
-            max-width: 200px;
-            height: 20px;
-            background: #34495e;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px auto;
-            border: 2px solid #2c3e50;
-        }
-        
-        .progressFill {
-            height: 100%;
-            background: linear-gradient(to right, #e74c3c, #f39c12, #2ecc71);
-            transition: width 0.3s;
-        }
-        
-        .pixel-art {
-            image-rendering: pixelated;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 900px) {
-            #topUI {
-                flex-direction: column;
-                gap: 8px;
+
+        /* ============================================================
+           RESPONSIVE — MOBILE (max-width: 600px)
+        ============================================================ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px 14px 40px;
             }
-            
-            .uiPanel {
-                min-width: 100%;
-                padding: 10px 12px;
-                font-size: 12px;
+
+            .hero {
+                padding: 30px 14px 24px;
             }
-            
-            #controls {
-                font-size: 11px;
-                padding: 10px 12px;
+
+            .play-btn {
+                display: block;
+                width: 100%;
+                border-radius: 12px;
+                text-align: center;
+                padding: 16px 20px;
             }
-        }
-        
-        /* Mobile-specific styles */
-        @media (max-width: 768px) {
-            body {
-                padding: 5px;
-                align-items: flex-start;
-            }
-            
-            #gameContainer {
-                gap: 8px;
-            }
-            
-            #gameCanvas {
-                max-height: 60vh;
-            }
-            
-            #mobileControls {
-                display: flex !important;
-                bottom: 10px;
-                gap: 10px;
-            }
-            
-            #controls {
-                display: none;
-            }
-            
-            .uiPanel {
-                font-size: 11px;
-                padding: 8px 10px;
-            }
-            
-            #endScreen {
-                padding: 15px;
-                max-width: 95vw;
-            }
-            
-            .factBox {
-                font-size: 12px;
-                padding: 12px;
-            }
-            
-            button {
-                padding: 10px 20px;
-                margin: 6px;
-                font-size: 14px;
-            }
-            
-            #cycleImageContainer {
-                padding: 10px;
-            }
-            
-            #cycleImageContainer div {
-                font-size: 11px;
-            }
-        }
-        
-        /* Very small mobile devices */
-        @media (max-width: 480px) {
-            #topUI {
-                gap: 5px;
-            }
-            
-            .uiPanel {
-                font-size: 10px;
-                padding: 6px 8px;
-            }
-            
-            .uiPanel > div {
-                margin: 2px 0;
-            }
-            
-            .mobileBtn {
-                width: 60px;
-                height: 60px;
-                font-size: 20px;
-            }
-            
-            .mobileBtn.launch {
-                width: 75px;
-                height: 75px;
-                font-size: 12px;
-            }
-            
-            #mobileControls {
-                gap: 8px;
-                bottom: 5px;
-            }
-        }
-        
-        /* Landscape mobile orientation - OPTIMIZED FOR GAMEPLAY */
-        @media (max-height: 600px) and (orientation: landscape) {
-            body {
-                padding: 0;
-                overflow: hidden;
-            }
-            
-            #gameContainer {
-                gap: 0;
-                max-width: 100%;
-            }
-            
-            /* Hide top UI in landscape for more screen space */
-            #topUI {
-                display: none;
-            }
-            
-            /* Full-width canvas in landscape */
-            #canvasWrapper {
-                max-width: 100%;
-                margin: 0;
-            }
-            
-            #gameCanvas {
-                max-height: 100vh;
-                height: 100vh;
-                border-radius: 0;
-                border: none;
-            }
-            
-            /* Hide desktop controls */
-            #controls {
-                display: none;
-            }
-            
-            /* Single player mobile controls - centered */
-            #mobileControls {
-                display: flex !important;
-                bottom: 15px;
+
+            .stats-bar {
                 gap: 20px;
+                padding: 18px;
             }
-            
-            /* Multiplayer controls - split left and right */
-            #mobileControlsP1 {
-                display: flex;
-                left: 15px;
-                bottom: 15px;
+
+            .stat-item {
+                flex: 1 1 40%;
             }
-            
-            #mobileControlsP2 {
-                display: flex;
-                right: 15px;
-                bottom: 15px;
+
+            .levels {
+                grid-template-columns: 1fr;
+                gap: 14px;
             }
-            
-            .mobileBtn {
-                width: 55px;
-                height: 55px;
-                font-size: 20px;
-                border-width: 2px;
+
+            .level-card {
+                padding: 20px 18px;
             }
-            
-            .mobileBtn.launch {
-                width: 70px;
-                height: 70px;
-                font-size: 10px;
+
+            .context-box {
+                padding: 20px;
             }
-            
-            /* Compact on-screen UI overlay */
-            #gameplayUI {
-                position: fixed;
-                top: 5px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(0, 0, 0, 0.7);
-                padding: 5px 15px;
-                border-radius: 15px;
-                font-size: 11px;
-                z-index: 100;
-                display: flex;
-                gap: 15px;
-                border: 1px solid rgba(52, 152, 219, 0.5);
+
+            button, .play-btn {
+                min-height: 44px;
             }
-            
-            #gameplayUI > div {
-                white-space: nowrap;
-            }
-            
-            /* End screen adjustments for landscape */
-            #endScreen {
-                max-height: 95vh;
-                max-width: 80vw;
-                padding: 15px;
-                overflow-y: auto;
-            }
-            
-            #endScreen h2 {
-                font-size: 22px;
-                margin-bottom: 10px;
-            }
-            
-            #endStats {
-                font-size: 13px;
-                margin: 10px 0;
-            }
-            
-            .factBox {
-                font-size: 11px;
-                padding: 10px;
-                margin: 10px 0;
-            }
-            
-            button {
-                padding: 8px 15px;
-                font-size: 13px;
-                margin: 5px;
-            }
-            
-            /* Mode and start screens - scrollable */
-            #modeScreen, #startScreen {
-                padding: 15px;
-                overflow-y: auto;
-            }
-            
-            #modeScreen h1, #startScreen h1 {
+        }
+
+        /* ============================================================
+           RESPONSIVE — LANDSCAPE PHONE (max-height: 500px + landscape)
+        ============================================================ */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero h1 {
                 font-size: 28px;
-                margin-bottom: 10px;
             }
-            
-            #modeScreen h2 {
-                font-size: 18px;
-            }
-            
-            #modeScreen p, #startScreen p {
+
+            .hero .subtitle {
                 font-size: 13px;
+            }
+
+            .hero {
+                padding: 20px 14px 16px;
+            }
+
+            .levels {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .stats-bar {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                gap: 24px;
+                padding: 14px 20px;
+            }
+
+            .play-btn {
+                padding: 12px 36px;
+            }
+
+            .context-box {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <!-- Top UI Panel - Outside Canvas (hidden in landscape mobile) -->
-        <div id="topUI">
-            <div class="uiPanel" style="border-color: #3498db;" id="p1Panel">
-                <div style="color: #3498db; font-weight: bold;" id="p1Label">PLAYER 1</div>
-                <div><strong>SCORE:</strong> <span id="p1Score">0</span></div>
-                <div><strong>TRASH:</strong> <span id="p1Trash">0</span></div>
-            </div>
-            
-            <div class="uiPanel">
-                <div><strong>TIME:</strong> <span id="timeValue">60</span>s</div>
-                <div><strong>MIN SCORE:</strong> <span id="minScore">50</span></div>
-                <div><strong>FISH SAVED:</strong> <span id="fishProtected">0</span></div>
-                <div><strong>COLLISIONS:</strong> <span id="collisionCount">0</span></div>
-            </div>
-            
-            <div class="uiPanel" style="border-color: #e74c3c;" id="p2Panel">
-                <div style="color: #e74c3c; font-weight: bold;">PLAYER 2</div>
-                <div><strong>SCORE:</strong> <span id="p2Score">0</span></div>
-                <div><strong>TRASH:</strong> <span id="p2Trash">0</span></div>
-            </div>
+
+<!-- Background particles -->
+<div class="bg-particles" id="particles"></div>
+
+<div class="container">
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-badge">🌏 Environmental Awareness Game</div>
+        <h1>Vietnam<br>Environmental Heroes</h1>
+        <p class="subtitle">
+            Three real crises. Three missions. One chance to understand the environmental challenges facing Vietnam — and what we can do about them.
+        </p>
+        <p class="location">🇻🇳 South China Sea · Hanoi · Northern Mountains</p>
+        <a href="level1/Level1.html" class="play-btn"><span>▶</span> START MISSION</a>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Levels</div>
         </div>
-        
-        <!-- Compact Gameplay UI for Mobile Landscape -->
-        <div id="gameplayUI" style="display: none;">
-            <div id="gameplayP1" style="color: #3498db;">P1: <span id="gameplayP1Score">0</span></div>
-            <div id="gameplayTime">⏱️ <span id="gameplayTimeValue">60</span>s</div>
-            <div id="gameplayP2" style="color: #e74c3c; display: none;">P2: <span id="gameplayP2Score">0</span></div>
+        <div class="stat-item">
+            <div class="stat-number">280K</div>
+            <div class="stat-label">Tons of plastic / year</div>
         </div>
-        
-        <!-- Canvas Wrapper -->
-        <div id="canvasWrapper">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="stat-item">
+            <div class="stat-number">80%</div>
+            <div class="stat-label">Floods from blocked drains</div>
         </div>
-        
-        <!-- Controls - Outside Canvas -->
-        <div id="controls">
-            <div id="controlsDisplay">
-                <!-- Will be dynamically updated based on game mode -->
-            </div>
-        </div>
-        
-        <!-- Mobile Touch Controls - Single Player (centered) -->
-        <div id="mobileControls">
-            <div class="mobileBtn" id="mobileLeft">◄</div>
-            <div class="mobileBtn launch" id="mobileLaunch">LAUNCH</div>
-            <div class="mobileBtn" id="mobileRight">►</div>
-        </div>
-        
-        <!-- Multiplayer Mobile Controls - Player 1 (left side) -->
-        <div id="mobileControlsP1">
-            <div class="mobileBtn" id="mobileP1Left">◄</div>
-            <div class="mobileBtn launch" id="mobileP1Launch">P1<br>GO!</div>
-            <div class="mobileBtn" id="mobileP1Right">►</div>
-        </div>
-        
-        <!-- Multiplayer Mobile Controls - Player 2 (right side) -->
-        <div id="mobileControlsP2">
-            <div class="mobileBtn p2" id="mobileP2Left">◄</div>
-            <div class="mobileBtn p2 launch" id="mobileP2Launch">P2<br>GO!</div>
-            <div class="mobileBtn p2" id="mobileP2Right">►</div>
-        </div>
-        
-        <!-- Old overlay hidden -->
-        <div id="uiOverlay" style="display: none;">
-        </div>
-        
-        <div id="endScreen">
-            <h2 id="endTitle">LEVEL COMPLETE!</h2>
-            <div id="endStats">
-                <div style="color: #3498db;">Player 1 Score: <span id="p1FinalScore">0</span> (<span id="p1FinalTrash">0</span> trash)</div>
-                <div style="color: #e74c3c;">Player 2 Score: <span id="p2FinalScore">0</span> (<span id="p2FinalTrash">0</span> trash)</div>
-                <div style="margin-top: 10px;">Fish Saved: <span id="finalFish">0</span></div>
-                <div>Performance: <span id="performanceRating">C</span></div>
-            </div>
-            <div class="factBox" id="endFact">
-                <!-- Fact will be inserted here -->
-            </div>
-            <div id="cycleImageContainer" style="display: none; margin: 20px 0;">
-                <img id="cycleImage" src="assets/level1/cycle.png" alt="Plastic Cycle" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #e74c3c;">
-                <div style="font-size: 14px; margin-top: 10px; color: #bdc3c7; line-height: 1.6;">
-                    <strong>THE PLASTIC CYCLE:</strong><br>
-                    Human dumps plastic → Fish eats plastic → Human catches fish → Human eats fish → Microplastics in human body → Human gets sick
-                </div>
-            </div>
-            <div>
-                <button id="nextLevelBtn">Next Level</button>
-                <button id="retryBtn">Play Again</button>
-            </div>
-        </div>
-        
-        <div id="modeScreen">
-            <h1>🌊 OCEAN CLEANUP CHALLENGE</h1>
-            <h2 style="color: #3498db; font-size: 20px; margin: 10px 0;">Level 1: South China Sea Protection</h2>
-            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0; max-width: 600px; margin-left: auto; margin-right: auto;">
-                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 10px;">
-                    🌍 <strong>280,000 tons of plastic</strong> enter the South China Sea annually!
-                </p>
-                <p style="font-size: 14px; color: #3498db; margin-top: 15px;">
-                    ♻️ Clean the ocean and protect marine life!
-                </p>
-            </div>
-            <div style="margin: 30px 0;">
-                <h2 style="color: #3498db; font-size: 22px; margin-bottom: 20px;">SELECT GAME MODE</h2>
-                <button id="singlePlayerBtn" style="margin: 10px; padding: 20px 40px; font-size: 18px; background: #3498db;">
-                    🎮 SINGLE PLAYER<br>
-                    <span style="font-size: 12px;">Beat the clock and reach the goal!</span>
-                </button>
-                <br>
-                <button id="multiPlayerBtn" style="margin: 10px; padding: 20px 40px; font-size: 18px; background: #e74c3c;">
-                    👥 MULTIPLAYER<br>
-                    <span style="font-size: 12px;">Compete with a friend to save more!</span>
-                </button>
-            </div>
-            <div style="margin-top: 20px; font-size: 13px; color: #95a5a6; max-width: 500px; margin-left: auto; margin-right: auto;">
-                <em>This game raises awareness about ocean pollution and promotes environmental action in Vietnam's coastal regions.</em>
-            </div>
-        </div>
-        
-        <div id="startScreen" style="display: none;">
-            <h1>🌊 OCEAN CLEANUP CHALLENGE</h1>
-            <h2 style="color: #3498db; margin-bottom: 15px;">Mission Briefing</h2>
-            <p id="modeDescription" style="max-width: 600px; margin: 0 auto 20px; font-size: 15px; line-height: 1.6;">Welcome to Level 1: South China Sea Cleanup!</p>
-            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
-                <h3 style="color: #2ecc71; font-size: 18px; margin-bottom: 10px;">🎯 YOUR MISSION:</h3>
-                <div id="missionInfo" style="font-size: 14px; color: #ecf0f1; text-align: left;">
-                    <!-- Mission info will be dynamically added here -->
-                </div>
-            </div>
-            <div id="controlsInfo" style="margin: 20px auto; max-width: 600px; background: rgba(52,152,219,0.2); padding: 15px; border-radius: 8px;">
-                <!-- Controls will be dynamically added here -->
-            </div>
-            <button id="startBtn" style="font-size: 20px; padding: 15px 50px; margin-top: 10px;">🚀 START MISSION</button>
-            <button id="backBtn" style="background: #95a5a6; margin-top: 10px;">← BACK TO MENU</button>
+        <div class="stat-item">
+            <div class="stat-number">200K+</div>
+            <div class="stat-label">People affected by floods</div>
         </div>
     </div>
 
-    <script>
-        // Game Constants - CHALLENGE MODE
-        const LEVEL_TIME = 60; // 1 minute survival challenge
-        const MIN_SCORE_TO_PASS = 50; // Minimum score needed to pass (can't go below this)
-        const OCEAN_SURFACE = 200; // 20% of canvas height (600 * 0.2) - no objects above this line
-        
-        // Load Assets
-        const assets = {
-            boat1Left: new Image(),
-            boat1Right: new Image(),
-            boat2Left: new Image(),
-            boat2Right: new Image(),
-            bottle: new Image(),
-            fish: new Image(),
-            grabber: new Image(),
-            plastic: new Image(),
-            turtle: new Image(),
-            crab: new Image(),
-            shrimp: new Image(),
-            background: new Image(),
-            cycle: new Image()
-        };
-        
-        // Load all images from level1 folder
-        assets.boat1Left.src = 'assets/level1/VN_Boat1_Left.png';
-        assets.boat1Right.src = 'assets/level1/VN_Boat1_Right.png';
-        assets.boat2Left.src = 'assets/level1/VN_Boat2_Left.png';
-        assets.boat2Right.src = 'assets/level1/VN_Boat2_Right.png';
-        assets.bottle.src = 'assets/level1/Bottle.png';
-        assets.fish.src = 'assets/level1/Fish.png';
-        assets.grabber.src = 'assets/level1/Grabber.png';
-        assets.plastic.src = 'assets/level1/Plastic.png';
-        assets.turtle.src = 'assets/level1/Turtle.png';
-        assets.crab.src = 'assets/level1/Crab.png';
-        assets.shrimp.src = 'assets/level1/Shrimp.png';
-        assets.background.src = 'assets/level1/Island.png';
-        assets.cycle.src = 'assets/cycle.png';
-        
-        // Load Background Music
-        const bgMusic = new Audio('SFX/Sea.mp3');
-        bgMusic.loop = true; // Loop forever
-        bgMusic.volume = 1.0; // Maximum volume (200% louder - browser max is 1.0)
-        
-        // Load Catch Sound Effect
-        const catchSound = new Audio('SFX/Catch.mp3');
-        catchSound.volume = 1.0; // Maximum volume (200% louder)
-        
-        // Load Success Sound Effect
-        const successSound = new Audio('SFX/Success.mp3');
-        successSound.volume = 1.0; // Maximum volume
-        
-        let assetsLoaded = 0;
-        const totalAssets = Object.keys(assets).length;
-        
-        // Track asset loading
-        Object.values(assets).forEach(img => {
-            img.onload = () => {
-                assetsLoaded++;
-            };
-        });
-        
-        // Game Mode
-        let gameMode = 'single'; // 'single' or 'multiplayer'
-        
-        // Game State
-        let gameState = {
-            p1Score: 0,
-            p1Trash: 0,
-            p2Score: 0,
-            p2Trash: 0,
-            timeLeft: LEVEL_TIME,
-            fishProtected: 0,
-            collisions: 0,
-            gameActive: false,
-            gameOver: false,
-            winner: null
-        };
-        
-        // DOM Elements
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const modeScreen = document.getElementById('modeScreen');
-        const startScreen = document.getElementById('startScreen');
-        const endScreen = document.getElementById('endScreen');
-        const singlePlayerBtn = document.getElementById('singlePlayerBtn');
-        const multiPlayerBtn = document.getElementById('multiPlayerBtn');
-        const startBtn = document.getElementById('startBtn');
-        const backBtn = document.getElementById('backBtn');
-        const retryBtn = document.getElementById('retryBtn');
-        const nextLevelBtn = document.getElementById('nextLevelBtn');
-        const modeDescription = document.getElementById('modeDescription');
-        const controlsInfo = document.getElementById('controlsInfo');
-        const missionInfo = document.getElementById('missionInfo');
-        
-        // UI Elements
-        const p1Score = document.getElementById('p1Score');
-        const p2Score = document.getElementById('p2Score');
-        const p1Trash = document.getElementById('p1Trash');
-        const p2Trash = document.getElementById('p2Trash');
-        const timeValue = document.getElementById('timeValue');
-        const fishProtected = document.getElementById('fishProtected');
-        const collisionCount = document.getElementById('collisionCount');
-        
-        // End Screen Elements
-        const endTitle = document.getElementById('endTitle');
-        const p1FinalScore = document.getElementById('p1FinalScore');
-        const p2FinalScore = document.getElementById('p2FinalScore');
-        const p1FinalTrash = document.getElementById('p1FinalTrash');
-        const p2FinalTrash = document.getElementById('p2FinalTrash');
-        const finalFish = document.getElementById('finalFish');
-        const performanceRating = document.getElementById('performanceRating');
-        const endFact = document.getElementById('endFact');
-        
-        // Game Objects - Two Players
-        let boat1 = {
-            x: canvas.width / 4,
-            y: OCEAN_SURFACE - 10,
-            width: 160,
-            height: 80,
-            speed: 3,
-            canMove: true,
-            color: '#3498db', // Blue for P1
-            direction: 'left', // Current direction: 'left' or 'right'
-            targetDirection: 'left', // Target direction for smooth transition
-            flipProgress: 0, // 0 to 1, for smooth flip animation
-            isFlipping: false
-        };
-        
-        let boat2 = {
-            x: (canvas.width / 4) * 3,
-            y: OCEAN_SURFACE - 10,
-            width: 160,
-            height: 80,
-            speed: 3,
-            canMove: true,
-            color: '#e74c3c', // Red for P2
-            direction: 'left', // Current direction: 'left' or 'right'
-            targetDirection: 'left', // Target direction for smooth transition
-            flipProgress: 0, // 0 to 1, for smooth flip animation
-            isFlipping: false
-        };
-        
-        let grabber1 = {
-            angle: 0,
-            length: 60,
-            maxLength: 400,
-            extensionSpeed: 2.5,
-            retractionSpeed: 2.5,
-            swingSpeed: 0.01,
-            state: 'swinging',
-            carrying: null,
-            tipX: 0,
-            tipY: 0,
-            player: 1
-        };
-        
-        let grabber2 = {
-            angle: 0,
-            length: 60,
-            maxLength: 400,
-            extensionSpeed: 2.5,
-            retractionSpeed: 2.5,
-            swingSpeed: 0.01,
-            state: 'swinging',
-            carrying: null,
-            tipX: 0,
-            tipY: 0,
-            player: 2
-        };
-        
-        let trashItems = [];
-        let marineLife = [];
-        let effects = [];
-        
-        // Trash Types - HIGHER POINTS, EASIER TO CATCH
-        const TRASH_TYPES = {
-            BOTTLE: { points: 10, weight: 1, radius: 20, color: '#FF6B6B', name: 'Plastic Bottle', asset: 'bottle' },
-            PLASTIC: { points: 15, weight: 0.5, radius: 22, color: '#4ECDC4', name: 'Plastic Bag', asset: 'plastic' }
-        };
-        
-        // Marine Life Types - REDUCED PENALTIES
-        const MARINE_LIFE_TYPES = {
-            FISH: { penalty: 30, radius: 25, color: '#1DD3B0', speed: 0.3, name: 'Fish', asset: 'fish' },
-            TURTLE: { penalty: 50, radius: 30, color: '#AFFC41', speed: 0.2, name: 'Turtle', asset: 'turtle' },
-            CRAB: { penalty: 25, radius: 20, color: '#FF6347', speed: 0.25, name: 'Crab', asset: 'crab' },
-            SHRIMP: { penalty: 20, radius: 18, color: '#FFA07A', speed: 0.35, name: 'Shrimp', asset: 'shrimp' }
-        };
-        
-        // Initialize Game
-        function initGame() {
-            gameState = {
-                p1Score: 0,
-                p1Trash: 0,
-                p2Score: 0,
-                p2Trash: 0,
-                timeLeft: LEVEL_TIME,
-                fishProtected: 0,
-                collisions: 0,
-                gameActive: true,
-                gameOver: false,
-                winner: null
-            };
-            
-            // Configure UI based on game mode
-            const p1Label = document.getElementById('p1Label');
-            const p2Panel = document.getElementById('p2Panel');
-            const controlsDisplay = document.getElementById('controlsDisplay');
-            const gameplayUI = document.getElementById('gameplayUI');
-            const gameplayP2 = document.getElementById('gameplayP2');
-            
-            // Mobile controls
-            const mobileControls = document.getElementById('mobileControls');
-            const mobileControlsP1 = document.getElementById('mobileControlsP1');
-            const mobileControlsP2 = document.getElementById('mobileControlsP2');
-            
-            if (gameMode === 'single') {
-                // Single player mode
-                p1Label.textContent = 'YOUR SCORE';
-                p2Panel.style.display = 'none';
-                controlsDisplay.innerHTML = '<span class="key">A/D</span> or <span class="key">←/→</span> to move | <span class="key">SPACEBAR</span> to launch';
-                
-                // Show mobile gameplay UI in landscape
-                gameplayUI.style.display = 'flex';
-                gameplayP2.style.display = 'none';
-                
-                // Show single player mobile controls
-                mobileControls.style.display = window.innerHeight < 600 && window.innerWidth > window.innerHeight ? 'flex' : 'none';
-                mobileControlsP1.style.display = 'none';
-                mobileControlsP2.style.display = 'none';
-                
-                // Position boat in center for single player
-                boat1.x = canvas.width / 2;
-                boat2.x = -1000; // Move P2 off screen
-            } else {
-                // Multiplayer mode
-                p1Label.textContent = 'PLAYER 1';
-                p2Panel.style.display = 'block';
-                controlsDisplay.innerHTML = '<span style="color: #3498db;">P1:</span> <span class="key">A/D</span> + <span class="key">SPACE</span> | <span style="color: #e74c3c;">P2:</span> <span class="key">←/→</span> + <span class="key">ENTER</span>';
-                
-                // Show mobile gameplay UI with both players in landscape
-                gameplayUI.style.display = 'flex';
-                gameplayP2.style.display = 'block';
-                
-                // Show multiplayer mobile controls (split left/right)
-                mobileControls.style.display = 'none';
-                const isLandscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
-                mobileControlsP1.style.display = isLandscape ? 'flex' : 'none';
-                mobileControlsP2.style.display = isLandscape ? 'flex' : 'none';
-                
-                // Position boats for multiplayer
-                boat1.x = canvas.width / 4;
-                boat2.x = (canvas.width / 4) * 3;
-            }
-            
-            // Reset Player 1
-            boat1.y = OCEAN_SURFACE - 10;
-            boat1.canMove = true;
-            boat1.direction = 'left';
-            boat1.targetDirection = 'left';
-            boat1.flipProgress = 0;
-            boat1.isFlipping = false;
-            grabber1 = {
-                angle: 0,
-                length: 60,
-                maxLength: 400,
-                extensionSpeed: 2.5,
-                retractionSpeed: 2.5,
-                swingSpeed: 0.01,
-                state: 'swinging',
-                carrying: null,
-                tipX: 0,
-                tipY: 0,
-                player: 1
-            };
-            
-            // Reset Player 2
-            boat2.y = OCEAN_SURFACE - 10;
-            boat2.canMove = true;
-            boat2.direction = 'left';
-            boat2.targetDirection = 'left';
-            boat2.flipProgress = 0;
-            boat2.isFlipping = false;
-            grabber2 = {
-                angle: 0,
-                length: 60,
-                maxLength: 400,
-                extensionSpeed: 2.5,
-                retractionSpeed: 2.5,
-                swingSpeed: 0.01,
-                state: 'swinging',
-                carrying: null,
-                tipX: 0,
-                tipY: 0,
-                player: 2
-            };
-            
-            trashItems = [];
-            marineLife = [];
-            effects = [];
-            
-            // Spawn 10-15 trash items
-            const trashCount = 10 + Math.floor(Math.random() * 6);
-            for (let i = 0; i < trashCount; i++) {
-                spawnTrash();
-            }
-            
-            // Spawn 10-15 marine life
-            const marineCount = 10 + Math.floor(Math.random() * 6);
-            for (let i = 0; i < marineCount; i++) {
-                spawnMarineLife();
-            }
-            
-            updateUI();
-            startScreen.style.display = 'none';
-            endScreen.style.display = 'none';
-            
-            // Show mobile gameplay UI in landscape mode
-            const isLandscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
-            gameplayUI.style.display = isLandscape ? 'flex' : 'none';
-            
-            // Start background music
-            bgMusic.play().catch(err => console.log('Audio autoplay prevented:', err));
-            
-            // Start game loop
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Spawn Trash
-        function spawnTrash() {
-            const types = Object.keys(TRASH_TYPES);
-            const type = types[Math.floor(Math.random() * types.length)];
-            const trashConfig = TRASH_TYPES[type];
-            
-            let x, y;
-            let validPosition = false;
-            let attempts = 0;
-            
-            // Find valid position (not too close to other objects)
-            // Spawn below ocean surface (OCEAN_SURFACE to canvas.height)
-            while (!validPosition && attempts < 50) {
-                x = Math.random() * (canvas.width - 100) + 50;
-                y = Math.random() * (canvas.height - OCEAN_SURFACE - 100) + OCEAN_SURFACE + 50;
-                
-                validPosition = true;
-                
-                // Check distance from other trash
-                for (let trash of trashItems) {
-                    const distance = Math.sqrt((trash.x - x)**2 + (trash.y - y)**2);
-                    if (distance < 80) { // Increased from 60
-                        validPosition = false;
-                        break;
-                    }
-                }
-                
-                // Check distance from marine life
-                for (let life of marineLife) {
-                    const distance = Math.sqrt((life.x - x)**2 + (life.y - y)**2);
-                    if (distance < 80) { // Increased from 60
-                        validPosition = false;
-                        break;
-                    }
-                }
-                
-                attempts++;
-            }
-            
-            if (validPosition) {
-                trashItems.push({
-                    x: x,
-                    y: y,
-                    type: type,
-                    config: trashConfig,
-                    vx: (Math.random() - 0.5) * 0.3, // Reduced from 0.5
-                    vy: (Math.random() - 0.5) * 0.3  // Reduced from 0.5
-                });
-            }
-        }
-        
-        // Spawn Marine Life
-        function spawnMarineLife() {
-            const types = Object.keys(MARINE_LIFE_TYPES);
-            const type = types[Math.floor(Math.random() * types.length)];
-            const lifeConfig = MARINE_LIFE_TYPES[type];
-            
-            let x, y;
-            let validPosition = false;
-            let attempts = 0;
-            
-            // Spawn below ocean surface (OCEAN_SURFACE to canvas.height)
-            while (!validPosition && attempts < 50) {
-                x = Math.random() * (canvas.width - 100) + 50;
-                y = Math.random() * (canvas.height - OCEAN_SURFACE - 100) + OCEAN_SURFACE + 50;
-                
-                validPosition = true;
-                
-                // Check distance from other marine life
-                for (let life of marineLife) {
-                    const distance = Math.sqrt((life.x - x)**2 + (life.y - y)**2);
-                    if (distance < 100) { // Increased from 80
-                        validPosition = false;
-                        break;
-                    }
-                }
-                
-                // Check distance from trash
-                for (let trash of trashItems) {
-                    const distance = Math.sqrt((trash.x - x)**2 + (trash.y - y)**2);
-                    if (distance < 100) { // Increased from 80
-                        validPosition = false;
-                        break;
-                    }
-                }
-                
-                attempts++;
-            }
-            
-            if (validPosition) {
-                marineLife.push({
-                    x: x,
-                    y: y,
-                    type: type,
-                    config: lifeConfig,
-                    vx: (Math.random() - 0.5) * lifeConfig.speed,
-                    vy: (Math.random() - 0.5) * lifeConfig.speed,
-                    isPolluted: false,
-                    pollutionTimer: 0
-                });
-            }
-        }
-        
-        // Update Boat Animation
-        function updateBoatAnimation(boat) {
-            if (boat.isFlipping) {
-                // Smooth flip animation
-                boat.flipProgress += 0.1; // Adjust speed of flip (0.1 = fast, 0.05 = slower)
-                
-                if (boat.flipProgress >= 1) {
-                    boat.flipProgress = 0;
-                    boat.isFlipping = false;
-                    boat.direction = boat.targetDirection;
-                }
-            }
-        }
-        
-        // Update Game State
-        function updateGame() {
-            if (!gameState.gameActive) return;
-            
-            // Update boat animations
-            updateBoatAnimation(boat1);
-            if (gameMode === 'multiplayer') {
-                updateBoatAnimation(boat2);
-            }
-            
-            // Update Player 1 grabber (always)
-            updateGrabber(grabber1, boat1, 1);
-            
-            // Update Player 2 grabber (only in multiplayer)
-            if (gameMode === 'multiplayer') {
-                updateGrabber(grabber2, boat2, 2);
-            }
-            
-            // Update trash items
-            updateTrash();
-            
-            // Update marine life
-            updateMarineLife();
-            
-            // Update effects
-            updateEffects();
-            
-            // Check collisions between trash and marine life
-            checkCollisions();
-            
-            // Update timer
-            gameState.timeLeft -= 1/60; // Assuming 60 FPS
-            
-            // Check game over conditions
-            if (gameState.timeLeft <= 0) {
-                // Time's up - determine winner based on score
-                if (gameMode === 'single') {
-                    gameState.winner = (gameState.p1Score >= MIN_SCORE_TO_PASS) ? 1 : null;
-                } else {
-                    // Multiplayer: highest score wins (if both meet minimum)
-                    const p1Pass = gameState.p1Score >= MIN_SCORE_TO_PASS;
-                    const p2Pass = gameState.p2Score >= MIN_SCORE_TO_PASS;
-                    
-                    if (p1Pass && p2Pass) {
-                        gameState.winner = (gameState.p1Score >= gameState.p2Score) ? 1 : 2;
-                    } else if (p1Pass) {
-                        gameState.winner = 1;
-                    } else if (p2Pass) {
-                        gameState.winner = 2;
-                    } else {
-                        gameState.winner = null; // Both failed
-                    }
-                }
-                endGame();
-            }
-            
-            // Check if player(s) fall below minimum score (instant fail)
-            if (gameMode === 'single') {
-                if (gameState.p1Score < 0) {
-                    gameState.winner = null;
-                    endGame();
-                }
-            } else {
-                // In multiplayer, game continues even if one player goes negative
-                // Both players can still recover
-            }
-            
-            // Update UI
-            updateUI();
-        }
-        
-        // Update Grabber - Works for both players
-        function updateGrabber(grabber, boat, playerNum) {
-            if (grabber.state === 'swinging') {
-                // Swing the hook back and forth
-                grabber.angle += grabber.swingSpeed;
-                if (grabber.angle > Math.PI / 3 || grabber.angle < -Math.PI / 3) {
-                    grabber.swingSpeed *= -1;
-                }
-                
-                // Calculate tip position for swinging
-                grabber.tipX = boat.x + Math.sin(grabber.angle) * grabber.length;
-                grabber.tipY = boat.y + Math.cos(grabber.angle) * grabber.length;
-                
-                // Boat can move
-                boat.canMove = true;
-                
-            } else if (grabber.state === 'extending') {
-                // Boat cannot move when hook is launched
-                boat.canMove = false;
-                
-                // Extend hook in the direction it was launched
-                grabber.tipX += Math.sin(grabber.angle) * grabber.extensionSpeed;
-                grabber.tipY += Math.cos(grabber.angle) * grabber.extensionSpeed;
-                
-                // Calculate current length
-                const dx = grabber.tipX - boat.x;
-                const dy = grabber.tipY - boat.y;
-                grabber.length = Math.sqrt(dx * dx + dy * dy);
-                
-                // Check collision with trash (improved accuracy)
-                if (!grabber.carrying) {
-                    for (let i = 0; i < trashItems.length; i++) {
-                        const trash = trashItems[i];
-                        const dist = Math.sqrt(
-                            (grabber.tipX - trash.x) * (grabber.tipX - trash.x) +
-                            (grabber.tipY - trash.y) * (grabber.tipY - trash.y)
-                        );
-                        
-                        if (dist < trash.config.radius + 15) { // More forgiving collision
-                            grabber.carrying = trash;
-                            trashItems.splice(i, 1);
-                            grabber.state = 'retracting';
-                            const color = playerNum === 1 ? '#3498db' : '#e74c3c';
-                            createEffect(trash.x, trash.y, '+' + trash.config.points, color);
-                            
-                            // Play catch sound effect
-                            catchSound.currentTime = 0; // Reset to start for rapid catches
-                            catchSound.play().catch(err => console.log('Catch sound error:', err));
-                            
-                            break;
-                        }
-                    }
-                }
-                
-                // Check if hit bottom or max length
-                if (grabber.tipY >= canvas.height - 20 || grabber.length >= grabber.maxLength) {
-                    grabber.state = 'retracting';
-                }
-                
-            } else if (grabber.state === 'retracting') {
-                // Boat still cannot move
-                boat.canMove = false;
-                
-                // Retract hook back to boat
-                const dx = boat.x - grabber.tipX;
-                const dy = boat.y - grabber.tipY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist > 5) {
-                    grabber.tipX += (dx / dist) * grabber.retractionSpeed;
-                    grabber.tipY += (dy / dist) * grabber.retractionSpeed;
-                    grabber.length = dist;
-                    
-                    // Update carried trash position
-                    if (grabber.carrying) {
-                        grabber.carrying.x = grabber.tipX;
-                        grabber.carrying.y = grabber.tipY;
-                    }
-                } else {
-                    // Hook returned to boat
-                    if (grabber.carrying) {
-                        // Update appropriate player's score
-                        if (playerNum === 1) {
-                            gameState.p1Score += grabber.carrying.config.points;
-                            gameState.p1Trash++;
-                        } else {
-                            gameState.p2Score += grabber.carrying.config.points;
-                            gameState.p2Trash++;
-                        }
-                        const color = playerNum === 1 ? '#3498db' : '#e74c3c';
-                        createEffect(boat.x, boat.y, '+' + grabber.carrying.config.points, color);
-                        
-                        // Spawn new trash to replace collected one
-                        spawnTrash();
-                    }
-                    
-                    // Reset hook to swinging state
-                    grabber.state = 'swinging';
-                    grabber.carrying = null;
-                    grabber.length = 60;
-                    grabber.angle = 0;
-                    grabber.swingSpeed = 0.01;
-                    boat.canMove = true;
-                }
-            }
-        }
-        
-        // Update Trash Items
-        function updateTrash() {
-            for (let i = 0; i < trashItems.length; i++) {
-                const trash = trashItems[i];
-                
-                // Move trash with slight drift
-                trash.x += trash.vx;
-                trash.y += trash.vy;
-                
-                // Bounce off walls
-                if (trash.x < trash.config.radius || trash.x > canvas.width - trash.config.radius) {
-                    trash.vx *= -1;
-                }
-                // Keep trash below ocean surface and above bottom
-                if (trash.y < OCEAN_SURFACE + trash.config.radius || trash.y > canvas.height - trash.config.radius) {
-                    trash.vy *= -1;
-                }
-            }
-        }
-        
-        // Update Marine Life
-        function updateMarineLife() {
-            for (let life of marineLife) {
-                // Move marine life
-                life.x += life.vx;
-                life.y += life.vy;
-                
-                // Bounce off walls with some randomness
-                if (life.x < life.config.radius || life.x > canvas.width - life.config.radius) {
-                    life.vx *= -1;
-                    life.vx += (Math.random() - 0.5) * 0.3; // Reduced from 0.5
-                }
-                // Keep marine life below ocean surface and above bottom
-                if (life.y < OCEAN_SURFACE + life.config.radius || life.y > canvas.height - life.config.radius) {
-                    life.vy *= -1;
-                    life.vy += (Math.random() - 0.5) * 0.3; // Reduced from 0.5
-                }
-                
-                // Limit speed
-                const speed = Math.sqrt(life.vx**2 + life.vy**2);
-                if (speed > life.config.speed) {
-                    life.vx = (life.vx / speed) * life.config.speed;
-                    life.vy = (life.vy / speed) * life.config.speed;
-                }
-                
-                // Update pollution timer
-                if (life.isPolluted) {
-                    life.pollutionTimer--;
-                    if (life.pollutionTimer <= 0) {
-                        life.isPolluted = false;
-                    }
-                }
-            }
-        }
-        
-        // Check Collisions between Trash and Marine Life
-        function checkCollisions() {
-            for (let i = 0; i < trashItems.length; i++) {
-                const trash = trashItems[i];
-                
-                for (let j = 0; j < marineLife.length; j++) {
-                    const life = marineLife[j];
-                    
-                    const distance = Math.sqrt((trash.x - life.x)**2 + (trash.y - life.y)**2);
-                    
-                    if (distance < trash.config.radius + life.config.radius + 5) { // Added buffer
-                        // Collision detected - trash harms marine life
-                        gameState.score -= life.config.penalty;
-                        gameState.collisions++;
-                        life.isPolluted = true;
-                        life.pollutionTimer = 180; // 3 seconds at 60 FPS
-                        
-                        // Create collision effect
-                        createEffect(life.x, life.y, '-'+life.config.penalty, '#e74c3c');
-                        createCollisionEffect(life.x, life.y);
-                        
-                        // Remove the trash (marine life "ate" it)
-                        trashItems.splice(i, 1);
-                        i--; // Adjust index after removal
-                        break;
-                    }
-                }
-            }
-            
-            // Update fish protected count (non-polluted fish)
-            gameState.fishProtected = marineLife.filter(life => !life.isPolluted).length;
-        }
-        
-        // Create Text Effect
-        function createEffect(x, y, text, color) {
-            effects.push({
-                x: x,
-                y: y,
-                text: text,
-                color: color,
-                life: 60, // 1 second at 60 FPS
-                vy: -1 // Float upward
-            });
-        }
-        
-        // Create Collision Effect
-        function createCollisionEffect(x, y) {
-            effects.push({
-                x: x,
-                y: y,
-                type: 'collision',
-                life: 30, // 0.5 seconds
-                size: 10,
-                maxSize: 40
-            });
-        }
-        
-        // Update Effects
-        function updateEffects() {
-            for (let i = 0; i < effects.length; i++) {
-                const effect = effects[i];
-                
-                if (effect.type === 'collision') {
-                    effect.size += 1;
-                } else {
-                    effect.y += effect.vy;
-                }
-                
-                effect.life--;
-                
-                if (effect.life <= 0) {
-                    effects.splice(i, 1);
-                    i--;
-                }
-            }
-        }
-        
-        // Update UI
-        function updateUI() {
-            // Update desktop UI
-            p1Score.textContent = gameState.p1Score;
-            p2Score.textContent = gameState.p2Score;
-            p1Trash.textContent = gameState.p1Trash;
-            p2Trash.textContent = gameState.p2Trash;
-            timeValue.textContent = Math.max(0, Math.ceil(gameState.timeLeft));
-            fishProtected.textContent = gameState.fishProtected;
-            collisionCount.textContent = gameState.collisions;
-            
-            // Update mobile overlay UI
-            const gameplayP1Score = document.getElementById('gameplayP1Score');
-            const gameplayP2Score = document.getElementById('gameplayP2Score');
-            const gameplayTimeValue = document.getElementById('gameplayTimeValue');
-            
-            if (gameplayP1Score) gameplayP1Score.textContent = gameState.p1Score;
-            if (gameplayP2Score) gameplayP2Score.textContent = gameState.p2Score;
-            if (gameplayTimeValue) gameplayTimeValue.textContent = Math.max(0, Math.ceil(gameState.timeLeft));
-        }
-        
-        // End Game
-        function endGame() {
-            gameState.gameActive = false;
-            gameState.gameOver = true;
-            
-            // Stop background music
-            bgMusic.pause();
-            bgMusic.currentTime = 0;
-            
-            // Calculate performance rating
-            const efficiency = gameState.fishProtected / (gameState.fishProtected + gameState.collisions) || 0;
-            let rating = 'C';
-            if (efficiency >= 0.7) rating = 'A';
-            else if (efficiency >= 0.5) rating = 'B';
-            
-            const cycleImageContainer = document.getElementById('cycleImageContainer');
-            let didFail = false;
-            
-            // Update end screen based on game mode
-            if (gameMode === 'single') {
-                // Single player mode - Check if passed minimum score
-                if (gameState.winner === 1) {
-                    endTitle.textContent = '🎉 MISSION COMPLETE! 🎉';
-                    endTitle.style.color = '#2ecc71';
-                    didFail = false;
-                    
-                    // Play success sound
-                    successSound.currentTime = 0;
-                    successSound.play().catch(err => console.log('Success sound error:', err));
-                } else {
-                    if (gameState.p1Score < 0) {
-                        endTitle.textContent = '💔 MISSION FAILED - Too Many Collisions!';
-                    } else if (gameState.p1Score < MIN_SCORE_TO_PASS) {
-                        endTitle.textContent = '💔 MISSION FAILED - Score Too Low!';
-                    } else {
-                        endTitle.textContent = '💔 TIME\'S UP!';
-                    }
-                    endTitle.style.color = '#e74c3c';
-                    didFail = true;
-                }
-            } else {
-                // Multiplayer mode - Determine winner based on score
-                if (gameState.winner === 1) {
-                    endTitle.textContent = '🎉 PLAYER 1 WINS! 🎉';
-                    endTitle.style.color = '#3498db';
-                    
-                    // Play success sound for winner
-                    successSound.currentTime = 0;
-                    successSound.play().catch(err => console.log('Success sound error:', err));
-                } else if (gameState.winner === 2) {
-                    endTitle.textContent = '🎉 PLAYER 2 WINS! 🎉';
-                    endTitle.style.color = '#e74c3c';
-                    
-                    // Play success sound for winner
-                    successSound.currentTime = 0;
-                    successSound.play().catch(err => console.log('Success sound error:', err));
-                } else if (gameState.winner === 0) {
-                    endTitle.textContent = '🤝 TIE GAME! 🤝';
-                    endTitle.style.color = '#f39c12';
-                } else {
-                    // Both failed
-                    endTitle.textContent = '💔 BOTH PLAYERS FAILED!';
-                    endTitle.style.color = '#e74c3c';
-                    didFail = true;
-                }
-                
-                // Show cycle if both scores are low
-                didFail = didFail || (gameState.p1Score < MIN_SCORE_TO_PASS && gameState.p2Score < MIN_SCORE_TO_PASS);
-            }
-            
-            // Show different facts based on outcome
-            if (didFail || gameState.collisions > 5) {
-                // Show warning message with cycle diagram
-                endFact.innerHTML = `
-                    <strong>⚠️ MARINE LIFE AT RISK:</strong><br>
-                    Vietnam is top 10 in ocean plastic pollution. Fish ingest microplastics, 
-                    entering our food chain and threatening coastal communities.<br><br>
-                    <strong>🐟 THE CYCLE:</strong> 74,000 tons of plastic enter Vietnam's waters yearly, 
-                    affecting 3,200+ marine species.<br>
-                    <em>Source: World Bank, 2024</em>
-                `;
-                cycleImageContainer.style.display = 'block';
-            } else {
-                // Show positive message without cycle
-                endFact.innerHTML = `
-                    <strong>🌊 GREAT JOB!</strong><br>
-                    Vietnam aims to reduce ocean plastic 50% by 2025. Every piece removed helps!<br><br>
-                    <strong>💪 REAL IMPACT:</strong> 500,000+ kg collected from Vietnam's beaches in recent years.<br>
-                    <em>Small actions create big change! 🌍</em>
-                `;
-                cycleImageContainer.style.display = 'none';
-            }
-            
-            p1FinalScore.textContent = gameState.p1Score;
-            p2FinalScore.textContent = gameState.p2Score;
-            p1FinalTrash.textContent = gameState.p1Trash;
-            p2FinalTrash.textContent = gameState.p2Trash;
-            finalFish.textContent = gameState.fishProtected;
-            performanceRating.textContent = rating;
-            
-            // Show Next Level button only if player passed
-            if (gameMode === 'single') {
-                // Show button if single player passed the minimum score
-                nextLevelBtn.style.display = (gameState.winner === 1) ? 'inline-block' : 'none';
-            } else {
-                // Show button if either player won in multiplayer
-                nextLevelBtn.style.display = (gameState.winner === 1 || gameState.winner === 2) ? 'inline-block' : 'none';
-            }
-            
-            // Hide mobile gameplay UI
-            const gameplayUI = document.getElementById('gameplayUI');
-            if (gameplayUI) gameplayUI.style.display = 'none';
-            
-            endScreen.style.display = 'block';
-        }
-        
-        // Draw Game
-        function drawGame() {
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw background image if loaded
-            if (assets.background.complete && assets.background.naturalWidth > 0) {
-                ctx.drawImage(assets.background, 0, 0, canvas.width, canvas.height);
-            } else {
-                // Fallback: Draw water background with gradient
-                const waterGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                waterGradient.addColorStop(0, '#1e3c72');
-                waterGradient.addColorStop(0.2, '#2a5298'); // Ocean surface at 20%
-                waterGradient.addColorStop(1, '#1a3a52');
-                ctx.fillStyle = waterGradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw water surface line at OCEAN_SURFACE
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(0, OCEAN_SURFACE);
-                ctx.lineTo(canvas.width, OCEAN_SURFACE);
-                ctx.stroke();
-            }
-            
-            // Draw trash items
-            for (let trash of trashItems) {
-                drawTrash(trash);
-            }
-            
-            // Draw marine life
-            for (let life of marineLife) {
-                drawMarineLife(life);
-            }
-            
-            // Draw Player 1 (always)
-            drawBoat(boat1, 1);
-            drawGrabber(grabber1, boat1, '#3498db');
-            
-            // Draw Player 2 (only in multiplayer mode)
-            if (gameMode === 'multiplayer') {
-                drawBoat(boat2, 2);
-                drawGrabber(grabber2, boat2, '#e74c3c');
-            }
-            
-            // Draw effects
-            for (let effect of effects) {
-                drawEffect(effect);
-            }
-            
-            // Draw carried items
-            if (grabber1.carrying) {
-                drawTrash(grabber1.carrying);
-            }
-            if (gameMode === 'multiplayer' && grabber2.carrying) {
-                drawTrash(grabber2.carrying);
-            }
-        }
-        
-        // Draw Boat with Asset Image and Animation
-        function drawBoat(boat, playerNum) {
-            ctx.save();
-            
-            // Select the correct boat image based on player and direction
-            let boatImage;
-            if (playerNum === 1) {
-                boatImage = (boat.direction === 'left') ? assets.boat1Left : assets.boat1Right;
-            } else {
-                boatImage = (boat.direction === 'left') ? assets.boat2Left : assets.boat2Right;
-            }
-            
-            // Apply flip animation if currently flipping
-            if (boat.isFlipping) {
-                ctx.translate(boat.x, boat.y);
-                
-                // Create squash effect during flip
-                const scaleX = Math.cos(boat.flipProgress * Math.PI);
-                ctx.scale(scaleX, 1);
-                
-                // Draw boat at origin (already translated)
-                if (boatImage && boatImage.complete && boatImage.naturalWidth > 0) {
-                    ctx.drawImage(boatImage, -boat.width/2, -boat.height/2, boat.width, boat.height);
-                } else {
-                    // Fallback
-                    ctx.fillStyle = (playerNum === 1) ? '#3498db' : '#e74c3c';
-                    ctx.fillRect(-30, 0, 60, 20);
-                    ctx.fillRect(-15, -15, 30, 15);
-                }
-            } else {
-                // Normal drawing (no flip)
-                if (boatImage && boatImage.complete && boatImage.naturalWidth > 0) {
-                    ctx.drawImage(boatImage, boat.x - boat.width/2, boat.y - boat.height/2, boat.width, boat.height);
-                } else {
-                    // Fallback pixel art boat if image not loaded
-                    ctx.fillStyle = (playerNum === 1) ? '#3498db' : '#e74c3c';
-                    ctx.fillRect(boat.x - 30, boat.y, 60, 20);
-                    ctx.fillRect(boat.x - 15, boat.y - 15, 30, 15);
-                    
-                    ctx.fillStyle = '#34495e';
-                    ctx.fillRect(boat.x - 5, boat.y - 25, 10, 10);
-                }
-            }
-            
-            ctx.restore();
-            // Removed colored rectangle outline as requested
-        }
-        
-        // Draw Grabber with Asset Image
-        function drawGrabber(grabber, boat, playerColor) {
-            // Draw rope with player color
-            ctx.strokeStyle = playerColor;
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(boat.x, boat.y + 5);
-            ctx.lineTo(grabber.tipX, grabber.tipY);
-            ctx.stroke();
-            
-            // Draw grabber hook using asset
-            ctx.save();
-            if (assets.grabber.complete && assets.grabber.naturalWidth > 0) {
-                const grabberSize = 30;
-                ctx.drawImage(assets.grabber, grabber.tipX - grabberSize/2, grabber.tipY - grabberSize/2, grabberSize, grabberSize);
-            } else {
-                // Fallback
-                ctx.fillStyle = '#888';
-                ctx.beginPath();
-                ctx.arc(grabber.tipX, grabber.tipY, 8, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = playerColor;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(grabber.tipX, grabber.tipY, 10, 0.5, Math.PI - 0.5);
-                ctx.stroke();
-            }
-            ctx.restore();
-        }
-        
-        // Draw Trash with Asset Images
-        function drawTrash(trash) {
-            ctx.save();
-            
-            // Use asset images
-            const asset = trash.config.asset;
-            if (asset && assets[asset] && assets[asset].complete && assets[asset].naturalWidth > 0) {
-                const size = trash.config.radius * 2;
-                ctx.drawImage(assets[asset], trash.x - size/2, trash.y - size/2, size, size);
-            } else {
-                // Fallback to colored circles
-                ctx.fillStyle = trash.config.color;
-                ctx.beginPath();
-                ctx.arc(trash.x, trash.y, trash.config.radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            }
-            
-            ctx.restore();
-            
-            // OLD CODE - Now handled by images
-            switch(trash.type) {
-                case 'BOTTLE_OLD':
-                    // Draw bottle (pixel art)
-                    ctx.fillRect(trash.x - 6, trash.y - 12, 12, 24);
-                    // Bottle cap
-                    ctx.fillStyle = '#FFD700';
-                    ctx.fillRect(trash.x - 4, trash.y - 14, 8, 2);
-                    // Liquid
-                    ctx.fillStyle = '#87CEEB';
-                    ctx.fillRect(trash.x - 4, trash.y - 8, 8, 16);
-                    break;
-                    
-                case 'BAG':
-                    // Draw bag (pixel art)
-                    ctx.beginPath();
-                    ctx.moveTo(trash.x - 10, trash.y);
-                    ctx.lineTo(trash.x, trash.y - 8);
-                    ctx.lineTo(trash.x + 10, trash.y);
-                    ctx.lineTo(trash.x, trash.y + 8);
-                    ctx.closePath();
-                    ctx.fill();
-                    // Bag handles
-                    ctx.strokeStyle = '#FFFFFF';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.arc(trash.x - 6, trash.y - 2, 4, 0, Math.PI);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.arc(trash.x + 6, trash.y - 2, 4, 0, Math.PI);
-                    ctx.stroke();
-                    break;
-                    
-                case 'CONTAINER':
-                    // Draw container (pixel art)
-                    ctx.fillRect(trash.x - 10, trash.y - 7, 20, 14);
-                    // Container lid
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(trash.x - 8, trash.y - 9, 16, 2);
-                    // Food
-                    ctx.fillStyle = '#FF6B6B';
-                    ctx.fillRect(trash.x - 6, trash.y - 5, 12, 8);
-                    break;
-                    
-                case 'STRAW':
-                    // Draw straw (pixel art)
-                    ctx.fillRect(trash.x - 2, trash.y - 8, 4, 16);
-                    // Straw stripe
-                    ctx.fillStyle = '#FFD700';
-                    ctx.fillRect(trash.x - 2, trash.y - 6, 4, 2);
-                    ctx.fillRect(trash.x - 2, trash.y, 4, 2);
-                    ctx.fillRect(trash.x - 2, trash.y + 6, 4, 2);
-                    break;
-            }
-            
-            // Pixel art outline
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 1;
-            switch(trash.type) {
-                case 'BOTTLE':
-                    ctx.strokeRect(trash.x - 6, trash.y - 12, 12, 24);
-                    break;
-                case 'BAG':
-                    ctx.stroke();
-                    break;
-                case 'CONTAINER':
-                    ctx.strokeRect(trash.x - 10, trash.y - 7, 20, 14);
-                    break;
-                case 'STRAW':
-                    ctx.strokeRect(trash.x - 2, trash.y - 8, 4, 16);
-                    break;
-            }
-        }
-        
-        // Draw Marine Life with Asset Images
-        function drawMarineLife(life) {
-            ctx.save();
-            
-            // Apply pollution effect if contaminated
-            if (life.isPolluted) {
-                ctx.globalAlpha = 0.5;
-                ctx.filter = 'grayscale(70%)';
-            }
-            
-            // Use asset images
-            const asset = life.config.asset;
-            if (asset && assets[asset] && assets[asset].complete && assets[asset].naturalWidth > 0) {
-                const size = life.config.radius * 2;
-                
-                // Flip horizontally based on movement direction
-                if (life.vx < 0) {
-                    ctx.save();
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(assets[asset], -life.x - size/2, life.y - size/2, size, size);
-                    ctx.restore();
-                } else {
-                    ctx.drawImage(assets[asset], life.x - size/2, life.y - size/2, size, size);
-                }
-            } else {
-                // Fallback to colored shapes
-                ctx.fillStyle = life.isPolluted ? '#8B008B' : life.config.color;
-                ctx.beginPath();
-                ctx.arc(life.x, life.y, life.config.radius, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            }
-            
-            ctx.restore();
-            return; // Skip old drawing code
-            
-            // OLD CODE BELOW - keeping for reference
-            switch(life.type) {
-                case 'FISH_OLD':
-                    // Draw fish body (pixel art)
-                    ctx.beginPath();
-                    ctx.ellipse(life.x, life.y, 12, 8, Math.atan2(life.vy, life.vx), 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw tail (pixel art)
-                    ctx.beginPath();
-                    const tailAngle = Math.atan2(life.vy, life.vx);
-                    const tailX = life.x - Math.cos(tailAngle) * 12;
-                    const tailY = life.y - Math.sin(tailAngle) * 12;
-                    ctx.moveTo(tailX, tailY);
-                    ctx.lineTo(tailX - 8, tailY - 6);
-                    ctx.lineTo(tailX - 8, tailY + 6);
-                    ctx.closePath();
-                    ctx.fill();
-                    
-                    // Draw eye (pixel art)
-                    ctx.fillStyle = 'white';
-                    ctx.beginPath();
-                    const eyeX = life.x + Math.cos(tailAngle) * 6;
-                    const eyeY = life.y + Math.sin(tailAngle) * 6;
-                    ctx.arc(eyeX, eyeY, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw fin (pixel art)
-                    ctx.fillStyle = life.config.color;
-                    ctx.beginPath();
-                    ctx.moveTo(life.x, life.y - 6);
-                    ctx.lineTo(life.x + 4, life.y - 10);
-                    ctx.lineTo(life.x + 8, life.y - 8);
-                    ctx.closePath();
-                    ctx.fill();
-                    break;
-                    
-                case 'TURTLE':
-                    // Draw turtle shell (pixel art)
-                    ctx.beginPath();
-                    ctx.ellipse(life.x, life.y, 15, 10, Math.atan2(life.vy, life.vx), 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw shell pattern (pixel art)
-                    ctx.strokeStyle = '#2F4F4F';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.ellipse(life.x, life.y, 12, 8, Math.atan2(life.vy, life.vx), 0, Math.PI * 2);
-                    ctx.stroke();
-                    
-                    // Draw head (pixel art)
-                    ctx.fillStyle = life.config.color;
-                    const headAngle = Math.atan2(life.vy, life.vx);
-                    const headX = life.x + Math.cos(headAngle) * 15;
-                    const headY = life.y + Math.sin(headAngle) * 15;
-                    ctx.beginPath();
-                    ctx.arc(headX, headY, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Draw flippers (pixel art)
-                    ctx.beginPath();
-                    ctx.ellipse(life.x - 8, life.y - 8, 8, 3, Math.PI/4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.ellipse(life.x - 8, life.y + 8, 8, 3, -Math.PI/4, 0, Math.PI * 2);
-                    ctx.fill();
-                    break;
-            }
-            
-            // Outline for pixel art
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 1;
-            if (life.type === 'FISH') {
-                ctx.stroke();
-            } else {
-                ctx.stroke();
-            }
-        }
-        
-        // Draw Effect
-        function drawEffect(effect) {
-            if (effect.type === 'collision') {
-                // Draw collision effect (expanding circle)
-                ctx.strokeStyle = '#e74c3c';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(effect.x, effect.y, effect.size, 0, Math.PI * 2);
-                ctx.stroke();
-            } else {
-                // Draw text effect
-                ctx.fillStyle = effect.color;
-                ctx.font = 'bold 16px Courier New';
-                ctx.textAlign = 'center';
-                ctx.fillText(effect.text, effect.x, effect.y);
-            }
-        }
-        
-        // Game Loop
-        function gameLoop() {
-            if (gameState.gameActive && !gameState.gameOver) {
-                updateGame();
-                drawGame();
-                requestAnimationFrame(gameLoop);
-            }
-        }
-        
-        // Event Listeners
-        // Mode Selection
-        singlePlayerBtn.addEventListener('click', function() {
-            gameMode = 'single';
-            showStartScreen();
-        });
-        
-        multiPlayerBtn.addEventListener('click', function() {
-            gameMode = 'multiplayer';
-            showStartScreen();
-        });
-        
-        backBtn.addEventListener('click', function() {
-            startScreen.style.display = 'none';
-            modeScreen.style.display = 'flex';
-        });
-        
-        startBtn.addEventListener('click', initGame);
-        
-        retryBtn.addEventListener('click', function() {
-            startScreen.style.display = 'none';
-            modeScreen.style.display = 'flex';
-        });
-        
-        nextLevelBtn.addEventListener('click', function() {
-            // Navigate to Level 2 with game mode parameter
-            window.location.href = 'Level2.html?mode=' + gameMode;
-        });
-        
-        // Show Start Screen with Mode-Specific Info
-        function showStartScreen() {
-            modeScreen.style.display = 'none';
-            startScreen.style.display = 'flex';
-            
-            if (gameMode === 'single') {
-                modeDescription.innerHTML = 'Welcome to <strong>SINGLE PLAYER MODE</strong>!';
-                controlsInfo.innerHTML = `
-                    <div style="color: #3498db; margin: 10px 0;">
-                        <strong>🎮 CONTROLS:</strong> <span class="key">A</span> <span class="key">D</span> or <span class="key">←</span> <span class="key">→</span> Move | <span class="key">SPACE</span> Launch Grabber
-                    </div>
-                `;
-                missionInfo.innerHTML = `
-                    <strong>🎯 GOAL:</strong><br>
-                    ⏱️ Survive 60 seconds<br>
-                    ♻️ Collect trash (avoid fish!)<br>
-                    ⚠️ Keep score above 50 to pass
-                `;
-            } else {
-                modeDescription.innerHTML = 'Welcome to <strong>MULTIPLAYER MODE</strong>!';
-                controlsInfo.innerHTML = `
-                    <div style="color: #3498db; margin: 10px 0;"><strong>🎮 P1:</strong> <span class="key">A</span> <span class="key">D</span> Move | <span class="key">SPACE</span> Launch</div>
-                    <div style="color: #e74c3c; margin: 10px 0;"><strong>🎮 P2:</strong> <span class="key">←</span> <span class="key">→</span> Move | <span class="key">ENTER</span> Launch</div>
-                `;
-                missionInfo.innerHTML = `
-                    <strong>🎯 GOAL:</strong><br>
-                    ⏱️ Survive 60 seconds<br>
-                    ♻️ Collect most trash to win<br>
-                    ⚠️ Score 50+ to qualify
-                `;
-            }
-        }
-        
-        // Keyboard Controls
-        const keys = {};
-        
-        window.addEventListener('keydown', function(e) {
-            keys[e.key] = true;
-            
-            // Player 1: Spacebar to launch grabber
-            if (e.key === ' ' && gameState.gameActive && grabber1.state === 'swinging') {
-                grabber1.state = 'extending';
-                e.preventDefault();
-            }
-            
-            // Player 2: Enter to launch grabber (only in multiplayer mode)
-            if (gameMode === 'multiplayer' && e.key === 'Enter' && gameState.gameActive && grabber2.state === 'swinging') {
-                grabber2.state = 'extending';
-                e.preventDefault();
-            }
-        });
-        
-        window.addEventListener('keyup', function(e) {
-            keys[e.key] = false;
-        });
-        
-        // Mobile Controls Event Handlers
-        // Single Player Mobile Controls
-        const mobileLeft = document.getElementById('mobileLeft');
-        const mobileRight = document.getElementById('mobileRight');
-        const mobileLaunch = document.getElementById('mobileLaunch');
-        
-        // P1 Multiplayer Mobile Controls
-        const mobileP1Left = document.getElementById('mobileP1Left');
-        const mobileP1Right = document.getElementById('mobileP1Right');
-        const mobileP1Launch = document.getElementById('mobileP1Launch');
-        
-        // P2 Multiplayer Mobile Controls
-        const mobileP2Left = document.getElementById('mobileP2Left');
-        const mobileP2Right = document.getElementById('mobileP2Right');
-        const mobileP2Launch = document.getElementById('mobileP2Launch');
-        
-        // Helper function to handle button press
-        function handleMobileButton(button, key, launchPlayer) {
-            if (!button) return;
-            
-            // Touch start / Mouse down
-            const startHandler = (e) => {
-                e.preventDefault();
-                if (launchPlayer && gameState.gameActive) {
-                    // Launch grabber
-                    if (launchPlayer === 1 && grabber1.state === 'swinging') {
-                        grabber1.state = 'extending';
-                    } else if (launchPlayer === 2 && grabber2.state === 'swinging') {
-                        grabber2.state = 'extending';
-                    }
-                } else {
-                    // Movement key
-                    keys[key] = true;
-                }
-            };
-            
-            // Touch end / Mouse up
-            const endHandler = (e) => {
-                e.preventDefault();
-                if (!launchPlayer) {
-                    keys[key] = false;
-                }
-            };
-            
-            button.addEventListener('touchstart', startHandler, { passive: false });
-            button.addEventListener('mousedown', startHandler);
-            button.addEventListener('touchend', endHandler, { passive: false });
-            button.addEventListener('mouseup', endHandler);
-            button.addEventListener('contextmenu', (e) => e.preventDefault());
-        }
-        
-        // Single Player Controls
-        handleMobileButton(mobileLeft, 'a', null);
-        handleMobileButton(mobileRight, 'd', null);
-        handleMobileButton(mobileLaunch, ' ', 1);
-        
-        // P1 Multiplayer Controls
-        handleMobileButton(mobileP1Left, 'a', null);
-        handleMobileButton(mobileP1Right, 'd', null);
-        handleMobileButton(mobileP1Launch, ' ', 1);
-        
-        // P2 Multiplayer Controls
-        handleMobileButton(mobileP2Left, 'ArrowLeft', null);
-        handleMobileButton(mobileP2Right, 'ArrowRight', null);
-        handleMobileButton(mobileP2Launch, 'Enter', 2);
-        
-        // Handle continuous key presses for movement
-        function handleInput() {
-            if (!gameState.gameActive) return;
-            
-            if (gameMode === 'single') {
-                // Single Player: Can use A/D or Arrow Keys
-                if (boat1.canMove) {
-                    const pressingLeft = keys['a'] || keys['A'] || keys['ArrowLeft'];
-                    const pressingRight = keys['d'] || keys['D'] || keys['ArrowRight'];
-                    
-                    if (pressingLeft && !pressingRight) {
-                        // Trigger flip animation if changing direction
-                        if (boat1.direction !== 'left' && !boat1.isFlipping) {
-                            boat1.isFlipping = true;
-                            boat1.targetDirection = 'left';
-                            boat1.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing left or flipping to left
-                        if (boat1.direction === 'left' || (boat1.isFlipping && boat1.targetDirection === 'left')) {
-                            boat1.x -= boat1.speed;
-                            if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
-                        }
-                    }
-                    
-                    if (pressingRight && !pressingLeft) {
-                        // Trigger flip animation if changing direction
-                        if (boat1.direction !== 'right' && !boat1.isFlipping) {
-                            boat1.isFlipping = true;
-                            boat1.targetDirection = 'right';
-                            boat1.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing right or flipping to right
-                        if (boat1.direction === 'right' || (boat1.isFlipping && boat1.targetDirection === 'right')) {
-                            boat1.x += boat1.speed;
-                            if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
-                        }
-                    }
-                }
-            } else {
-                // Multiplayer: Separate controls
-                // Player 1 Controls: A/D
-                if (boat1.canMove) {
-                    const p1Left = keys['a'] || keys['A'];
-                    const p1Right = keys['d'] || keys['D'];
-                    
-                    if (p1Left && !p1Right) {
-                        // Trigger flip animation if changing direction
-                        if (boat1.direction !== 'left' && !boat1.isFlipping) {
-                            boat1.isFlipping = true;
-                            boat1.targetDirection = 'left';
-                            boat1.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing left or flipping to left
-                        if (boat1.direction === 'left' || (boat1.isFlipping && boat1.targetDirection === 'left')) {
-                            boat1.x -= boat1.speed;
-                            if (boat1.x < boat1.width/2) boat1.x = boat1.width/2;
-                        }
-                    }
-                    
-                    if (p1Right && !p1Left) {
-                        // Trigger flip animation if changing direction
-                        if (boat1.direction !== 'right' && !boat1.isFlipping) {
-                            boat1.isFlipping = true;
-                            boat1.targetDirection = 'right';
-                            boat1.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing right or flipping to right
-                        if (boat1.direction === 'right' || (boat1.isFlipping && boat1.targetDirection === 'right')) {
-                            boat1.x += boat1.speed;
-                            if (boat1.x > canvas.width - boat1.width/2) boat1.x = canvas.width - boat1.width/2;
-                        }
-                    }
-                }
-                
-                // Player 2 Controls: Arrow Keys
-                if (boat2.canMove) {
-                    const p2Left = keys['ArrowLeft'];
-                    const p2Right = keys['ArrowRight'];
-                    
-                    if (p2Left && !p2Right) {
-                        // Trigger flip animation if changing direction
-                        if (boat2.direction !== 'left' && !boat2.isFlipping) {
-                            boat2.isFlipping = true;
-                            boat2.targetDirection = 'left';
-                            boat2.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing left or flipping to left
-                        if (boat2.direction === 'left' || (boat2.isFlipping && boat2.targetDirection === 'left')) {
-                            boat2.x -= boat2.speed;
-                            if (boat2.x < boat2.width/2) boat2.x = boat2.width/2;
-                        }
-                    }
-                    
-                    if (p2Right && !p2Left) {
-                        // Trigger flip animation if changing direction
-                        if (boat2.direction !== 'right' && !boat2.isFlipping) {
-                            boat2.isFlipping = true;
-                            boat2.targetDirection = 'right';
-                            boat2.flipProgress = 0;
-                        }
-                        
-                        // Only move if facing right or flipping to right
-                        if (boat2.direction === 'right' || (boat2.isFlipping && boat2.targetDirection === 'right')) {
-                            boat2.x += boat2.speed;
-                            if (boat2.x > canvas.width - boat2.width/2) boat2.x = canvas.width - boat2.width/2;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Input handling in game loop
-        const originalGameLoop = gameLoop;
-        gameLoop = function() {
-            if (gameState.gameActive && !gameState.gameOver) {
-                handleInput();
-                updateGame();
-                drawGame();
-                requestAnimationFrame(gameLoop);
-            }
-        };
-        
-        // Handle canvas responsiveness
-        function resizeCanvas() {
-            const wrapper = document.getElementById('canvasWrapper');
-            const canvas = document.getElementById('gameCanvas');
-            
-            // Get the actual display size
-            const rect = canvas.getBoundingClientRect();
-            
-            // Scale calculations for mouse/touch input (if needed for future features)
-            window.canvasScaleX = canvas.width / rect.width;
-            window.canvasScaleY = canvas.height / rect.height;
-        }
-        
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('orientationchange', resizeCanvas);
-        resizeCanvas();
-        
-        // Detect if mobile device
-        function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                   (window.innerWidth <= 768);
-        }
-        
-        // Show mobile controls on mobile devices
-        if (isMobileDevice()) {
-            document.getElementById('mobileControls').style.display = 'flex';
-        }
-        
-        // Draw initial screen
-        drawGame();
-    </script>
+    <!-- Level cards -->
+    <p class="section-label">Your Missions</p>
+    <div class="levels">
+
+        <div class="level-card ocean">
+            <div class="level-num">Level 1</div>
+            <div class="level-icon">🌊</div>
+            <h3>Ocean Cleanup</h3>
+            <p>The South China Sea is drowning in plastic. Pilot a boat along the coast, collect waste before it reaches the coral reefs, and protect the marine life that millions of Vietnamese families depend on.</p>
+            <span class="level-tag">🐟 Marine Life</span>
+            <span class="level-tag">♻️ Plastic Pollution</span>
+        </div>
+
+        <div class="level-card flood">
+            <div class="level-num">Level 2</div>
+            <div class="level-icon">🌧️</div>
+            <h3>Hanoi Flood Challenge</h3>
+            <p>Heavy rain is coming and the sewers are clogged with trash. Race through Hanoi's streets to clear blocked drains before the city floods. Every sewer you save protects a neighbourhood.</p>
+            <span class="level-tag">🏙️ Urban Flooding</span>
+            <span class="level-tag">🕳️ Sewer Management</span>
+        </div>
+
+        <div class="level-card rescue">
+            <div class="level-num">Level 3</div>
+            <div class="level-icon">🚁</div>
+            <h3>Flood Rescue Drone</h3>
+            <p>Typhoon Yagi has cut off mountain communities in northern Vietnam. Roads are gone. Pilot an emergency drone to deliver medical supplies, food, and water to five stranded families before time runs out.</p>
+            <span class="level-tag">🏔️ Disaster Relief</span>
+            <span class="level-tag">🚨 Drone Rescue</span>
+        </div>
+
+    </div>
+
+    <!-- Context -->
+    <div class="context-box">
+        <h2>🌍 Why This Matters</h2>
+        <p>
+            Vietnam is one of the countries <span class="highlight">most vulnerable to climate change</span> in the world. Rising sea levels threaten coastal cities, intensified monsoon seasons cause catastrophic urban flooding, and isolated highland communities are cut off for weeks after major storms.
+        </p>
+        <p>
+            In <span class="highlight">September 2024</span>, Super Typhoon Yagi — the strongest storm to hit Vietnam in 30 years — left over 300 people dead and displaced thousands of families in the north. The same year, Hanoi recorded its worst urban flooding in a decade, largely caused by blocked drainage systems overwhelmed by waste.
+        </p>
+        <p>
+            These games put you in the shoes of the people who respond to these crises every day — and show how individual actions, from picking up litter to clearing a drain, create real change at scale.
+        </p>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-bottom">
+        <a href="level1/Level1.html" class="play-btn"><span>▶</span> BEGIN LEVEL 1</a>
+        <p>Single player and multiplayer modes available in each level</p>
+    </div>
+
+</div>
+
+<footer>
+    Vietnam Environmental Heroes &nbsp;·&nbsp; Educational Game &nbsp;·&nbsp; Raising Awareness for Environmental Action
+</footer>
+
+<script>
+    // Generate background particles
+    const container = document.getElementById('particles');
+    const colors = ['#2ecc71', '#3498db', '#9b59b6', '#e67e22', '#1abc9c'];
+
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = 4 + Math.random() * 12;
+        p.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${Math.random() * 100}%;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            animation-duration: ${8 + Math.random() * 16}s;
+            animation-delay: ${Math.random() * 12}s;
+        `;
+        container.appendChild(p);
+    }
+</script>
+
 </body>
 </html>

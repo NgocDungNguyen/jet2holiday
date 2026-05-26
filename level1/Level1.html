@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Ocean Cleanup - South China Sea</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Top UI Panel - Outside Canvas (hidden in landscape mobile) -->
+        <div id="topUI">
+            <div class="uiPanel" style="border-color: #3498db;" id="p1Panel">
+                <div style="color: #3498db; font-weight: bold;" id="p1Label">PLAYER 1</div>
+                <div><strong>SCORE:</strong> <span id="p1Score">0</span></div>
+                <div><strong>TRASH:</strong> <span id="p1Trash">0</span></div>
+            </div>
+
+            <div class="uiPanel">
+                <div><strong>TIME:</strong> <span id="timeValue">60</span>s</div>
+                <div><strong>MIN SCORE:</strong> <span id="minScore">50</span></div>
+                <div><strong>FISH SAVED:</strong> <span id="fishProtected">0</span></div>
+                <div><strong>COLLISIONS:</strong> <span id="collisionCount">0</span></div>
+            </div>
+
+            <div class="uiPanel" style="border-color: #e74c3c;" id="p2Panel">
+                <div style="color: #e74c3c; font-weight: bold;">PLAYER 2</div>
+                <div><strong>SCORE:</strong> <span id="p2Score">0</span></div>
+                <div><strong>TRASH:</strong> <span id="p2Trash">0</span></div>
+            </div>
+        </div>
+
+        <!-- Compact Gameplay UI for Mobile Landscape -->
+        <div id="gameplayUI" style="display: none;">
+            <div id="gameplayP1" style="color: #3498db;">P1: <span id="gameplayP1Score">0</span></div>
+            <div id="gameplayTime">⏱️ <span id="gameplayTimeValue">60</span>s</div>
+            <div id="gameplayP2" style="color: #e74c3c; display: none;">P2: <span id="gameplayP2Score">0</span></div>
+        </div>
+
+        <!-- Canvas Wrapper -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+
+        <!-- Controls - Outside Canvas -->
+        <div id="controls">
+            <div id="controlsDisplay">
+                <!-- Will be dynamically updated based on game mode -->
+            </div>
+        </div>
+
+        <!-- Mobile Touch Controls - Single Player (centered) -->
+        <div id="mobileControls">
+            <div class="mobileBtn" id="mobileLeft">◄</div>
+            <div class="mobileBtn launch" id="mobileLaunch">LAUNCH</div>
+            <div class="mobileBtn" id="mobileRight">►</div>
+        </div>
+
+        <!-- Multiplayer Mobile Controls - Player 1 (left side) -->
+        <div id="mobileControlsP1">
+            <div class="mobileBtn" id="mobileP1Left">◄</div>
+            <div class="mobileBtn launch" id="mobileP1Launch">P1<br>GO!</div>
+            <div class="mobileBtn" id="mobileP1Right">►</div>
+        </div>
+
+        <!-- Multiplayer Mobile Controls - Player 2 (right side) -->
+        <div id="mobileControlsP2">
+            <div class="mobileBtn p2" id="mobileP2Left">◄</div>
+            <div class="mobileBtn p2 launch" id="mobileP2Launch">P2<br>GO!</div>
+            <div class="mobileBtn p2" id="mobileP2Right">►</div>
+        </div>
+
+        <!-- Old overlay hidden -->
+        <div id="uiOverlay" style="display: none;">
+        </div>
+
+        <div id="endScreen">
+            <h2 id="endTitle">LEVEL COMPLETE!</h2>
+            <div id="endStats">
+                <div style="color: #3498db;">Player 1 Score: <span id="p1FinalScore">0</span> (<span id="p1FinalTrash">0</span> trash)</div>
+                <div style="color: #e74c3c;">Player 2 Score: <span id="p2FinalScore">0</span> (<span id="p2FinalTrash">0</span> trash)</div>
+                <div style="margin-top: 10px;">Fish Saved: <span id="finalFish">0</span></div>
+                <div>Performance: <span id="performanceRating">C</span></div>
+            </div>
+            <div class="factBox" id="endFact">
+                <!-- Fact will be inserted here -->
+            </div>
+            <div id="cycleImageContainer" style="display: none; margin: 20px 0;">
+                <img id="cycleImage" src="assets/cycle.png" alt="Plastic Cycle" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #e74c3c;">
+                <div style="font-size: 14px; margin-top: 10px; color: #bdc3c7; line-height: 1.6;">
+                    <strong>THE PLASTIC CYCLE:</strong><br>
+                    Human dumps plastic → Fish eats plastic → Human catches fish → Human eats fish → Microplastics in human body → Human gets sick
+                </div>
+            </div>
+            <div>
+                <button id="nextLevelBtn">Next Level</button>
+                <button id="retryBtn">Play Again</button>
+            </div>
+        </div>
+
+        <div id="modeScreen">
+            <h1>🌊 OCEAN CLEANUP CHALLENGE</h1>
+            <h2 style="color: #3498db; font-size: 20px; margin: 10px 0;">Level 1: South China Sea Protection</h2>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 10px;">
+                    🌍 <strong>280,000 tons of plastic</strong> enter the South China Sea annually!
+                </p>
+                <p style="font-size: 14px; color: #3498db; margin-top: 15px;">
+                    ♻️ Clean the ocean and protect marine life!
+                </p>
+            </div>
+            <div style="margin: 30px 0;">
+                <h2 style="color: #3498db; font-size: 22px; margin-bottom: 20px;">SELECT GAME MODE</h2>
+                <button id="singlePlayerBtn" style="margin: 10px; padding: 20px 40px; font-size: 18px; background: #3498db;">
+                    🎮 SINGLE PLAYER<br>
+                    <span style="font-size: 12px;">Beat the clock and reach the goal!</span>
+                </button>
+                <br>
+                <button id="multiPlayerBtn" style="margin: 10px; padding: 20px 40px; font-size: 18px; background: #e74c3c;">
+                    👥 MULTIPLAYER<br>
+                    <span style="font-size: 12px;">Compete with a friend to save more!</span>
+                </button>
+            </div>
+            <div style="margin-top: 20px; font-size: 13px; color: #95a5a6; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <em>This game raises awareness about ocean pollution and promotes environmental action in Vietnam's coastal regions.</em>
+            </div>
+        </div>
+
+        <div id="startScreen" style="display: none;">
+            <h1>🌊 OCEAN CLEANUP CHALLENGE</h1>
+            <h2 style="color: #3498db; margin-bottom: 15px;">Mission Briefing</h2>
+            <p id="modeDescription" style="max-width: 600px; margin: 0 auto 20px; font-size: 15px; line-height: 1.6;">Welcome to Level 1: South China Sea Cleanup!</p>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px auto; max-width: 600px;">
+                <h3 style="color: #2ecc71; font-size: 18px; margin-bottom: 10px;">🎯 YOUR MISSION:</h3>
+                <div id="missionInfo" style="font-size: 14px; color: #ecf0f1; text-align: left;">
+                    <!-- Mission info will be dynamically added here -->
+                </div>
+            </div>
+            <div id="controlsInfo" style="margin: 20px auto; max-width: 600px; background: rgba(52,152,219,0.2); padding: 15px; border-radius: 8px;">
+                <!-- Controls will be dynamically added here -->
+            </div>
+            <button id="startBtn" style="font-size: 20px; padding: 15px 50px; margin-top: 10px;">🚀 START MISSION</button>
+            <button id="backBtn" style="background: #95a5a6; margin-top: 10px;">← BACK TO MENU</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

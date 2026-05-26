@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Hanoi Flood Challenge - Level 2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen">
+        <h2>🌧️ LOADING HANOI FLOOD CHALLENGE</h2>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar">0%</div>
+        </div>
+        <div class="loading-text" id="loadingText">Loading assets...</div>
+    </div>
+
+    <div id="gameContainer">
+        <!-- Compact landscape overlay (shown only when topUI is hidden) -->
+        <div id="gameplayUI2" style="display:none;">
+            <div style="color:#3498db;">P1: <span id="gameplay2Trash">0</span> trash</div>
+            <div>⏱️ <span id="gameplay2Rain">60</span>s</div>
+            <div>💧 <span id="gameplay2WaterVal">0</span>%</div>
+            <div id="gameplay2P2" style="color:#e74c3c;display:none;">P2: <span id="gameplay2TrashP2">0</span> trash</div>
+        </div>
+
+        <!-- Top UI Panel - Outside Canvas -->
+        <div id="topUI">
+            <div class="uiPanel">
+                <div id="player1UI">
+                    <div><strong>👦 PLAYER 1</strong></div>
+                    <div>Trash: <span id="p1Trash">0</span></div>
+                </div>
+            </div>
+
+            <div class="uiPanel" style="text-align: center;">
+                <div><strong>⏱️ Countdown:</strong> <span id="countdownValue">10s</span></div>
+                <div><strong>🌧️ Rain:</strong> <span id="rainTimeValue">60s</span></div>
+                <div><strong>💧 Water:</strong> <span id="waterLevelValue">0%</span></div>
+                <div><strong>🕳️ Sewers:</strong> <span id="sewersClear">0</span>/3</div>
+            </div>
+
+            <div class="uiPanel" id="player2UI" style="display: none;">
+                <div><strong>👧 PLAYER 2</strong></div>
+                <div>Trash: <span id="p2Trash">0</span></div>
+            </div>
+        </div>
+
+        <!-- Canvas Wrapper -->
+        <div id="canvasWrapper">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+
+        <!-- Controls - Outside Canvas -->
+        <div id="controls">
+            <span id="singleControls">
+                <span class="key">A/D</span> or <span class="key">←/→</span> = Move | <span class="key">SPACEBAR</span> = Pick Up/Drop
+            </span>
+            <span id="multiControls" style="display: none;">
+                P1: <span class="key">A/D</span> + <span class="key">SPACE</span> |
+                P2: <span class="key">←/→</span> + <span class="key">ENTER</span>
+            </span>
+        </div>
+
+        <!-- Single player touch controls -->
+        <div id="mobileControls2">
+            <div class="mobileBtn" id="mob2Left">◄</div>
+            <div class="mobileBtn jump" id="mob2Jump">▲</div>
+            <div class="mobileBtn action" id="mob2Action">PICK<br>UP</div>
+            <div class="mobileBtn" id="mob2Right">►</div>
+        </div>
+
+        <!-- Multiplayer P1 touch controls (left side) -->
+        <div id="mobileControls2P1">
+            <div class="mobileBtn" id="mob2P1Left">◄</div>
+            <div class="mobileBtn jump" id="mob2P1Jump">▲</div>
+            <div class="mobileBtn action" id="mob2P1Action">P1<br>ACT</div>
+            <div class="mobileBtn" id="mob2P1Right">►</div>
+        </div>
+
+        <!-- Multiplayer P2 touch controls (right side) -->
+        <div id="mobileControls2P2">
+            <div class="mobileBtn p2" id="mob2P2Left">◄</div>
+            <div class="mobileBtn p2 jump" id="mob2P2Jump">▲</div>
+            <div class="mobileBtn p2 action" id="mob2P2Action">P2<br>ACT</div>
+            <div class="mobileBtn p2" id="mob2P2Right">►</div>
+        </div>
+
+        <div id="endScreen">
+            <h2 id="endTitle">MISSION COMPLETE!</h2>
+            <div id="endStats"></div>
+            <div class="factBox" id="endFact"></div>
+            <div>
+                <button id="nextLevelBtn" style="display: none;">🚁 NEXT LEVEL →</button>
+                <button id="retryBtn">TRY AGAIN</button>
+                <button id="backBtn">BACK TO LEVEL 1</button>
+            </div>
+        </div>
+
+        <div id="characterScreen" style="display: none;">
+            <h1>🌧️ HANOI FLOOD PREVENTION</h1>
+            <h2 style="color: #3498db; margin: 20px 0;">Choose Your Character</h2>
+
+            <div style="display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; margin: 30px 0;">
+                <div id="selectBoy" style="cursor: pointer; text-align: center; padding: 20px; border: 3px solid transparent; border-radius: 10px; transition: all 0.3s;">
+                    <img src="assets/Boy_Front.png" style="width: 150px; height: auto; image-rendering: pixelated;">
+                    <h3 style="color: #3498db; margin-top: 10px;">BOY</h3>
+                </div>
+                <div id="selectGirl" style="cursor: pointer; text-align: center; padding: 20px; border: 3px solid transparent; border-radius: 10px; transition: all 0.3s;">
+                    <img src="assets/Girl_Front.png" style="width: 150px; height: auto; image-rendering: pixelated;">
+                    <h3 style="color: #e74c3c; margin-top: 10px;">GIRL</h3>
+                </div>
+            </div>
+
+            <button id="backToLevel1" style="background: #95a5a6; margin-top: 20px;">← BACK TO LEVEL 1</button>
+        </div>
+
+        <div id="startScreen" style="display: none;">
+            <h1>🌧️ HANOI FLOOD PREVENTION</h1>
+            <h2 id="modeTitle" style="color: #3498db; margin: 10px 0;">LEVEL 2: Urban Flood Challenge</h2>
+
+            <div class="missionBox">
+                <p style="font-size: clamp(14px, 2vw, 18px); line-height: 1.6; margin-bottom: 10px;">
+                    🚨 <strong>Heavy rain is coming! Clear trash from sewers before the city floods!</strong>
+                </p>
+            </div>
+
+            <div style="max-width: 600px; width: 90%; margin: 20px auto; background: rgba(52, 152, 219, 0.2); padding: 15px; border-radius: 10px; border: 2px solid #3498db;">
+                <h3 style="color: #2ecc71; font-size: clamp(14px, 2vw, 18px); margin-bottom: 12px;">🎯 OBJECTIVE:</h3>
+
+                <div style="text-align: left; font-size: clamp(12px, 1.8vw, 15px); line-height: 1.8;">
+                    <ul style="margin: 5px 0 15px 20px;">
+                        <li>Pick up trash and drop into bins (left bin or trash car)</li>
+                        <li>Clear ALL trash from sewers to unblock them ✓</li>
+                        <li><strong style="color: #e74c3c;">Keep water below 50% or you LOSE!</strong></li>
+                    </ul>
+
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #f39c12;">⏱️ TIMELINE:</strong></p>
+                    <ul style="margin: 5px 0 15px 20px;">
+                        <li>0-10s: Prep time (collect trash fast!)</li>
+                        <li>10-70s: HEAVY RAIN - water rises if sewers blocked!</li>
+                    </ul>
+
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #f39c12;">🎮 CONTROLS:</strong></p>
+                    <ul style="margin: 5px 0 15px 20px;" id="controlsList">
+                        <li><span class="key">A</span>/<span class="key">D</span> or <span class="key">←</span>/<span class="key">→</span> = Move</li>
+                        <li><span class="key">W</span> or <span class="key">↑</span> = JUMP (swim when underwater)</li>
+                        <li><span class="key">SPACEBAR</span> = Pick Up / Drop</li>
+                    </ul>
+
+                    <p style="margin: 10px 0 5px 0;"><strong style="color: #e74c3c;">⚠️ KEY TIPS:</strong></p>
+                    <ul style="margin: 5px 0 0 20px;">
+                        <li>Bins float when water rises - jump to reach them!</li>
+                        <li>Underwater 5+ seconds = DROWN! Watch your air!</li>
+                        <li>Clear sewers FAST - they drain water when unblocked ✓</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button id="startBtn" style="font-size: clamp(14px, 2.5vw, 18px); padding: 15px 40px; margin: 10px;">🚀 START MISSION</button>
+
+            <div class="impactBox">
+                <strong>🌍 REAL IMPACT:</strong> 80% of Hanoi's flooding is caused by blocked drains. Clear sewers save lives!
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
