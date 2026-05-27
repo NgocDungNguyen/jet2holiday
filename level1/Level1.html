@@ -51,26 +51,28 @@
             </div>
         </div>
 
-        <!-- Mobile Touch Controls - Single Player (centered) -->
-        <div id="mobileControls">
-            <div class="mobileBtn" id="mobileLeft">◄</div>
-            <div class="mobileBtn launch" id="mobileLaunch">LAUNCH</div>
-            <div class="mobileBtn" id="mobileRight">►</div>
+        <!-- Single-player joystick zone -->
+        <div id="controlZone" style="display:none;">
+            <div class="joystick-base" id="js1"><div class="joystick-knob" id="jsKnob1"></div></div>
+            <button class="action-btn" id="act1">LAUNCH</button>
         </div>
 
-        <!-- Multiplayer Mobile Controls - Player 1 (left side) -->
-        <div id="mobileControlsP1">
-            <div class="mobileBtn" id="mobileP1Left">◄</div>
-            <div class="mobileBtn launch" id="mobileP1Launch">P1<br>GO!</div>
-            <div class="mobileBtn" id="mobileP1Right">►</div>
+        <!-- Multiplayer P1 zone (left) -->
+        <div id="controlZoneP1" class="control-zone p1" style="display:none;">
+            <span class="zone-label" style="color:#3498db;">P1</span>
+            <div class="joystick-base" id="js1P1"><div class="joystick-knob" id="jsKnob1P1"></div></div>
+            <button class="action-btn" id="act1P1">LAUNCH</button>
         </div>
 
-        <!-- Multiplayer Mobile Controls - Player 2 (right side) -->
-        <div id="mobileControlsP2">
-            <div class="mobileBtn p2" id="mobileP2Left">◄</div>
-            <div class="mobileBtn p2 launch" id="mobileP2Launch">P2<br>GO!</div>
-            <div class="mobileBtn p2" id="mobileP2Right">►</div>
+        <!-- Multiplayer P2 zone (right) -->
+        <div id="controlZoneP2" class="control-zone p2" style="display:none;">
+            <span class="zone-label" style="color:#e74c3c;">P2</span>
+            <div class="joystick-base" id="js1P2"><div class="joystick-knob" id="jsKnob1P2"></div></div>
+            <button class="action-btn p2" id="act1P2">LAUNCH</button>
         </div>
+
+        <!-- Landscape multiplayer center divider -->
+        <div id="multiDivider" style="display:none;"></div>
 
         <!-- Old overlay hidden -->
         <div id="uiOverlay" style="display: none;">

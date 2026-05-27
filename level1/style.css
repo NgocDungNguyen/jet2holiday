@@ -6,8 +6,6 @@
     --accent-orange: #f39c12;
     --panel-bg:  rgba(0, 0, 0, 0.8);
     --screen-bg: rgba(0, 0, 0, 0.92);
-    --touch-btn-size:           60px;
-    --touch-btn-size-landscape: 52px;
 }
 
 * {
@@ -99,87 +97,6 @@ body {
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
-}
-
-/* Mobile Controls */
-#mobileControls {
-    display: none;
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 150;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 90vw;
-}
-
-#mobileControlsP1, #mobileControlsP2 {
-    display: none;
-    position: fixed;
-    bottom: 10px;
-    z-index: 150;
-    gap: 8px;
-    align-items: center;
-}
-
-#mobileControlsP1 { left: 10px; }
-#mobileControlsP2 { right: 10px; }
-
-.mobileBtn {
-    background: rgba(52, 152, 219, 0.85);
-    border: 3px solid var(--accent-blue);
-    border-radius: 50%;
-    width: var(--touch-btn-size);
-    height: var(--touch-btn-size);
-    font-size: 22px;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    -webkit-tap-highlight-color: transparent;
-}
-
-.mobileBtn:active {
-    transform: scale(0.93);
-    background: rgba(41, 128, 185, 0.95);
-}
-
-.mobileBtn.launch {
-    width: 80px;
-    height: 80px;
-    font-size: 11px;
-    background: rgba(46, 204, 113, 0.85);
-    border-color: var(--accent-green);
-}
-
-.mobileBtn.launch:active {
-    background: rgba(39, 174, 96, 0.95);
-}
-
-.mobileBtn.p2 {
-    background: rgba(231, 76, 60, 0.85);
-    border-color: var(--accent-red);
-}
-
-.mobileBtn.p2:active {
-    background: rgba(192, 57, 43, 0.95);
-}
-
-.mobileBtn.p2.launch {
-    background: rgba(241, 196, 15, 0.85);
-    border-color: var(--accent-orange);
-}
-
-.mobileBtn.p2.launch:active {
-    background: rgba(243, 156, 18, 0.95);
 }
 
 #endScreen {
@@ -328,6 +245,127 @@ button:hover, button:active {
 }
 
 /* ============================================================
+   JOYSTICK COMPONENTS
+============================================================ */
+.joystick-base {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.joystick-knob {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    position: absolute;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.control-zone.p1 .joystick-base { border-color: rgba(52, 152, 219, 0.6); }
+.control-zone.p1 .joystick-knob { background: rgba(52, 152, 219, 0.85); border-color: var(--accent-blue); }
+.control-zone.p2 .joystick-base { border-color: rgba(231, 76, 60, 0.6); }
+.control-zone.p2 .joystick-knob { background: rgba(231, 76, 60, 0.85); border-color: var(--accent-red); }
+
+.action-btn {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 3px solid var(--accent-green);
+    background: rgba(46, 204, 113, 0.85);
+    color: white;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1.2;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+    min-height: unset;
+    transition: transform 0.1s;
+}
+
+.action-btn:hover, .action-btn:active {
+    transform: scale(0.92);
+    background: rgba(39, 174, 96, 0.95);
+}
+
+.action-btn.p2 {
+    background: rgba(155, 89, 182, 0.85);
+    border-color: #9b59b6;
+}
+
+.action-btn.p2:active {
+    background: rgba(125, 60, 152, 0.95);
+}
+
+.control-zone {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 8px;
+}
+
+.zone-label {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+/* Multiplayer landscape divider */
+#multiDivider {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    z-index: 140;
+    pointer-events: none;
+}
+
+/* Single-player zone: inline row */
+#controlZone {
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 12px 10px;
+    width: 100%;
+}
+
+/* Compact gameplay overlay (landscape) */
+#gameplayUI {
+    display: none;
+}
+
+/* ============================================================
    RESPONSIVE — TABLET (max-width: 900px)
 ============================================================ */
 @media (max-width: 900px) {
@@ -362,13 +400,7 @@ button:hover, button:active {
     }
 
     #gameCanvas {
-        max-height: 55vh;
-    }
-
-    #mobileControls {
-        display: flex !important;
-        bottom: 10px;
-        gap: 10px;
+        max-height: 45vh;
     }
 
     #controls {
@@ -398,6 +430,38 @@ button:hover, button:active {
 
     #cycleImageContainer { padding: 10px; }
     #cycleImageContainer div { font-size: 11px; }
+
+    /* Single-player zone shown below canvas */
+    #controlZone {
+        display: flex;
+    }
+
+    /* Multiplayer zones: side by side below canvas */
+    #controlZoneP1,
+    #controlZoneP2 {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 6px;
+    }
+
+    /* Joystick slightly smaller in portrait */
+    .joystick-base {
+        width: 88px;
+        height: 88px;
+    }
+
+    .joystick-knob {
+        width: 40px;
+        height: 40px;
+    }
+
+    .action-btn {
+        width: 64px;
+        height: 64px;
+    }
 }
 
 /* ============================================================
@@ -413,21 +477,24 @@ button:hover, button:active {
 
     .uiPanel > div { margin: 2px 0; }
 
-    .mobileBtn {
-        width: 54px;
-        height: 54px;
-        font-size: 20px;
+    .joystick-base {
+        width: 80px;
+        height: 80px;
     }
 
-    .mobileBtn.launch {
-        width: 68px;
-        height: 68px;
-        font-size: 10px;
+    .joystick-knob {
+        width: 36px;
+        height: 36px;
     }
 
-    #mobileControls {
-        gap: 8px;
-        bottom: 5px;
+    .action-btn {
+        width: 58px;
+        height: 58px;
+        font-size: 9px;
+    }
+
+    #controlZone {
+        gap: 14px;
     }
 }
 
@@ -461,37 +528,7 @@ button:hover, button:active {
 
     #controls { display: none; }
 
-    #mobileControls {
-        display: flex !important;
-        bottom: 15px;
-        gap: 18px;
-    }
-
-    #mobileControlsP1 {
-        display: flex;
-        left: 15px;
-        bottom: 15px;
-    }
-
-    #mobileControlsP2 {
-        display: flex;
-        right: 15px;
-        bottom: 15px;
-    }
-
-    .mobileBtn {
-        width: var(--touch-btn-size-landscape);
-        height: var(--touch-btn-size-landscape);
-        font-size: 20px;
-        border-width: 2px;
-    }
-
-    .mobileBtn.launch {
-        width: 66px;
-        height: 66px;
-        font-size: 10px;
-    }
-
+    /* Compact info overlay at top-center */
     #gameplayUI {
         position: fixed;
         top: 5px;
@@ -502,11 +539,65 @@ button:hover, button:active {
         border-radius: 15px;
         font-size: 11px;
         z-index: 100;
-        display: flex;
         gap: 15px;
         border: 1px solid rgba(52, 152, 219, 0.5);
         white-space: nowrap;
     }
+
+    /* Single-player: centred fixed overlay */
+    #controlZone {
+        position: fixed;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 14px;
+        z-index: 150;
+        padding: 0;
+        width: auto;
+    }
+
+    /* Multiplayer P1: bottom-left */
+    #controlZoneP1 {
+        position: fixed;
+        bottom: 12px;
+        left: 12px;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 10px;
+        z-index: 150;
+    }
+
+    /* Multiplayer P2: bottom-right */
+    #controlZoneP2 {
+        position: fixed;
+        bottom: 12px;
+        right: 12px;
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 10px;
+        z-index: 150;
+    }
+
+    /* Smaller controls in landscape */
+    .joystick-base {
+        width: 80px;
+        height: 80px;
+    }
+
+    .joystick-knob {
+        width: 36px;
+        height: 36px;
+    }
+
+    .action-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 9px;
+    }
+
+    .zone-label { display: none; }
 
     #endScreen {
         max-height: 92vh;

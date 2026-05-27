@@ -68,32 +68,28 @@
             </span>
         </div>
 
-        <!-- Single player touch controls (D-pad + drop) -->
-        <div id="mobileControls3">
-            <div class="mobileBtn" id="mob3Left">◄</div>
-            <div class="mobileBtn" id="mob3Up">▲</div>
-            <div class="mobileBtn" id="mob3Down">▼</div>
-            <div class="mobileBtn" id="mob3Right">►</div>
-            <div class="mobileBtn action" id="mob3Action">DROP</div>
+        <!-- Single-player joystick zone -->
+        <div id="controlZone3" style="display:none;">
+            <div class="joystick-base" id="js3Single"><div class="joystick-knob" id="jsKnob3Single"></div></div>
+            <button class="action-btn" id="act3Single">DROP</button>
         </div>
 
-        <!-- Multiplayer P1 touch controls (left side) -->
-        <div id="mobileControls3P1">
-            <div class="mobileBtn" id="mob3P1Left">◄</div>
-            <div class="mobileBtn" id="mob3P1Up">▲</div>
-            <div class="mobileBtn" id="mob3P1Down">▼</div>
-            <div class="mobileBtn" id="mob3P1Right">►</div>
-            <div class="mobileBtn action" id="mob3P1Action">DROP</div>
+        <!-- Multiplayer P1 zone (left) -->
+        <div id="controlZoneP1_3" class="control-zone p1" style="display:none;">
+            <span class="zone-label" style="color:#3498db;">P1</span>
+            <div class="joystick-base" id="js3P1"><div class="joystick-knob" id="jsKnob3P1"></div></div>
+            <button class="action-btn" id="act3P1">DROP</button>
         </div>
 
-        <!-- Multiplayer P2 touch controls (right side) -->
-        <div id="mobileControls3P2">
-            <div class="mobileBtn p2" id="mob3P2Left">◄</div>
-            <div class="mobileBtn p2" id="mob3P2Up">▲</div>
-            <div class="mobileBtn p2" id="mob3P2Down">▼</div>
-            <div class="mobileBtn p2" id="mob3P2Right">►</div>
-            <div class="mobileBtn p2 action" id="mob3P2Action">DROP</div>
+        <!-- Multiplayer P2 zone (right) -->
+        <div id="controlZoneP2_3" class="control-zone p2" style="display:none;">
+            <span class="zone-label" style="color:#e74c3c;">P2</span>
+            <div class="joystick-base" id="js3P2"><div class="joystick-knob" id="jsKnob3P2"></div></div>
+            <button class="action-btn p2" id="act3P2">DROP</button>
         </div>
+
+        <!-- Landscape multiplayer center divider -->
+        <div id="multiDivider3" style="display:none;"></div>
     </div>
 
     <div id="endScreen">

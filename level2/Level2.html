@@ -65,29 +65,28 @@
             </span>
         </div>
 
-        <!-- Single player touch controls -->
-        <div id="mobileControls2">
-            <div class="mobileBtn" id="mob2Left">◄</div>
-            <div class="mobileBtn jump" id="mob2Jump">▲</div>
-            <div class="mobileBtn action" id="mob2Action">PICK<br>UP</div>
-            <div class="mobileBtn" id="mob2Right">►</div>
+        <!-- Single-player joystick zone -->
+        <div id="controlZone2" style="display:none;">
+            <div class="joystick-base" id="js2Single"><div class="joystick-knob" id="jsKnob2Single"></div></div>
+            <button class="action-btn" id="act2Single">PICK<br>UP</button>
         </div>
 
-        <!-- Multiplayer P1 touch controls (left side) -->
-        <div id="mobileControls2P1">
-            <div class="mobileBtn" id="mob2P1Left">◄</div>
-            <div class="mobileBtn jump" id="mob2P1Jump">▲</div>
-            <div class="mobileBtn action" id="mob2P1Action">P1<br>ACT</div>
-            <div class="mobileBtn" id="mob2P1Right">►</div>
+        <!-- Multiplayer P1 zone (left) -->
+        <div id="controlZoneP1_2" class="control-zone p1" style="display:none;">
+            <span class="zone-label" style="color:#3498db;">P1</span>
+            <div class="joystick-base" id="js2P1"><div class="joystick-knob" id="jsKnob2P1"></div></div>
+            <button class="action-btn" id="act2P1">PICK<br>UP</button>
         </div>
 
-        <!-- Multiplayer P2 touch controls (right side) -->
-        <div id="mobileControls2P2">
-            <div class="mobileBtn p2" id="mob2P2Left">◄</div>
-            <div class="mobileBtn p2 jump" id="mob2P2Jump">▲</div>
-            <div class="mobileBtn p2 action" id="mob2P2Action">P2<br>ACT</div>
-            <div class="mobileBtn p2" id="mob2P2Right">►</div>
+        <!-- Multiplayer P2 zone (right) -->
+        <div id="controlZoneP2_2" class="control-zone p2" style="display:none;">
+            <span class="zone-label" style="color:#e74c3c;">P2</span>
+            <div class="joystick-base" id="js2P2"><div class="joystick-knob" id="jsKnob2P2"></div></div>
+            <button class="action-btn p2" id="act2P2">PICK<br>UP</button>
         </div>
+
+        <!-- Landscape multiplayer center divider -->
+        <div id="multiDivider2" style="display:none;"></div>
 
         <div id="endScreen">
             <h2 id="endTitle">MISSION COMPLETE!</h2>

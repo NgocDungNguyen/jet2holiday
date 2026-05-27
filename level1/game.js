@@ -207,25 +207,12 @@ function initGame() {
     const gameplayUI = document.getElementById('gameplayUI');
     const gameplayP2 = document.getElementById('gameplayP2');
 
-    // Mobile controls
-    const mobileControls = document.getElementById('mobileControls');
-    const mobileControlsP1 = document.getElementById('mobileControlsP1');
-    const mobileControlsP2 = document.getElementById('mobileControlsP2');
-
     if (gameMode === 'single') {
         // Single player mode
         p1Label.textContent = 'YOUR SCORE';
         p2Panel.style.display = 'none';
         controlsDisplay.innerHTML = '<span class="key">A/D</span> or <span class="key">←/→</span> to move | <span class="key">SPACEBAR</span> to launch';
-
-        // Show mobile gameplay UI in landscape
-        gameplayUI.style.display = 'flex';
         gameplayP2.style.display = 'none';
-
-        // Show single player mobile controls
-        mobileControls.style.display = window.innerHeight < 600 && window.innerWidth > window.innerHeight ? 'flex' : 'none';
-        mobileControlsP1.style.display = 'none';
-        mobileControlsP2.style.display = 'none';
 
         // Position boat in center for single player
         boat1.x = canvas.width / 2;
@@ -235,21 +222,15 @@ function initGame() {
         p1Label.textContent = 'PLAYER 1';
         p2Panel.style.display = 'block';
         controlsDisplay.innerHTML = '<span style="color: #3498db;">P1:</span> <span class="key">A/D</span> + <span class="key">SPACE</span> | <span style="color: #e74c3c;">P2:</span> <span class="key">←/→</span> + <span class="key">ENTER</span>';
-
-        // Show mobile gameplay UI with both players in landscape
-        gameplayUI.style.display = 'flex';
         gameplayP2.style.display = 'block';
-
-        // Show multiplayer mobile controls (split left/right)
-        mobileControls.style.display = 'none';
-        const isLandscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
-        mobileControlsP1.style.display = isLandscape ? 'flex' : 'none';
-        mobileControlsP2.style.display = isLandscape ? 'flex' : 'none';
 
         // Position boats for multiplayer
         boat1.x = canvas.width / 4;
         boat2.x = (canvas.width / 4) * 3;
     }
+
+    // Update mobile control visibility for current mode + orientation
+    updateMobileUI1();
 
     // Reset Player 1
     boat1.y = OCEAN_SURFACE - 10;
@@ -1203,71 +1184,136 @@ window.addEventListener('keyup', function(e) {
     keys[e.key] = false;
 });
 
-// Mobile Controls Event Handlers
-// Single Player Mobile Controls
-const mobileLeft = document.getElementById('mobileLeft');
-const mobileRight = document.getElementById('mobileRight');
-const mobileLaunch = document.getElementById('mobileLaunch');
+// ============================================================
+// Virtual Joystick — shared class used by all 3 joystick instances
+// ============================================================
+function VirtualJoystick(baseEl, knobEl, opts) {
+    let active = false, touchId = null, cx = 0, cy = 0, R = 44;
 
-// P1 Multiplayer Mobile Controls
-const mobileP1Left = document.getElementById('mobileP1Left');
-const mobileP1Right = document.getElementById('mobileP1Right');
-const mobileP1Launch = document.getElementById('mobileP1Launch');
+    function getCenter() {
+        const rect = baseEl.getBoundingClientRect();
+        cx = rect.left + rect.width  / 2;
+        cy = rect.top  + rect.height / 2;
+        R  = rect.width / 2;
+    }
 
-// P2 Multiplayer Mobile Controls
-const mobileP2Left = document.getElementById('mobileP2Left');
-const mobileP2Right = document.getElementById('mobileP2Right');
-const mobileP2Launch = document.getElementById('mobileP2Launch');
+    function apply(dx, dy) {
+        const dist  = Math.sqrt(dx * dx + dy * dy);
+        const cDist = Math.min(dist, R);
+        const ang   = Math.atan2(dy, dx);
+        knobEl.style.transform = `translate(${Math.cos(ang) * cDist}px, ${Math.sin(ang) * cDist}px)`;
 
-// Helper function to handle button press
-function handleMobileButton(button, key, launchPlayer) {
-    if (!button) return;
+        const thr = R * (opts.deadzone || 0.30);
+        const k = opts.keys;
+        if (opts.axisX) {
+            k[opts.leftKey]  = dx < -thr;
+            k[opts.rightKey] = dx >  thr;
+        }
+        if (opts.axisY) {
+            k[opts.upKey]   = dy < -thr;
+            if (!opts.noDown) k[opts.downKey] = dy > thr;
+        } else if (opts.upOnly) {
+            k[opts.upKey] = dy < -thr;
+        }
+    }
 
-    // Touch start / Mouse down
-    const startHandler = (e) => {
+    function reset() {
+        active = false; touchId = null;
+        knobEl.style.transform = 'translate(0px, 0px)';
+        const k = opts.keys;
+        if (opts.axisX) { k[opts.leftKey] = false; k[opts.rightKey] = false; }
+        if (opts.axisY) { k[opts.upKey] = false; if (!opts.noDown) k[opts.downKey] = false; }
+        if (opts.upOnly) k[opts.upKey] = false;
+    }
+
+    baseEl.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (launchPlayer && gameState.gameActive) {
-            // Launch grabber
-            if (launchPlayer === 1 && grabber1.state === 'swinging') {
-                grabber1.state = 'extending';
-            } else if (launchPlayer === 2 && grabber2.state === 'swinging') {
-                grabber2.state = 'extending';
+        if (active) return;
+        touchId = e.changedTouches[0].identifier;
+        active  = true;
+        getCenter();
+        apply(e.changedTouches[0].clientX - cx, e.changedTouches[0].clientY - cy);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!active) return;
+        for (const t of e.changedTouches) {
+            if (t.identifier === touchId) {
+                e.preventDefault();
+                apply(t.clientX - cx, t.clientY - cy);
+                break;
             }
-        } else {
-            // Movement key
-            keys[key] = true;
         }
-    };
+    }, { passive: false });
 
-    // Touch end / Mouse up
-    const endHandler = (e) => {
-        e.preventDefault();
-        if (!launchPlayer) {
-            keys[key] = false;
-        }
+    const onEnd = (e) => {
+        for (const t of e.changedTouches) { if (t.identifier === touchId) { reset(); break; } }
     };
-
-    button.addEventListener('touchstart', startHandler, { passive: false });
-    button.addEventListener('mousedown', startHandler);
-    button.addEventListener('touchend', endHandler, { passive: false });
-    button.addEventListener('mouseup', endHandler);
-    button.addEventListener('contextmenu', (e) => e.preventDefault());
+    window.addEventListener('touchend',    onEnd, { passive: false });
+    window.addEventListener('touchcancel', onEnd, { passive: false });
 }
 
-// Single Player Controls
-handleMobileButton(mobileLeft, 'a', null);
-handleMobileButton(mobileRight, 'd', null);
-handleMobileButton(mobileLaunch, ' ', 1);
+// Joystick instances (Level 1: x-axis only — boats don't jump)
+const jsSP  = new VirtualJoystick(
+    document.getElementById('js1'), document.getElementById('jsKnob1'),
+    { axisX: true, leftKey: 'a', rightKey: 'd', keys }
+);
+const jsMP1 = new VirtualJoystick(
+    document.getElementById('js1P1'), document.getElementById('jsKnob1P1'),
+    { axisX: true, leftKey: 'a', rightKey: 'd', keys }
+);
+const jsMP2 = new VirtualJoystick(
+    document.getElementById('js1P2'), document.getElementById('jsKnob1P2'),
+    { axisX: true, leftKey: 'ArrowLeft', rightKey: 'ArrowRight', keys }
+);
 
-// P1 Multiplayer Controls
-handleMobileButton(mobileP1Left, 'a', null);
-handleMobileButton(mobileP1Right, 'd', null);
-handleMobileButton(mobileP1Launch, ' ', 1);
+// Action buttons (LAUNCH — one-shot, no repeat while extending)
+function wireActionBtn1(btnId, player) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    const launch = () => {
+        if (!gameState || !gameState.gameActive) return;
+        if (player === 1 && grabber1.state === 'swinging') grabber1.state = 'extending';
+        if (player === 2 && grabber2.state === 'swinging') grabber2.state = 'extending';
+    };
+    btn.addEventListener('touchstart', (e) => { e.preventDefault(); launch(); }, { passive: false });
+    btn.addEventListener('mousedown', launch);
+}
+wireActionBtn1('act1',   1);
+wireActionBtn1('act1P1', 1);
+wireActionBtn1('act1P2', 2);
 
-// P2 Multiplayer Controls
-handleMobileButton(mobileP2Left, 'ArrowLeft', null);
-handleMobileButton(mobileP2Right, 'ArrowRight', null);
-handleMobileButton(mobileP2Launch, 'Enter', 2);
+// Show/hide correct control zones based on game mode + orientation
+function updateMobileUI1() {
+    const landscape = window.innerHeight < 600 && window.innerWidth > window.innerHeight;
+    const mobile    = window.innerWidth <= 768 || landscape;
+
+    const sp  = document.getElementById('controlZone');
+    const mp1 = document.getElementById('controlZoneP1');
+    const mp2 = document.getElementById('controlZoneP2');
+    const div = document.getElementById('multiDivider');
+    const ov  = document.getElementById('gameplayUI');
+
+    [sp, mp1, mp2, div].forEach(el => { if (el) el.style.display = 'none'; });
+
+    if (!mobile) {
+        if (ov) ov.style.display = 'none';
+        return;
+    }
+
+    if (gameMode === 'multiplayer') {
+        if (mp1) mp1.style.display = 'flex';
+        if (mp2) mp2.style.display = 'flex';
+        if (div) div.style.display = landscape ? 'block' : 'none';
+    } else {
+        if (sp) sp.style.display = 'flex';
+    }
+
+    if (ov) ov.style.display = landscape ? 'flex' : 'none';
+}
+
+window.addEventListener('resize',            updateMobileUI1);
+window.addEventListener('orientationchange', updateMobileUI1);
 
 // Handle continuous key presses for movement
 function handleInput() {
@@ -1423,17 +1469,6 @@ window.addEventListener('resize', () => {
         ui.style.display = 'none';
     }
 });
-
-// Detect if mobile device
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (window.innerWidth <= 768);
-}
-
-// Show mobile controls on mobile devices
-if (isMobileDevice()) {
-    document.getElementById('mobileControls').style.display = 'flex';
-}
 
 // Draw initial screen
 drawGame();

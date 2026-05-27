@@ -871,90 +871,101 @@
             keys[e.key] = false;
         });
 
-        // Mobile touch controls
-        function handleMobileBtn3(id, key) {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            const press   = (e) => { e.preventDefault(); keys[key] = true; };
-            const release = (e) => { e.preventDefault(); keys[key] = false; };
-            btn.addEventListener('touchstart',  press,   { passive: false });
-            btn.addEventListener('touchend',    release, { passive: false });
-            btn.addEventListener('touchcancel', release, { passive: false });
-            btn.addEventListener('mousedown',   press);
-            btn.addEventListener('mouseup',     release);
+        // Virtual joystick + split-screen mobile controls
+        function VirtualJoystick(baseEl, knobEl, opts) {
+            let active = false, touchId = null, cx = 0, cy = 0, R = 44;
+            function getCenter() {
+                const rect = baseEl.getBoundingClientRect();
+                cx = rect.left + rect.width / 2;
+                cy = rect.top + rect.height / 2;
+                R = rect.width / 2;
+            }
+            function apply(dx, dy) {
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const cDist = Math.min(dist, R);
+                const ang = Math.atan2(dy, dx);
+                knobEl.style.transform = `translate(${Math.cos(ang)*cDist}px, ${Math.sin(ang)*cDist}px)`;
+                const thr = R * (opts.deadzone || 0.30);
+                const k = opts.keys;
+                if (opts.axisX) { k[opts.leftKey] = dx < -thr; k[opts.rightKey] = dx > thr; }
+                if (opts.axisY) { k[opts.upKey] = dy < -thr; if (!opts.noDown) k[opts.downKey] = dy > thr; }
+                else if (opts.upOnly) { k[opts.upKey] = dy < -thr; }
+            }
+            function reset() {
+                active = false; touchId = null;
+                knobEl.style.transform = 'translate(0px, 0px)';
+                const k = opts.keys;
+                if (opts.axisX) { k[opts.leftKey] = false; k[opts.rightKey] = false; }
+                if (opts.axisY) { k[opts.upKey] = false; if (!opts.noDown) k[opts.downKey] = false; }
+                if (opts.upOnly) k[opts.upKey] = false;
+            }
+            baseEl.addEventListener('touchstart', (e) => {
+                e.preventDefault(); if (active) return;
+                touchId = e.changedTouches[0].identifier; active = true;
+                getCenter(); apply(e.changedTouches[0].clientX - cx, e.changedTouches[0].clientY - cy);
+            }, { passive: false });
+            window.addEventListener('touchmove', (e) => {
+                if (!active) return;
+                for (const t of e.changedTouches) {
+                    if (t.identifier === touchId) { e.preventDefault(); apply(t.clientX - cx, t.clientY - cy); break; }
+                }
+            }, { passive: false });
+            const onEnd = (e) => { for (const t of e.changedTouches) { if (t.identifier === touchId) { reset(); break; } } };
+            window.addEventListener('touchend', onEnd, { passive: false });
+            window.addEventListener('touchcancel', onEnd, { passive: false });
         }
 
-        function handleMobileActionBtn3(id, droneRef, playerNum) {
-            const btn = document.getElementById(id);
+        const jsSP3 = new VirtualJoystick(document.getElementById('js3Single'), document.getElementById('jsKnob3Single'),
+            { axisX: true, axisY: true, leftKey: 'a', rightKey: 'd', upKey: 'w', downKey: 's', keys });
+        const js3P1 = new VirtualJoystick(document.getElementById('js3P1'), document.getElementById('jsKnob3P1'),
+            { axisX: true, axisY: true, leftKey: 'a', rightKey: 'd', upKey: 'w', downKey: 's', keys });
+        const js3P2 = new VirtualJoystick(document.getElementById('js3P2'), document.getElementById('jsKnob3P2'),
+            { axisX: true, axisY: true, leftKey: 'ArrowLeft', rightKey: 'ArrowRight', upKey: 'ArrowUp', downKey: 'ArrowDown', keys });
+
+        function wireActionBtn3(btnId, droneRef, playerNum) {
+            const btn = document.getElementById(btnId);
             if (!btn) return;
             let held = false;
             btn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!held && gameState.gameActive) {
-                    held = true;
-                    checkDroneInteraction(droneRef(), playerNum);
-                }
+                if (!held && gameState.gameActive) { held = true; checkDroneInteraction(droneRef(), playerNum); }
             }, { passive: false });
-            btn.addEventListener('touchend',    (e) => { e.preventDefault(); held = false; }, { passive: false });
-            btn.addEventListener('touchcancel', (e) => { e.preventDefault(); held = false; }, { passive: false });
+            const rel = (e) => { e.preventDefault(); held = false; };
+            btn.addEventListener('touchend',    rel, { passive: false });
+            btn.addEventListener('touchcancel', rel, { passive: false });
             btn.addEventListener('mousedown', () => {
                 if (!held && gameState.gameActive) { held = true; checkDroneInteraction(droneRef(), playerNum); }
             });
             btn.addEventListener('mouseup', () => { held = false; });
         }
-
-        // Wire single player buttons
-        handleMobileBtn3('mob3Left',  'a');
-        handleMobileBtn3('mob3Up',    'w');
-        handleMobileBtn3('mob3Down',  's');
-        handleMobileBtn3('mob3Right', 'd');
-        handleMobileActionBtn3('mob3Action', () => drone, 1);
-
-        // Wire multiplayer P1 buttons
-        handleMobileBtn3('mob3P1Left',  'a');
-        handleMobileBtn3('mob3P1Up',    'w');
-        handleMobileBtn3('mob3P1Down',  's');
-        handleMobileBtn3('mob3P1Right', 'd');
-        handleMobileActionBtn3('mob3P1Action', () => drone, 1);
-
-        // Wire multiplayer P2 buttons
-        handleMobileBtn3('mob3P2Left',  'ArrowLeft');
-        handleMobileBtn3('mob3P2Up',    'ArrowUp');
-        handleMobileBtn3('mob3P2Down',  'ArrowDown');
-        handleMobileBtn3('mob3P2Right', 'ArrowRight');
-        handleMobileActionBtn3('mob3P2Action', () => drone2, 2);
+        wireActionBtn3('act3Single', () => drone,  1);
+        wireActionBtn3('act3P1',     () => drone,  1);
+        wireActionBtn3('act3P2',     () => drone2, 2);
 
         function updateMobileUI3() {
             const isLandscape = window.innerHeight < window.innerWidth && window.innerHeight < 600;
             const isMobile    = window.innerWidth <= 768 || isLandscape;
 
-            const ctrl1   = document.getElementById('mobileControls3');
-            const ctrlP1  = document.getElementById('mobileControls3P1');
-            const ctrlP2  = document.getElementById('mobileControls3P2');
+            const sp     = document.getElementById('controlZone3');
+            const mp1    = document.getElementById('controlZoneP1_3');
+            const mp2    = document.getElementById('controlZoneP2_3');
+            const div    = document.getElementById('multiDivider3');
             const overlay = document.getElementById('gameplayUI3');
             const p2Info  = document.getElementById('gameplay3P2Info');
 
-            if (!isMobile) {
-                ctrl1.style.display   = 'none';
-                ctrlP1.style.display  = 'none';
-                ctrlP2.style.display  = 'none';
-                overlay.style.display = 'none';
-                return;
-            }
+            [sp, mp1, mp2, div].forEach(el => { if (el) el.style.display = 'none'; });
+            if (!isMobile) { if (overlay) overlay.style.display = 'none'; return; }
 
             if (gameMode === 'multiplayer') {
-                ctrl1.style.display  = 'none';
-                ctrlP1.style.display = 'grid';
-                ctrlP2.style.display = 'grid';
+                if (mp1) mp1.style.display = 'flex';
+                if (mp2) mp2.style.display = 'flex';
+                if (div) div.style.display = isLandscape ? 'block' : 'none';
                 if (p2Info) p2Info.style.display = 'block';
             } else {
-                ctrl1.style.display  = isLandscape ? 'grid' : 'flex';
-                ctrlP1.style.display = 'none';
-                ctrlP2.style.display = 'none';
+                if (sp) sp.style.display = 'flex';
                 if (p2Info) p2Info.style.display = 'none';
             }
-
-            overlay.style.display = isLandscape ? 'flex' : 'none';
+            if (overlay) overlay.style.display = isLandscape ? 'flex' : 'none';
         }
 
         window.addEventListener('resize',            updateMobileUI3);
