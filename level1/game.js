@@ -665,8 +665,8 @@ function checkCollisions() {
 
             const distance = Math.sqrt((trash.x - life.x)**2 + (trash.y - life.y)**2);
 
-            if (distance < trash.config.radius + life.config.radius + 5) { // Added buffer
-                // Collision detected - trash harms marine life
+            if (distance < trash.config.radius + life.config.radius && !life.isPolluted) {
+                // Collision detected - trash harms marine life (only once per pollution event)
                 if (gameMode === 'single') {
                     gameState.p1Score -= life.config.penalty;
                 } else {
@@ -1090,11 +1090,48 @@ function drawEffect(effect) {
     }
 }
 
+// Split-screen multiplayer renderer — draws the game canvas twice (rotated) onto a full-screen overlay
+function renderSplitScreen() {
+    const displayCanvas = document.getElementById('displayCanvas');
+    if (!displayCanvas) return;
+    const isMobile = window.innerWidth <= 900;
+    if (gameMode !== 'multiplayer' || !isMobile) {
+        displayCanvas.style.display = 'none';
+        return;
+    }
+    displayCanvas.style.display = 'block';
+    const dw = displayCanvas.width  = window.innerWidth;
+    const dh = displayCanvas.height = window.innerHeight;
+    const dCtx = displayCanvas.getContext('2d');
+    dCtx.clearRect(0, 0, dw, dh);
+    const hw = dw / 2;
+    // After rotating 90°: canvas.width maps to display height, canvas.height maps to display width
+    const scale = Math.min(hw / canvas.height, dh / canvas.width);
+    // P1 — left half, 90° CW
+    dCtx.save();
+    dCtx.translate(hw / 2, dh / 2);
+    dCtx.rotate(Math.PI / 2);
+    dCtx.scale(scale, scale);
+    dCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+    dCtx.restore();
+    // Divider
+    dCtx.fillStyle = 'rgba(255,255,255,0.25)';
+    dCtx.fillRect(hw - 1, 0, 2, dh);
+    // P2 — right half, -90° CCW
+    dCtx.save();
+    dCtx.translate(hw + hw / 2, dh / 2);
+    dCtx.rotate(-Math.PI / 2);
+    dCtx.scale(scale, scale);
+    dCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+    dCtx.restore();
+}
+
 // Game Loop
 function gameLoop() {
     if (gameState.gameActive && !gameState.gameOver) {
         updateGame();
         drawGame();
+        renderSplitScreen();
         requestAnimationFrame(gameLoop);
     }
 }
@@ -1438,6 +1475,7 @@ gameLoop = function() {
         handleInput();
         updateGame();
         drawGame();
+        renderSplitScreen();
         requestAnimationFrame(gameLoop);
     }
 };

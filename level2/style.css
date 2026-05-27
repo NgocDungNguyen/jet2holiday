@@ -441,132 +441,62 @@ button:hover, button:active {
 }
 
 /* ============================================================
-   RESPONSIVE — TABLET (max-width: 900px)
+   RESPONSIVE — MOBILE (max-width: 900px)
+   Hide outer UI, canvas fills screen, controls overlaid
 ============================================================ */
 @media (max-width: 900px) {
-    #topUI {
-        flex-direction: column;
-        gap: 8px;
-    }
+    body { padding: 0; overflow: hidden; }
+    #gameContainer { gap: 0; max-width: 100%; }
 
-    .uiPanel {
-        min-width: 100%;
-        padding: 10px 12px;
-        font-size: 12px;
-    }
+    #topUI    { display: none !important; }
+    #controls { display: none !important; }
 
-    #controls {
-        font-size: 11px;
-        padding: 10px 12px;
-    }
-}
-
-/* ============================================================
-   RESPONSIVE — MOBILE PORTRAIT (max-width: 768px)
-============================================================ */
-@media (max-width: 768px) {
-    body {
-        padding: 5px;
-        align-items: flex-start;
-    }
-
-    #gameContainer {
-        gap: 8px;
-    }
+    #canvasWrapper { max-width: 100%; margin: 0; }
 
     #gameCanvas {
-        max-height: 45vh;
+        max-height: none;
+        border: none;
+        border-radius: 0;
+        width: 100vw;
+        height: auto;
     }
 
-    #controls {
-        display: none;
-    }
-
-    .uiPanel {
-        font-size: 11px;
-        padding: 8px 10px;
-    }
-
-    #endScreen {
-        padding: 15px;
-        max-width: 95vw;
-    }
-
-    .factBox {
-        font-size: 12px;
-        padding: 12px;
-    }
-
-    button {
-        padding: 10px 20px;
-        margin: 6px;
-        font-size: 14px;
-    }
-
-    /* Single-player zone shown below canvas */
+    /* Single-player: joystick left, action right */
     #controlZone2 {
         display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        width: 100%;
+        min-height: 90px;
     }
 
-    /* Multiplayer zones side by side */
+    /* Multiplayer zones — action on top, joystick on bottom */
     #controlZoneP1_2,
     #controlZoneP2_2 {
         display: flex;
         flex: 1;
         flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 6px;
+        justify-content: space-between;
+        min-height: 120px;
+        padding: 8px 10px;
     }
+    #controlZoneP1_2 { align-items: flex-start; }
+    #controlZoneP2_2 { align-items: flex-end; }
 
-    .joystick-base {
-        width: 88px;
-        height: 88px;
-    }
+    #controlZoneP1_2 .action-btn,
+    #controlZoneP2_2 .action-btn { order: -1; }
 
-    .joystick-knob {
-        width: 40px;
-        height: 40px;
-    }
+    .zone-label { display: none; }
 
-    .action-btn {
-        width: 64px;
-        height: 64px;
-    }
-}
+    .joystick-base { width: 88px; height: 88px; }
+    .joystick-knob { width: 40px; height: 40px; }
+    .action-btn    { width: 68px; height: 68px; }
 
-/* ============================================================
-   RESPONSIVE — SMALL MOBILE (max-width: 480px)
-============================================================ */
-@media (max-width: 480px) {
-    #topUI { gap: 5px; }
-
-    .uiPanel {
-        font-size: 10px;
-        padding: 6px 8px;
-    }
-
-    .uiPanel > div { margin: 2px 0; }
-
-    .joystick-base {
-        width: 80px;
-        height: 80px;
-    }
-
-    .joystick-knob {
-        width: 36px;
-        height: 36px;
-    }
-
-    .action-btn {
-        width: 58px;
-        height: 58px;
-        font-size: 9px;
-    }
-
-    #controlZone2 {
-        gap: 14px;
-    }
+    #endScreen { padding: 15px; max-width: 95vw; }
+    .factBox { font-size: 12px; padding: 12px; }
+    button { padding: 10px 20px; margin: 6px; font-size: 14px; }
 }
 
 /* ============================================================
@@ -603,59 +533,37 @@ button:hover, button:active {
         display: flex;
     }
 
-    /* Single-player: centred fixed overlay */
+    #gameCanvas { height: 100vh; max-height: 100vh; width: auto; max-width: 100vw; }
+
+    #gameplayUI2 { display: flex; }
+
+    /* Single player: joystick left, action right */
     #controlZone2 {
-        position: fixed;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 14px;
-        z-index: 150;
-        padding: 0;
-        width: auto;
-    }
-
-    /* Multiplayer P1: bottom-left */
-    #controlZoneP1_2 {
-        position: fixed;
-        bottom: 12px;
-        left: 12px;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 10px;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        justify-content: space-between;
+        padding: 14px 18px;
         z-index: 150;
     }
 
-    /* Multiplayer P2: bottom-right */
-    #controlZoneP2_2 {
-        position: fixed;
-        bottom: 12px;
-        right: 12px;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 10px;
+    /* Multiplayer: corner controls */
+    #controlZoneP1_2, #controlZoneP2_2 {
+        position: fixed; top: 0; bottom: 0;
+        width: 50vw;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 14px 14px;
         z-index: 150;
     }
+    #controlZoneP1_2 { left: 0; align-items: flex-start; }
+    #controlZoneP2_2 { right: 0; align-items: flex-end; }
 
-    .joystick-base {
-        width: 80px;
-        height: 80px;
-    }
+    #controlZoneP1_2 .action-btn,
+    #controlZoneP2_2 .action-btn { order: -1; }
 
-    .joystick-knob {
-        width: 36px;
-        height: 36px;
-    }
-
-    .action-btn {
-        width: 60px;
-        height: 60px;
-        font-size: 9px;
-    }
-
-    .zone-label { display: none; }
+    .joystick-base { width: 80px; height: 80px; }
+    .joystick-knob { width: 36px; height: 36px; }
+    .action-btn    { width: 60px; height: 60px; font-size: 9px; }
+    .zone-label    { display: none; }
 
     #endScreen {
         max-height: 92vh;

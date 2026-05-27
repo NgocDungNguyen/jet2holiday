@@ -831,6 +831,7 @@
                 handleInput();
                 updateGame(deltaTime);
                 drawGame();
+                renderSplitScreen();
                 requestAnimationFrame(gameLoop);
             }
         }
@@ -941,6 +942,37 @@
         wireActionBtn3('act3Single', () => drone,  1);
         wireActionBtn3('act3P1',     () => drone,  1);
         wireActionBtn3('act3P2',     () => drone2, 2);
+
+        function renderSplitScreen() {
+            const displayCanvas = document.getElementById('displayCanvas');
+            if (!displayCanvas) return;
+            const isMobile = window.innerWidth <= 900;
+            if (gameMode !== 'multiplayer' || !isMobile) {
+                displayCanvas.style.display = 'none';
+                return;
+            }
+            displayCanvas.style.display = 'block';
+            const dw = displayCanvas.width  = window.innerWidth;
+            const dh = displayCanvas.height = window.innerHeight;
+            const dCtx = displayCanvas.getContext('2d');
+            dCtx.clearRect(0, 0, dw, dh);
+            const hw = dw / 2;
+            const scale = Math.min(hw / canvas.height, dh / canvas.width);
+            dCtx.save();
+            dCtx.translate(hw / 2, dh / 2);
+            dCtx.rotate(Math.PI / 2);
+            dCtx.scale(scale, scale);
+            dCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+            dCtx.restore();
+            dCtx.fillStyle = 'rgba(255,255,255,0.25)';
+            dCtx.fillRect(hw - 1, 0, 2, dh);
+            dCtx.save();
+            dCtx.translate(hw + hw / 2, dh / 2);
+            dCtx.rotate(-Math.PI / 2);
+            dCtx.scale(scale, scale);
+            dCtx.drawImage(canvas, -canvas.width / 2, -canvas.height / 2);
+            dCtx.restore();
+        }
 
         function updateMobileUI3() {
             const isLandscape = window.innerHeight < window.innerWidth && window.innerHeight < 600;

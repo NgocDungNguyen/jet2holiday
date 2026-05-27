@@ -366,238 +366,112 @@ button:hover, button:active {
 }
 
 /* ============================================================
-   RESPONSIVE — TABLET (max-width: 900px)
+   RESPONSIVE — MOBILE (max-width: 900px)
+   Hide outer UI, canvas fills screen, controls overlaid
 ============================================================ */
 @media (max-width: 900px) {
-    #topUI {
-        flex-direction: column;
-        gap: 8px;
-    }
+    body { padding: 0; overflow: hidden; }
+    #gameContainer { gap: 0; max-width: 100%; }
 
-    .uiPanel {
-        min-width: 100%;
-        padding: 10px 12px;
-        font-size: 12px;
-    }
+    /* Hide all layout panels — game canvas is the UI */
+    #topUI    { display: none !important; }
+    #controls { display: none !important; }
 
-    #controls {
-        font-size: 11px;
-        padding: 10px 12px;
-    }
-}
-
-/* ============================================================
-   RESPONSIVE — MOBILE PORTRAIT (max-width: 768px)
-============================================================ */
-@media (max-width: 768px) {
-    body {
-        padding: 5px;
-        align-items: flex-start;
-    }
-
-    #gameContainer {
-        gap: 8px;
-    }
+    #canvasWrapper { max-width: 100%; margin: 0; }
 
     #gameCanvas {
-        max-height: 45vh;
+        max-height: none;
+        border: none;
+        border-radius: 0;
+        width: 100vw;
+        height: auto;
     }
 
-    #controls {
-        display: none;
-    }
-
-    .uiPanel {
-        font-size: 11px;
-        padding: 8px 10px;
-    }
-
-    #endScreen {
-        padding: 15px;
-        max-width: 95vw;
-    }
-
-    .factBox {
-        font-size: 12px;
-        padding: 12px;
-    }
-
-    button {
-        padding: 10px 20px;
-        margin: 6px;
-        font-size: 14px;
-    }
-
-    #cycleImageContainer { padding: 10px; }
-    #cycleImageContainer div { font-size: 11px; }
-
-    /* Single-player zone shown below canvas */
+    /* Single-player: joystick left, action right */
     #controlZone {
         display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        width: 100%;
+        min-height: 90px;
     }
 
-    /* Multiplayer zones: side by side below canvas */
+    /* Multiplayer zones side by side — action on top, joystick on bottom */
     #controlZoneP1,
     #controlZoneP2 {
         display: flex;
         flex: 1;
         flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 6px;
+        justify-content: space-between;
+        min-height: 120px;
+        padding: 8px 10px;
     }
+    #controlZoneP1 { align-items: flex-start; }
+    #controlZoneP2 { align-items: flex-end; }
 
-    /* Joystick slightly smaller in portrait */
-    .joystick-base {
-        width: 88px;
-        height: 88px;
-    }
+    /* Reorder: action btn floats to top */
+    #controlZoneP1 .action-btn,
+    #controlZoneP2 .action-btn { order: -1; }
 
-    .joystick-knob {
-        width: 40px;
-        height: 40px;
-    }
+    .zone-label { display: none; }
 
-    .action-btn {
-        width: 64px;
-        height: 64px;
-    }
-}
+    .joystick-base { width: 88px; height: 88px; }
+    .joystick-knob { width: 40px; height: 40px; }
+    .action-btn    { width: 68px; height: 68px; }
 
-/* ============================================================
-   RESPONSIVE — SMALL MOBILE (max-width: 480px)
-============================================================ */
-@media (max-width: 480px) {
-    #topUI { gap: 5px; }
-
-    .uiPanel {
-        font-size: 10px;
-        padding: 6px 8px;
-    }
-
-    .uiPanel > div { margin: 2px 0; }
-
-    .joystick-base {
-        width: 80px;
-        height: 80px;
-    }
-
-    .joystick-knob {
-        width: 36px;
-        height: 36px;
-    }
-
-    .action-btn {
-        width: 58px;
-        height: 58px;
-        font-size: 9px;
-    }
-
-    #controlZone {
-        gap: 14px;
-    }
+    #endScreen { padding: 15px; max-width: 95vw; }
+    .factBox { font-size: 12px; padding: 12px; }
+    button { padding: 10px 20px; margin: 6px; font-size: 14px; }
+    #cycleImageContainer { padding: 10px; }
+    #cycleImageContainer div { font-size: 11px; }
 }
 
 /* ============================================================
    RESPONSIVE — LANDSCAPE PHONE (max-height: 600px + landscape)
+   Canvas fills full screen; controls are fixed corner overlays
 ============================================================ */
 @media (max-height: 600px) and (orientation: landscape) {
-    body {
-        padding: 0;
-        overflow: hidden;
-    }
+    #gameCanvas { height: 100vh; max-height: 100vh; width: auto; max-width: 100vw; }
 
-    #gameContainer {
-        gap: 0;
-        max-width: 100%;
-    }
-
-    #topUI { display: none; }
-
-    #canvasWrapper {
-        max-width: 100%;
-        margin: 0;
-    }
-
-    #gameCanvas {
-        max-height: 100vh;
-        height: 100vh;
-        border-radius: 0;
-        border: none;
-    }
-
-    #controls { display: none; }
-
-    /* Compact info overlay at top-center */
+    /* Compact info overlay */
     #gameplayUI {
-        position: fixed;
-        top: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        padding: 5px 15px;
-        border-radius: 15px;
-        font-size: 11px;
-        z-index: 100;
-        gap: 15px;
-        border: 1px solid rgba(52, 152, 219, 0.5);
-        white-space: nowrap;
+        position: fixed; top: 5px; left: 50%; transform: translateX(-50%);
+        background: rgba(0,0,0,0.7); padding: 5px 15px; border-radius: 15px;
+        font-size: 11px; z-index: 100; gap: 15px;
+        border: 1px solid rgba(52,152,219,0.5); white-space: nowrap;
     }
 
-    /* Single-player: centred fixed overlay */
+    /* Single player: joystick fixed bottom-left, action fixed bottom-right */
     #controlZone {
-        position: fixed;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 14px;
-        z-index: 150;
-        padding: 0;
-        width: auto;
-    }
-
-    /* Multiplayer P1: bottom-left */
-    #controlZoneP1 {
-        position: fixed;
-        bottom: 12px;
-        left: 12px;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 10px;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        justify-content: space-between;
+        padding: 14px 18px;
         z-index: 150;
     }
 
-    /* Multiplayer P2: bottom-right */
-    #controlZoneP2 {
-        position: fixed;
-        bottom: 12px;
-        right: 12px;
-        flex-direction: row;
-        align-items: flex-end;
-        gap: 10px;
+    /* Multiplayer: zone containers become transparent wrappers */
+    #controlZoneP1, #controlZoneP2 {
+        position: fixed; top: 0; bottom: 0;
+        width: 50vw;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 14px 14px;
         z-index: 150;
     }
+    #controlZoneP1 { left: 0; align-items: flex-start; }
+    #controlZoneP2 { right: 0; align-items: flex-end; }
+
+    /* Joystick at bottom, action at top — use order */
+    #controlZoneP1 .action-btn,
+    #controlZoneP2 .action-btn { order: -1; }
 
     /* Smaller controls in landscape */
-    .joystick-base {
-        width: 80px;
-        height: 80px;
-    }
-
-    .joystick-knob {
-        width: 36px;
-        height: 36px;
-    }
-
-    .action-btn {
-        width: 60px;
-        height: 60px;
-        font-size: 9px;
-    }
-
-    .zone-label { display: none; }
+    .joystick-base { width: 80px; height: 80px; }
+    .joystick-knob { width: 36px; height: 36px; }
+    .action-btn    { width: 60px; height: 60px; font-size: 9px; }
+    .zone-label    { display: none; }
 
     #endScreen {
         max-height: 92vh;
