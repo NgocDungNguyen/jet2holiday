@@ -435,6 +435,13 @@ button:hover, button:active {
 @media (max-height: 600px) and (orientation: landscape) {
     #gameCanvas { height: 100vh; max-height: 100vh; width: auto; max-width: 100vw; }
 
+    #canvasWrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
     /* Compact info overlay */
     #gameplayUI {
         position: fixed; top: 5px; left: 50%; transform: translateX(-50%);
