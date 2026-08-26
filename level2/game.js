@@ -867,26 +867,30 @@
         function updateWaterLevel(deltaTime) {
             if (gameState.phase !== 'raining') return;
 
-            const blockedSewers = sewers.filter(s => s.blocked).length;
-            const clearSewers = SEWER_COUNT - blockedSewers;
+            // Realistic water logic, now gradual instead of all-or-nothing:
+            // - Each sewer's blockage is measured by how much trash still sits on it
+            //   (trashCount / TRASH_PER_SEWER), not just "any trash at all".
+            // - As players clear trash off a sewer, its contribution to the rise
+            //   shrinks and its contribution to the drain grows smoothly.
+            // - Only a fully-cleared sewer (0 trash) drains at full rate.
 
-            // Realistic water logic:
-            // - Water only rises when sewers are BLOCKED (can't drain)
-            // - Water drains when sewers are CLEAR
-            // - If all sewers clear: water drains fast, no rising
-            // - If all sewers blocked: water rises fast (realistic flooding!)
+            let totalBlockage = 0; // sum of per-sewer ratios, 0 (clear) to SEWER_COUNT (all fully blocked)
+            sewers.forEach(sewer => {
+                totalBlockage += Math.min(1, sewer.trashCount / TRASH_PER_SEWER);
+            });
+            const totalClearness = SEWER_COUNT - totalBlockage;
 
             let netChange = 0;
 
-            if (blockedSewers > 0) {
-                // Water rises proportional to number of blocked sewers
-                const waterInflow = WATER_RISE_RATE * (blockedSewers / SEWER_COUNT) * deltaTime;
+            if (totalBlockage > 0) {
+                // Water rises proportional to remaining blockage across all sewers
+                const waterInflow = WATER_RISE_RATE * (totalBlockage / SEWER_COUNT) * deltaTime;
                 netChange += waterInflow;
             }
 
-            if (clearSewers > 0) {
-                // Water drains proportional to number of clear sewers
-                const waterDrain = clearSewers * WATER_DRAIN_RATE * deltaTime;
+            if (totalClearness > 0) {
+                // Water drains proportional to how clear the sewers are
+                const waterDrain = totalClearness * WATER_DRAIN_RATE * deltaTime;
                 netChange -= waterDrain;
             }
 

@@ -1,6 +1,6 @@
 // Game Constants - CHALLENGE MODE
 const LEVEL_TIME = 60; // 1 minute survival challenge
-const MIN_SCORE_TO_PASS = 50; // Minimum score needed to pass (can't go below this)
+const MIN_SCORE_TO_PASS = 30; // Minimum score needed to pass (can't go below this)
 const OCEAN_SURFACE = 200; // 20% of canvas height (600 * 0.2) - no objects above this line
 
 // Load Assets
@@ -179,10 +179,10 @@ const TRASH_TYPES = {
 
 // Marine Life Types - REDUCED PENALTIES
 const MARINE_LIFE_TYPES = {
-    FISH: { penalty: 30, radius: 25, color: '#1DD3B0', speed: 0.3, name: 'Fish', asset: 'fish' },
-    TURTLE: { penalty: 50, radius: 30, color: '#AFFC41', speed: 0.2, name: 'Turtle', asset: 'turtle' },
-    CRAB: { penalty: 25, radius: 20, color: '#FF6347', speed: 0.25, name: 'Crab', asset: 'crab' },
-    SHRIMP: { penalty: 20, radius: 18, color: '#FFA07A', speed: 0.35, name: 'Shrimp', asset: 'shrimp' }
+    FISH: { penalty: 15, radius: 25, color: '#1DD3B0', speed: 0.3, name: 'Fish', asset: 'fish' },
+    TURTLE: { penalty: 25, radius: 30, color: '#AFFC41', speed: 0.2, name: 'Turtle', asset: 'turtle' },
+    CRAB: { penalty: 12, radius: 20, color: '#FF6347', speed: 0.25, name: 'Crab', asset: 'crab' },
+    SHRIMP: { penalty: 10, radius: 18, color: '#FFA07A', speed: 0.35, name: 'Shrimp', asset: 'shrimp' }
 };
 
 // Initialize Game
@@ -284,8 +284,8 @@ function initGame() {
         spawnTrash();
     }
 
-    // Spawn 10-15 marine life
-    const marineCount = 10 + Math.floor(Math.random() * 6);
+    // Spawn 6-10 marine life (fewer than trash so accidental drift collisions are less punishing)
+    const marineCount = 6 + Math.floor(Math.random() * 5);
     for (let i = 0; i < marineCount; i++) {
         spawnMarineLife();
     }
@@ -478,17 +478,6 @@ function updateGame() {
         endGame();
     }
 
-    // Check if player(s) fall below minimum score (instant fail)
-    if (gameMode === 'single') {
-        if (gameState.p1Score < 0) {
-            gameState.winner = null;
-            endGame();
-        }
-    } else {
-        // In multiplayer, game continues even if one player goes negative
-        // Both players can still recover
-    }
-
     // Update UI
     updateUI();
 }
@@ -668,10 +657,10 @@ function checkCollisions() {
             if (distance < trash.config.radius + life.config.radius && !life.isPolluted) {
                 // Collision detected - trash harms marine life (only once per pollution event)
                 if (gameMode === 'single') {
-                    gameState.p1Score -= life.config.penalty;
+                    gameState.p1Score = Math.max(0, gameState.p1Score - life.config.penalty);
                 } else {
-                    gameState.p1Score -= life.config.penalty;
-                    gameState.p2Score -= life.config.penalty;
+                    gameState.p1Score = Math.max(0, gameState.p1Score - life.config.penalty);
+                    gameState.p2Score = Math.max(0, gameState.p2Score - life.config.penalty);
                 }
                 gameState.collisions++;
                 life.isPolluted = true;
@@ -788,13 +777,9 @@ function endGame() {
             successSound.currentTime = 0;
             successSound.play().catch(err => console.log('Success sound error:', err));
         } else {
-            if (gameState.p1Score < 0) {
-                endTitle.textContent = '💔 MISSION FAILED - Too Many Collisions!';
-            } else if (gameState.p1Score < MIN_SCORE_TO_PASS) {
-                endTitle.textContent = '💔 MISSION FAILED - Score Too Low!';
-            } else {
-                endTitle.textContent = '💔 TIME\'S UP!';
-            }
+            endTitle.textContent = (gameState.p1Score < MIN_SCORE_TO_PASS)
+                ? '💔 MISSION FAILED - Score Too Low!'
+                : '💔 TIME\'S UP!';
             endTitle.style.color = '#e74c3c';
             didFail = true;
         }
@@ -1181,7 +1166,7 @@ function showStartScreen() {
             <strong>🎯 GOAL:</strong><br>
             ⏱️ Survive 60 seconds<br>
             ♻️ Collect trash (avoid fish!)<br>
-            ⚠️ Keep score above 50 to pass
+            ⚠️ Keep score above ${MIN_SCORE_TO_PASS} to pass
         `;
     } else {
         modeDescription.innerHTML = 'Welcome to <strong>MULTIPLAYER MODE</strong>!';
@@ -1193,7 +1178,7 @@ function showStartScreen() {
             <strong>🎯 GOAL:</strong><br>
             ⏱️ Survive 60 seconds<br>
             ♻️ Collect most trash to win<br>
-            ⚠️ Score 50+ to qualify
+            ⚠️ Score ${MIN_SCORE_TO_PASS}+ to qualify
         `;
     }
 }
