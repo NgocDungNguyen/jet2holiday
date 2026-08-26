@@ -6,7 +6,7 @@
         let gameMode = urlParams.get('mode') || 'single'; // 'single' or 'multiplayer'
 
         // Game Constants
-        const PRE_RAIN_TIME = 10; // 5 seconds before rain starts
+        const PRE_RAIN_TIME = 6; // 6 seconds before rain starts
         const RAIN_DURATION = 60; // 30 seconds of rain
         const MAX_WATER_LEVEL = 50; // Lose if water reaches 40%
         const SEWER_COUNT = 3;
